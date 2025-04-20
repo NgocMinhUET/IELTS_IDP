@@ -1,0 +1,26 @@
+<?php
+
+return [
+    'success' => '成功',
+    'error' => 'エラー',
+    'unauthorized' => '認証されていません',
+    'forbidden' => '禁止されています',
+    'expired' => '期限切れ',
+    'validation_error' => '検証エラー',
+    'contact_success' => 'メッセージは正常に送信されました',
+    'rating_success' => '評価が成功しました',
+    'update_success' => '更新に成功しました',
+    'update_failed' => '更新に失敗しました',
+    'delete_success' => '削除に成功しました',
+    'delete_failed' => '削除に失敗しました',
+    'create_success' => '作成に成功しました',
+    'create_failed' => '作成に失敗しました',
+    'send_success' => '送信に成功しました',
+    'send_failed' => '送信に失敗しました',
+    'not_found' => '見つかりません',
+    'not_found_data' => 'データが見つかりません',
+    'schedule_is_exist' => 'スケジュールはすでに存在します',
+    'unauthorized_action' => 'このアクションは許可されていません',
+    'not_in_conversation' => '会話に参加していません',
+    'invalid_conversation_id' => '無効な会話ID',
+];

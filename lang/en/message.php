@@ -1,0 +1,25 @@
+<?php
+
+return [
+    'success' => 'Success',
+    'error' => 'Error',
+    'unauthorized' => 'Unauthorized',
+    'forbidden' => 'Forbidden',
+    'expired' => 'Expired',
+    'validation_error' => 'Validation error',
+    'contact_success' => 'Your message has been sent successfully!',
+    'rating_success' => 'Rating successfully',
+    'update_success' => 'Update successfully',
+    'update_failed' => 'Update failed',
+    'delete_success' => 'Delete successfully',
+    'delete_failed' => 'Delete failed',
+    'create_success' => 'Create successfully',
+    'create_failed' => 'Create failed',
+    'send_success' => 'Send successfully',
+    'send_failed' => 'Send failed',
+    'not_found' => 'Not found',
+    'not_found_data' => 'Data not found',
+    'schedule_is_exist' => 'Schedule is already exist',
+    'unauthorized_action' => 'This action is unauthorized',
+    'not_in_conversation' => 'Not in conversation',
+];

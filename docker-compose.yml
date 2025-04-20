@@ -1,0 +1,82 @@
+version: "1.0"
+services:
+    #Nginx Service
+    nginx:
+        container_name: ielts_nginx
+        image: nginx:alpine
+        build:
+            context: .docker/nginx
+            dockerfile: Dockerfile
+        command: nginx -g "daemon off;"
+        restart: unless-stopped
+        tty: true
+        links:
+            - php
+        ports:
+            - "8088:80"
+            - "443:443"
+            - "3009:3000"
+        volumes:
+            - .docker/nginx/logs:/var/log/nginx
+            - ./:/var/www/html
+        networks:
+            - app-network
+        depends_on:
+            - php
+            - mysql
+
+    #PHP Service
+    php:
+        container_name: ielts_php
+        image: php
+        build:
+            context: .docker/php
+            dockerfile: Dockerfile
+        ports:
+            - "9000:9000"
+        volumes:
+            - ./:/var/www/html
+            - .docker/php/local.ini:/usr/local/etc/php/conf.d/local.ini
+        working_dir: /var/www/html
+        networks:
+            - app-network
+        depends_on:
+            - mysql
+
+    #mysql Service
+    mysql:
+        image: mysql:8.0
+        container_name: ielts_mysql
+        restart: unless-stopped
+        tty: true
+        ports:
+            - "3306:3306"
+        environment:
+            MYSQL_ROOT_PASSWORD: laravel@2025
+            MYSQL_DATABASE: ielts
+            SERVICE_TAGS: dev
+            SERVICE_NAME: mysql
+        volumes:
+            - data:/var/lib/mysql/
+            - .docker/mysql/my.cnf:/etc/mysql/my.cnf
+        networks:
+            - app-network
+
+    mail:
+        image: axllent/mailpit:latest
+        container_name: mailpit
+        ports:
+            - 8025:8025
+            - 1025:1025
+        networks:
+            - app-network
+
+#Docker Networks
+networks:
+    app-network:
+        driver: bridge
+
+#Volumes
+volumes:
+    data:
+        driver: local
