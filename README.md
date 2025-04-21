@@ -17,7 +17,7 @@ Follow these steps to set up your Laravel project locally:
 3. **Open docker workspace**:
 
     ```sh
-     docker exec -it aimm_php bash
+     docker exec -it ielts_php bash
     ```
 
 4. **Install Composer Dependencies**:
