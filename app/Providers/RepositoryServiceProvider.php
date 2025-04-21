@@ -13,24 +13,6 @@ use App\Repositories\Otp\OtpInterface;
 use App\Repositories\User\UserRepository;
 use App\Repositories\User\UserInterface;
 
-use App\Repositories\TeamMatchingSetting\TeamMatchingSettingRepository;
-use App\Repositories\TeamMatchingSetting\TeamMatchingSettingInterface;
-
-use App\Repositories\TeamSchedule\TeamScheduleRepository;
-use App\Repositories\TeamSchedule\TeamScheduleInterface;
-
-use App\Repositories\TeamStadium\TeamStadiumRepository;
-use App\Repositories\TeamStadium\TeamStadiumInterface;
-
-use App\Repositories\Conversation\ConversationRepository;
-use App\Repositories\Conversation\ConversationInterface;
-
-use App\Repositories\Message\MessageRepository;
-use App\Repositories\Message\MessageInterface;
-
-use App\Repositories\Team\TeamInterface;
-use App\Repositories\Team\TeamRepository;
-
 class RepositoryServiceProvider extends ServiceProvider
 {
     /**
@@ -38,6 +20,20 @@ class RepositoryServiceProvider extends ServiceProvider
      */
     public function register(): void
     {
+        $this->app->bind(
+            PasswordResetInterface::class,
+            PasswordResetRepository::class
+        );
+
+        $this->app->bind(
+            OtpInterface::class,
+            OtpRepository::class
+        );
+
+        $this->app->bind(
+            UserInterface::class,
+            UserRepository::class
+        );
     }
 
     /**

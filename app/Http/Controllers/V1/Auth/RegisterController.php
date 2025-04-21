@@ -31,8 +31,6 @@ class RegisterController extends Controller
 {
     public PasswordResetInterface $passwordResetRepository;
     public AuthInterface $authRepository;
-    public TeamInterface $teamRepository;
-    public TeamStadiumInterface $teamStadiumRepository;
 
     private OtpService $service;
 
@@ -40,14 +38,10 @@ class RegisterController extends Controller
         AuthInterface          $authRepository,
         OtpService             $service,
         PasswordResetInterface $passwordResetRepository,
-        TeamInterface          $teamRepository,
-        TeamStadiumInterface   $teamStadiumRepository,
     ) {
         $this->authRepository = $authRepository;
         $this->passwordResetRepository = $passwordResetRepository;
-        $this->teamRepository = $teamRepository;
         $this->service = $service;
-        $this->teamStadiumRepository = $teamStadiumRepository;
     }
 
     /**
@@ -132,24 +126,6 @@ class RegisterController extends Controller
             }
 
             $otpData->delete();
-
-            // Default create team
-            $team = $this->teamRepository->create([
-                'user_id' => $user->id,
-                'member_number' => 1,
-                'email' => $user->email,
-            ]);
-
-            foreach (range(1, 3) as $index) {
-                $this->teamStadiumRepository->create([
-                    'team_id' => $team->id,
-                    'order' => $index,
-                ]);
-            }
-
-            // Update team id to user
-            $user->team_id = $team->id;
-            $user->save();
 
             // Generate token for the user
             $token = auth()->login($user);

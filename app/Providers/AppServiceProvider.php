@@ -5,8 +5,6 @@ namespace App\Providers;
 use Illuminate\Support\ServiceProvider;
 use Illuminate\Database\Schema\Blueprint;
 
-use App\Models\BaseModel;
-
 class AppServiceProvider extends ServiceProvider
 {
     /**
