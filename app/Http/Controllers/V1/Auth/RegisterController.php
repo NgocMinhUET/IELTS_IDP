@@ -9,6 +9,7 @@ use Illuminate\Http\Response;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
 use Carbon\Carbon;
+use Illuminate\Support\Str;
 use Exception;
 
 use App\Common\ResponseApi;
@@ -17,9 +18,8 @@ use App\Http\Requests\Auth\ActiveAccountRequest;
 use App\Http\Requests\Auth\RegisterRequest;
 use App\Http\Requests\Auth\ResendOtpRequest;
 use App\Models\Otp;
+use App\Models\User;
 use App\Notifications\UserRegisteredSuccessfully;
-use App\Repositories\Team\TeamInterface;
-use App\Repositories\TeamStadium\TeamStadiumInterface;
 use App\Services\OtpService;
 
 /**
@@ -56,9 +56,6 @@ class RegisterController extends Controller
 
             $email = $request->get('email');
 
-            // Generate OTP
-            $otp = $this->service->createOrUpdateOtp($email);
-
             $data = [
                 'name' => $request->get('name'),
                 'email' => $email,
@@ -82,8 +79,13 @@ class RegisterController extends Controller
                 return ResponseApi::unauthorized();
             }
 
+            // Generate token
+            $token = Str::random(50);
+            $user->remember_token = $token;
+            $user->save();
+
             // send mail active
-            $user->notify(new UserRegisteredSuccessfully($otp));
+            $user->notify(new UserRegisteredSuccessfully($token));
             DB::commit();
 
             return ResponseApi::created([], __('auth.register_success'));
@@ -98,26 +100,22 @@ class RegisterController extends Controller
      * @return ResponseFactory|\Symfony\Component\HttpFoundation\Response
      * @throws Exception
      */
-    public function verifyOtp(ActiveAccountRequest $request): \Symfony\Component\HttpFoundation\Response|ResponseFactory
+    public function verify(ActiveAccountRequest $request): \Symfony\Component\HttpFoundation\Response|ResponseFactory
     {
         try {
             DB::beginTransaction();
 
-            $email = $request->get('email');
-            $otp = $request->get('otp');
+            $token = $request->get('token');
 
-            $otpData = Otp::where('email', $email)
-                ->where('otp', $otp)
-                ->where('expires_at', '>', Carbon::now())
+            $user = User::where('remember_token', $token)
                 ->first();
 
-            if (!$otpData) {
+            if (!$user) {
                 return ResponseApi::bad([], __('auth.otp.invalid_or_expired'));
             }
 
             $user = $this->authRepository->activeUser([
-                'email' => $email,
-                'otp' => $otp,
+                'token' => $user->remember_token
             ]);
 
             if (!$user) {
@@ -125,27 +123,9 @@ class RegisterController extends Controller
                 return ResponseApi::unauthorized();
             }
 
-            $otpData->delete();
-
-            // Generate token for the user
-            $token = auth()->login($user);
-            $res = [];
-            if ($token) {
-                $data = $this->respondWithToken($token);
-
-                // save last login
-                $this->authRepository->update([
-                    'last_login_at' => Carbon::now(),
-                ], $user->id);
-
-                $res = $data->original;
-                $res['is_active'] = $user->is_active == 1 ? true : false;
-                $res['email'] = $user->email;
-            }
-
             DB::commit();
 
-            return ResponseApi::success(__('auth.account_active_success'), $res);
+            return redirect('http://localhost:5173/');
         } catch (Exception $exception) {
             DB::rollBack();
             throw $exception;

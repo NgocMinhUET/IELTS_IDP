@@ -77,7 +77,7 @@ class AuthRepository extends BaseRepository implements AuthInterface
     public function active(array $params): mixed
     {
         $data = $this->model
-            ->where('email', $params['email'])
+            ->where('remember_token', $params['token'])
             ->where('is_active', false)
             ->first();
 
@@ -86,6 +86,7 @@ class AuthRepository extends BaseRepository implements AuthInterface
         }
 
         $data->is_active = true;
+        $data->remember_token = null;
         $data->email_verified_at = now();
         $data->save();
 

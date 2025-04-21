@@ -11,16 +11,16 @@ class UserRegisteredSuccessfully extends Notification
 {
     use Queueable;
 
-    protected $otp;
+    protected $token;
 
     /**
      * Create a new notification instance.
      *
-     * @param $otp
+     * @param $token
      */
-    public function __construct($otp)
+    public function __construct($token)
     {
-        $this->otp = $otp;
+        $this->token = $token;
     }
 
     /**
@@ -41,14 +41,17 @@ class UserRegisteredSuccessfully extends Notification
      */
     public function toMail(): MailMessage
     {
+
+        $verifyLink = env('APP_API_URL') . '/auth/verify?token=' . $this->token;
+
         return (new MailMessage)
             ->from(config('mail.from.address'), config('mail.from.name'))
-            ->subject('Ielts -アカウントを確認する')
+            ->subject('Ielts - Verify Account')
             ->view(
-                'emails.otp_active_account',
+                'emails.active_account',
                 [
-                    'otp' => $this->otp,
-                    'time_expired' => Auth::REGISTER_OTP_EXPIRE->value . '分間',
+                    'verification_url' => $verifyLink,
+                    'time_expired' => Auth::REGISTER_OTP_EXPIRE->value . 'minutes',
                 ]
             );
     }

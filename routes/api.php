@@ -1,18 +1,10 @@
 <?php
 
-use App\Http\Controllers\V1\Api\GoogleMapController;
 use Illuminate\Support\Facades\Route;
 
 use App\Http\Controllers\V1\Auth\AuthController;
 use App\Http\Controllers\V1\Auth\ForgotPasswordController;
 use App\Http\Controllers\V1\Auth\RegisterController;
-use App\Http\Controllers\V1\Api\CommonController;
-use App\Http\Controllers\V1\Api\SampleController;
-use App\Http\Controllers\V1\Api\TeamScheduleController;
-use App\Http\Controllers\V1\Api\TeamStadiumController;
-use App\Http\Controllers\V1\Api\TeamMatchingSettingController;
-use App\Http\Controllers\V1\Api\ConversationController;
-use App\Http\Controllers\V1\Api\MessageController;
 
 Route::group(['middleware' => ['localization', 'cors']], function () {
 
@@ -24,7 +16,7 @@ Route::group(['middleware' => ['localization', 'cors']], function () {
 
             Route::post('/login', [AuthController::class, 'login'])->name('API_002');
 
-            Route::post('/verify-otp', [RegisterController::class, 'verifyOtp'])->name('API_003');
+            Route::get('/verify', [RegisterController::class, 'verify'])->name('API_003');
 
             Route::post('/resend-otp', [RegisterController::class, 'resendOtp'])->name('API_004');
 
@@ -53,7 +45,6 @@ Route::group(['middleware' => ['localization', 'cors']], function () {
             });
         });
 
-        Route::group(['middleware' => ['auth:api', 'auth.active']], function () {
-        });
+        Route::group(['middleware' => ['auth:api', 'auth.active']], function () {});
     });
 });

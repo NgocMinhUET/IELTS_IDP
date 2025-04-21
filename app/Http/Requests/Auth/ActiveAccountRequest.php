@@ -24,8 +24,7 @@ class ActiveAccountRequest extends ApiRequest
     public function rules(): array
     {
         return [
-            'otp' => 'required|digits:6',
-            'email' => 'required|email|max:255',
+            'token' => 'required',
         ];
     }
 }
