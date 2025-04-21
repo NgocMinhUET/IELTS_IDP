@@ -4,7 +4,7 @@
         <meta charset="utf-8">
         <meta name="viewport" content="width=device-width, initial-scale=1">
 
-        <title>Aimm</title>
+        <title>Ielts</title>
 
         <!-- Fonts -->
         <link rel="preconnect" href="https://fonts.bunny.net">
@@ -18,7 +18,7 @@
             <div class="max-w-7xl mx-auto p-6 lg:p-8">
                 <div class="flex justify-center mt-16 px-0">
                     <div class="text-center text-sm text-gray-500 dark:text-gray-400 sm:text-right">
-                        AIMM Version 1
+                        Ielts Version 1
                     </div>
                 </div>
             </div>

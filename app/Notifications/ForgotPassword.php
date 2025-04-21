@@ -46,7 +46,7 @@ class ForgotPassword extends Notification
 
         return (new MailMessage)
             ->from(config('mail.from.address'), config('mail.from.name'))
-            ->subject('AIMM -パスワードをお忘れですか')
+            ->subject('Ielts -パスワードをお忘れですか')
             ->view(
                 'emails.otp_forgot_password',
                 [

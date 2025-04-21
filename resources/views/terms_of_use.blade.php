@@ -5,7 +5,7 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
 
-    <title>利用規約 - Aimm</title>
+    <title>利用規約 - Ielts</title>
 
     <!-- Fonts -->
     <link rel="preconnect" href="https://fonts.bunny.net">
@@ -67,7 +67,7 @@
 
             <div class="flex justify-center mt-10 px-0 sm:items-center sm:justify-between">
                 <div class="text-center text-sm text-gray-500 sm:text-right">
-                    Aimm Version 1.0.0
+                    Ielts Version 1.0.0
                 </div>
             </div>
         </div>

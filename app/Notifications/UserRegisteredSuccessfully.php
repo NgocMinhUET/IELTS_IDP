@@ -43,7 +43,7 @@ class UserRegisteredSuccessfully extends Notification
     {
         return (new MailMessage)
             ->from(config('mail.from.address'), config('mail.from.name'))
-            ->subject('AIMM -アカウントを確認する')
+            ->subject('Ielts -アカウントを確認する')
             ->view(
                 'emails.otp_active_account',
                 [

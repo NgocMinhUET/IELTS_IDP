@@ -18,7 +18,7 @@ class ContactFormMail extends Mailable
 
     public function build()
     {
-        return $this->subject('AIMM -New Contact Form')
+        return $this->subject('Ielts -New Contact Form')
                     ->view('emails.contact_form')
                     ->with('data', $this->data);
     }
