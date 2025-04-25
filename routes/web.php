@@ -1,6 +1,9 @@
 <?php
 
 use App\Http\Controllers\CMS\ExamController;
+use App\Http\Controllers\CMS\PartController;
+use App\Http\Controllers\CMS\QuestionController;
+use App\Http\Controllers\CMS\SkillController;
 use App\Http\Controllers\ContactController;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\V1\Auth\ForgotPasswordController;
@@ -40,7 +43,26 @@ Route::group(['prefix' => 'admin', 'as' => 'admin.', 'middleware' => []], functi
     Route::group(['prefix' => 'exams', 'as' => 'exams.'], function () {
         Route::get('/', [ExamController::class, 'index'])->name('index');
         Route::get('/create', [ExamController::class, 'create'])->name('create');
-        Route::get('/store', [ExamController::class, 'store'])->name('store');
+        Route::post('/store', [ExamController::class, 'store'])->name('store');
         Route::get('/{id}', [ExamController::class, 'detail'])->name('detail');
+        Route::put('/{id}', [ExamController::class, 'update'])->name('update');
+    });
+
+    Route::group(['prefix' => 'skills', 'as' => 'skills.'], function () {
+        Route::get('/{id}', [SkillController::class, 'detail'])->name('detail');
+        Route::put('/{id}', [SkillController::class, 'update'])->name('update');
+    });
+
+    Route::group(['prefix' => 'parts', 'as' => 'parts.'], function () {
+        Route::group(['prefix' => '{id}'], function () {
+            Route::get('/', [PartController::class, 'detail'])->name('detail');
+            Route::put('/', [PartController::class, 'update'])->name('update');
+            Route::group(['prefix' => 'questions', 'as' => 'questions.'], function () {
+                Route::get('/create', [QuestionController::class, 'create'])->name('create');
+                Route::post('/store', [QuestionController::class, 'store'])->name('store');
+                Route::get('/{questionId}', [QuestionController::class, 'detail'])->name('detail');
+                Route::put('/{questionId}', [QuestionController::class, 'update'])->name('update');
+            });
+        });
     });
 });
