@@ -2,27 +2,39 @@
 
 namespace App\Http\Controllers\CMS;
 
-use App\Http\Controllers\Controller;
 use App\Http\Requests\Exam\StoreExamRequest;
 use App\Services\CMS\ExamService;
 use App\Services\CMS\SkillService;
 use Illuminate\Support\Facades\DB;
 
-class ExamController extends Controller
+class ExamController extends CMSController
 {
+    private array $rootBreadcrumbs = ['Exam' => null];
+
     public function __construct(
         public ExamService $examService,
         public SkillService $skillService,
     ) {
+        $this->rootBreadcrumbs['Exam'] = route('admin.exams.index');
     }
 
     public function index()
     {
-        return view('exams.index');
+        $this->breadcrumbs = array_merge($this->rootBreadcrumbs, [
+            'List' => null
+        ]);
+
+        $exams = $this->examService->getPaginateExams();
+
+        return view('exams.index', compact('exams'));
     }
 
     public function create()
     {
+        $this->breadcrumbs = array_merge($this->rootBreadcrumbs, [
+            'Create' => null
+        ]);
+
         return view('exams.create');
     }
 
@@ -46,6 +58,10 @@ class ExamController extends Controller
 
     public function detail($id)
     {
+        $this->breadcrumbs = array_merge($this->rootBreadcrumbs, [
+            'Detail' => null
+        ]);
+
         $exam = $this->examService->getExam($id);
 
         return view('exams.create', [

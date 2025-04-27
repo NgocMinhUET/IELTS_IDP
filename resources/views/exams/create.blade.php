@@ -14,6 +14,16 @@
         }
     @endphp
 {{--    <h2 class="mb-2 lh-sm">Create Exam</h2>--}}
+{{--    TODO: make component--}}
+    @foreach (['success', 'error', 'warning', 'info'] as $msg)
+        @if(session($msg))
+            <div class="alert alert-{{ $msg }} alert-dismissible fade show" role="alert">
+                {{ session($msg) }}
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+            </div>
+        @endif
+    @endforeach
+
     <div class="mt-4">
         <div class="row g-4">
             <div class="col-12 col-xl-12 order-1 order-xl-0">
@@ -42,7 +52,7 @@
                                     @csrf
 
                                     <div class="mb-3">
-                                        <label class="form-label" for="titleFormControlInput">Title</label>
+                                        <label class="form-label" for="titleFormControlInput">Title <span class="text-danger">*</span></label>
                                         <input class="form-control  {{ $errors->has('title') ? 'is-invalid' : '' }}"
                                                id="titleFormControlInput" name="title" placeholder=""
                                                value="{{ old('title', $exam->title ?? '') }}"
@@ -62,7 +72,7 @@
                                     </div>
 
                                     <div class="mb-3">
-                                        <label class="form-label mb-1" for="skill">Select Skills</label>
+                                        <label class="form-label mb-1" for="skill">Select Skills <span class="text-danger">*</span></label>
                                         @if($errors->has('skills'))
                                             <div class="invalid-feedback mt-0 d-block">{{ $errors->first('skills') }}</div>
                                         @endif

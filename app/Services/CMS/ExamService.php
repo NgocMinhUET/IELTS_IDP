@@ -16,6 +16,11 @@ class ExamService extends BaseService
         public ExamInterface $examRepository,
     ) {}
 
+    public function getPaginateExams()
+    {
+        return $this->examRepository->with('skills')->paginate(10);
+    }
+
     public function getExam($id)
     {
         return $this->examRepository->with('skills')->find($id);

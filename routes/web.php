@@ -1,6 +1,8 @@
 <?php
 
 use App\Http\Controllers\CMS\ExamController;
+use App\Http\Controllers\CMS\FillInContentQuestionController;
+use App\Http\Controllers\CMS\FillInImageQuestionController;
 use App\Http\Controllers\CMS\PartController;
 use App\Http\Controllers\CMS\QuestionController;
 use App\Http\Controllers\CMS\SkillController;
@@ -62,6 +64,18 @@ Route::group(['prefix' => 'admin', 'as' => 'admin.', 'middleware' => []], functi
                 Route::post('/store', [QuestionController::class, 'store'])->name('store');
                 Route::get('/{questionId}', [QuestionController::class, 'detail'])->name('detail');
                 Route::put('/{questionId}', [QuestionController::class, 'update'])->name('update');
+            });
+
+            Route::group(['prefix' => 'fic-questions', 'as' => 'fic-questions.'], function () {
+                Route::post('/store', [FillInContentQuestionController::class, 'store'])->name('store');
+                Route::get('/{questionId}', [FillInContentQuestionController::class, 'detail'])->name('detail');
+                Route::put('/{questionId}', [FillInContentQuestionController::class, 'update'])->name('update');
+            });
+
+            Route::group(['prefix' => 'fii-questions', 'as' => 'fii-questions.'], function () {
+                Route::post('/store', [FillInImageQuestionController::class, 'store'])->name('store');
+                Route::get('/{questionId}', [FillInImageQuestionController::class, 'detail'])->name('detail');
+                Route::put('/{questionId}', [FillInImageQuestionController::class, 'update'])->name('update');
             });
         });
     });

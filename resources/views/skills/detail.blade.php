@@ -27,7 +27,7 @@
 
                                     <div class="mb-3">
                                         <label class="form-label" for="descTextarea">Description</label>
-                                        <textarea class="form-control  {{ $errors->has('desc') ? 'is-invalid' : '' }}"
+                                        <textarea class="form-control {{ $errors->has('desc') ? 'is-invalid' : '' }}"
                                                   id="descTextarea" name="desc" rows="3">{{ old('desc', $skill->desc ?? '') }}</textarea>
                                         @if($errors->has('desc'))
                                             <div class="invalid-feedback mt-0">{{ $errors->first('desc') }}</div>

@@ -32,6 +32,10 @@
     <!-- ===============================================-->
     @include('layouts.partials.styles')
 
+    <style>
+        @yield('css')
+    </style>
+
     <script>
         var phoenixIsRTL = window.config.config.phoenixIsRTL;
         if (phoenixIsRTL) {

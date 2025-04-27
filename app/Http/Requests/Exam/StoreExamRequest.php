@@ -8,11 +8,6 @@ use Illuminate\Validation\Rule;
 
 class StoreExamRequest extends FormRequest
 {
-//    public function authorize()
-//    {
-//        return true; // Set to true if authorization is not required
-//    }
-
     public function rules(): array
     {
         return [

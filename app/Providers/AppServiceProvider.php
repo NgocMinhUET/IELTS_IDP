@@ -2,6 +2,7 @@
 
 namespace App\Providers;
 
+use Illuminate\Support\Facades\View;
 use Illuminate\Support\ServiceProvider;
 use Illuminate\Database\Schema\Blueprint;
 
@@ -26,6 +27,13 @@ class AppServiceProvider extends ServiceProvider
             /** @var Blueprint $this */
             $this->timestamps();
             $this->softDeletes();
+        });
+
+        // append breadcrumbs to view
+        View::composer('*', function ($view) {
+            if (property_exists($controller = optional(request()->route())->controller, 'breadcrumbs')) {
+                $view->with('breadcrumbs', $controller->breadcrumbs);
+            }
         });
     }
 }

@@ -2,6 +2,10 @@
 
 namespace App\Providers;
 
+use App\Repositories\BlankImageAnswer\BlankImageAnswerInterface;
+use App\Repositories\BlankImageAnswer\BlankImageAnswerRepository;
+use App\Repositories\BlankImageQuestion\BlankImageQuestionInterface;
+use App\Repositories\BlankImageQuestion\BlankImageQuestionRepository;
 use App\Repositories\ChoiceOption\ChoiceOptionInterface;
 use App\Repositories\ChoiceOption\ChoiceOptionRepository;
 use App\Repositories\ChoiceQuestion\ChoiceQuestionInterface;
@@ -10,6 +14,10 @@ use App\Repositories\ChoiceSubQuestion\ChoiceSubQuestionInterface;
 use App\Repositories\ChoiceSubQuestion\ChoiceSubQuestionRepository;
 use App\Repositories\Exam\ExamInterface;
 use App\Repositories\Exam\ExamRepository;
+use App\Repositories\LBlankContentAnswer\LBlankContentAnswerInterface;
+use App\Repositories\LBlankContentAnswer\LBlankContentAnswerRepository;
+use App\Repositories\LBlankContentQuestion\LBlankContentQuestionInterface;
+use App\Repositories\LBlankContentQuestion\LBlankContentQuestionRepository;
 use App\Repositories\Part\PartInterface;
 use App\Repositories\Part\PartRepository;
 use App\Repositories\Skill\SkillInterface;
@@ -42,6 +50,10 @@ class RepositoryServiceProvider extends ServiceProvider
             ChoiceQuestionInterface::class => ChoiceQuestionRepository::class,
             ChoiceSubQuestionInterface::class => ChoiceSubQuestionRepository::class,
             ChoiceOptionInterface::class => ChoiceOptionRepository::class,
+            LBlankContentQuestionInterface::class => LBlankContentQuestionRepository::class,
+            LBlankContentAnswerInterface::class => LBlankContentAnswerRepository::class,
+            BlankImageQuestionInterface::class => BlankImageQuestionRepository::class,
+            BlankImageAnswerInterface::class => BlankImageAnswerRepository::class,
         ];
 
         foreach ($repositories as $interface => $repository) {

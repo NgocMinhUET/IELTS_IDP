@@ -2,15 +2,15 @@
 
 namespace App\Http\Controllers\CMS;
 
-use App\Http\Controllers\Controller;
 use App\Http\Requests\Skill\UpdateSkillRequest;
 use App\Services\CMS\PartService;
 use App\Services\CMS\SkillService;
-use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 
-class SkillController extends Controller
+class SkillController extends CMSController
 {
+    private array $rootBreadcrumbs = [];
+
     public function __construct(
         public SkillService $skillService,
         public PartService $partService,
@@ -20,6 +20,12 @@ class SkillController extends Controller
     public function detail($id)
     {
         $skill = $this->skillService->getSkill($id);
+
+        $this->breadcrumbs = [
+            'Exam' => route('admin.exams.detail', ['id' => $skill->exam_id]),
+            'Skill' => null,
+            'Detail' => null,
+        ];
 
         return view('skills.detail', [
             'skill' => $skill,
@@ -40,7 +46,6 @@ class SkillController extends Controller
                 ->with('success', 'Update skill success');
         } catch (\Throwable $th) {
             DB::rollBack();
-            dd($th);
         }
     }
 }

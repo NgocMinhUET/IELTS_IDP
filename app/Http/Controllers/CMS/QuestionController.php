@@ -2,22 +2,35 @@
 
 namespace App\Http\Controllers\CMS;
 
-use App\Http\Controllers\Controller;
+use App\Enum\QuestionType;
+use App\Http\Requests\Question\CreateQuestionRequest;
 use App\Http\Requests\Question\StoreQuestionRequest;
 use App\Services\CMS\QuestionService;
-use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 
-class QuestionController extends Controller
+class QuestionController extends CMSController
 {
     public function __construct(
         public QuestionService $questionService,
     ) {
     }
 
-    public function create($partId)
+    public function create($partId, CreateQuestionRequest $request)
     {
-        return view('questions.choices.create', [
+        $this->breadcrumbs = [
+            'Exam' => null,
+            'Skill' => null,
+            'Part' => route('admin.parts.detail', $partId),
+            'Question' => null,
+            'Create' => null,
+        ];
+
+        $type = QuestionType::fromValue($request->input('type'));
+
+        if (!$type) abort(404);
+
+
+        return view($type->view(), [
             'partId' => $partId,
         ]);
     }

@@ -2,16 +2,16 @@
 
 namespace App\Http\Requests\Question;
 
+use App\Enum\QuestionType;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Rule;
 
-class StoreQuestionRequest extends FormRequest
+class CreateQuestionRequest extends FormRequest
 {
     public function rules(): array
     {
         return [
-            'choice_sub_questions' => 'required|array',
-            'title' => 'required|string|max:255',
+            'type' => ['required', Rule::in(QuestionType::values())],
         ];
     }
 }

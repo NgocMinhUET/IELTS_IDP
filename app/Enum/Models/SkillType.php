@@ -2,14 +2,14 @@
 
 namespace App\Enum\Models;
 
-use App\Enum\Models\Traits\HasLabel;
+use App\Enum\Models\Traits\HasSelectOption;
 
 /**
  * enum type of Skill model
  */
 enum SkillType: int
 {
-    use HasLabel;
+    use HasSelectOption;
     case LISTENING = 1;
     case SPEAKING = 2;
     case READING = 3;

@@ -2,7 +2,7 @@
 
 namespace App\Enum\Models\Traits;
 
-trait HasLabel
+trait HasSelectOption
 {
     public static function options(): array
     {
