@@ -3,6 +3,7 @@
 namespace App\Services\CMS;
 
 use App\Repositories\Part\PartInterface;
+use App\Repositories\QuestionOrder\QuestionOrderInterface;
 use App\Services\BaseService;
 
 /**
@@ -14,6 +15,7 @@ class PartService extends BaseService
 {
     public function __construct(
         public PartInterface $partRepository,
+        public QuestionOrderInterface $questionOrderRepository,
     ) {}
 
     public function getPart($id)
@@ -49,5 +51,11 @@ class PartService extends BaseService
         if (count($insertData)) {
             $this->partRepository->insert($insertData);
         }
+    }
+
+    public function getAllQuestionOrdersOfPart($id)
+    {
+        return $this->questionOrderRepository->findWhere(['part_id' => $id])
+            ->select('table', 'question_id')->toArray();
     }
 }

@@ -2,12 +2,14 @@
 
 namespace App\Models;
 
+use App\Models\Traits\HasQuestionOrder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
 class LBlankContentQuestion extends Model
 {
     use HasFactory;
+    use HasQuestionOrder;
 
     protected $fillable = [
         'content',

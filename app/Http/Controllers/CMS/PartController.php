@@ -29,24 +29,7 @@ class PartController extends CMSController
             'Detail' => null,
         ];
 
-        $sort = [
-            [
-                'child_table' => 'l_blank_content_questions',
-                'child_id' => 1,
-            ],
-            [
-                'child_table' => 'l_blank_content_questions',
-                'child_id' => 2,
-            ],
-            [
-                'child_table' => 'choice_questions',
-                'child_id' => 10,
-            ],
-            [
-                'child_table' => 'choice_questions',
-                'child_id' => 12,
-            ],
-        ];
+        $questionOrders = $this->partService->getAllQuestionOrdersOfPart($id);
 
         $choiceQuestions = $this->questionService->getChoiceQuestionByPart($id);
         $sortMapChoiceQuestions = $choiceQuestions->mapWithKeys(function ($item) {
@@ -59,24 +42,24 @@ class PartController extends CMSController
         })->all();
 
         $fillInImageQuestions = $this->blankImageQuestionService->getFillInImageQuestionByPart($id);
-        $sortFillInImageQuestions = $fillInBlankQuestions->mapWithKeys(function ($item) {
+        $sortFillInImageQuestions = $fillInImageQuestions->mapWithKeys(function ($item) {
             return [$item->getTable() . '_' . $item->id => $item];
         })->all();
 
         $allMapQuestions = array_merge($sortMapChoiceQuestions, $sortFillInBlankQuestions, $sortFillInImageQuestions);
         $allQuestions = [];
-        foreach ($sort as $item) {
-            if (isset($allMapQuestions[$item['child_table'] . '_' . $item['child_id']])) {
-                $allQuestions[] = $allMapQuestions[$item['child_table'] . '_' . $item['child_id']];
+        foreach ($questionOrders as $order) {
+            if (isset($allMapQuestions[$order['table'] . '_' . $order['question_id']])) {
+                $allQuestions[] = $allMapQuestions[$order['table'] . '_' . $order['question_id']];
             }
         }
-        dd($allQuestions);
 
         return view('parts.detail', [
             'part' => $part,
             'choiceQuestions' => $choiceQuestions,
             'fillInBlankQuestions' => $fillInBlankQuestions,
             'fillInImageQuestions' => $fillInImageQuestions,
+            'allQuestions' => $allQuestions,
         ]);
     }
 
