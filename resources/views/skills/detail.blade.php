@@ -1,7 +1,6 @@
 @extends('layouts.master')
 
 @section('contents')
-    {{--    <h2 class="mb-2 lh-sm">Create Exam</h2>--}}
     <div class="mt-4">
         <div class="row g-4">
             <div class="col-12 col-xl-12 order-1 order-xl-0">
@@ -66,7 +65,10 @@
                                     </div>
 
                                     <div class="mb-3">
-                                        <label class="form-label mb-1" for="skill">Parts</label>
+                                        <label class="form-label mb-1" for="skill">Parts <span class="text-danger">*</span></label>
+                                        @if($errors->has('parts'))
+                                            <div class="invalid-feedback mt-0 d-block">{{ $errors->first('parts') }}</div>
+                                        @endif
 
                                         <div class="mb-2 d-flex">
                                             <input type="text" class="form-control me-2" id="new-part-title" placeholder="Enter new part title">

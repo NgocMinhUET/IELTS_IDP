@@ -30,4 +30,9 @@ class ExamService extends BaseService
     {
         return $this->examRepository->create($examPayload);
     }
+
+    public function updateExam($id, $payload)
+    {
+        return $this->examRepository->update($payload, $id);
+    }
 }

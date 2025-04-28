@@ -16,6 +16,8 @@ class Skill extends Model
         'type' => SkillType::class
     ];
 
+    protected $with = ['parts'];
+
     public function exam(): \Illuminate\Database\Eloquent\Relations\BelongsTo
     {
         return $this->belongsTo(Exam::class, 'exam_id');

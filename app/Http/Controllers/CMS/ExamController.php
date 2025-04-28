@@ -71,6 +71,20 @@ class ExamController extends CMSController
 
     public function update($id, StoreExamRequest $request)
     {
-        dd($request->all());
+        DB::beginTransaction();
+        try {
+            $this->examService->updateExam($id, $request->only(['title', 'desc']));
+
+            $this->skillService->updateSkillFromExam($id, $request->input('skills'));
+
+            DB::commit();
+
+            return redirect()
+                ->back()
+                ->with('success', 'Update exam success');
+        } catch (\Throwable $th) {
+            DB::rollBack();
+            dd($th);
+        }
     }
 }

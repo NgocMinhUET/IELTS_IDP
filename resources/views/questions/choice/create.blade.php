@@ -1,3 +1,4 @@
+@php use Illuminate\Support\Str; @endphp
 @extends('layouts.master')
 
 @section('contents')
@@ -23,7 +24,7 @@
                                 <form action="{{ route('admin.parts.questions.store', $partId) }}" method="POST">
                                     @csrf
                                     <div class="mb-3">
-                                        <label class="form-label">Main Question Content</label>
+                                        <label class="form-label">Main Question Content <span class="text-danger">*</span></label>
                                         <textarea name="title"
                                                   class="form-control {{ $errors->has('title') ? 'is-invalid' : '' }}"
                                                   rows="3" required>{{ old('title', '') }}</textarea>
@@ -66,7 +67,7 @@
                     </div>
 
                     <div class="mb-2">
-                        <label class="form-label">Question Content</label>
+                        <label class="form-label">Question Content <span class="text-danger">*</span></label>
                         <textarea name="choice_sub_questions[${index}][question]" class="form-control" rows="2" required></textarea>
                     </div>
 
@@ -82,7 +83,7 @@
                     </div>
 
                     <div class="mb-2">
-                        <label class="form-label">Answers</label>
+                        <label class="form-label">Answers <span class="text-danger">*</span></label>
                         <div class="row g-2 answer-list" data-sub-index="${index}">
                             <!-- JavaScript add answer -->
                         </div>

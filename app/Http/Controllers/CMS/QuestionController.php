@@ -8,6 +8,9 @@ use App\Http\Requests\Question\StoreQuestionRequest;
 use App\Services\CMS\QuestionService;
 use Illuminate\Support\Facades\DB;
 
+/**
+ * Choice question controller
+ */
 class QuestionController extends CMSController
 {
     public function __construct(

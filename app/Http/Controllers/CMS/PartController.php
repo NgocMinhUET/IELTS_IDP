@@ -29,11 +29,48 @@ class PartController extends CMSController
             'Detail' => null,
         ];
 
+        $sort = [
+            [
+                'child_table' => 'l_blank_content_questions',
+                'child_id' => 1,
+            ],
+            [
+                'child_table' => 'l_blank_content_questions',
+                'child_id' => 2,
+            ],
+            [
+                'child_table' => 'choice_questions',
+                'child_id' => 10,
+            ],
+            [
+                'child_table' => 'choice_questions',
+                'child_id' => 12,
+            ],
+        ];
+
         $choiceQuestions = $this->questionService->getChoiceQuestionByPart($id);
+        $sortMapChoiceQuestions = $choiceQuestions->mapWithKeys(function ($item) {
+            return [$item->getTable() . '_' . $item->id => $item];
+        })->all();
 
         $fillInBlankQuestions = $this->fillInBlankQuestionService->getFillInBlankContentQuestionByPart($id);
+        $sortFillInBlankQuestions = $fillInBlankQuestions->mapWithKeys(function ($item) {
+            return [$item->getTable() . '_' . $item->id => $item];
+        })->all();
 
         $fillInImageQuestions = $this->blankImageQuestionService->getFillInImageQuestionByPart($id);
+        $sortFillInImageQuestions = $fillInBlankQuestions->mapWithKeys(function ($item) {
+            return [$item->getTable() . '_' . $item->id => $item];
+        })->all();
+
+        $allMapQuestions = array_merge($sortMapChoiceQuestions, $sortFillInBlankQuestions, $sortFillInImageQuestions);
+        $allQuestions = [];
+        foreach ($sort as $item) {
+            if (isset($allMapQuestions[$item['child_table'] . '_' . $item['child_id']])) {
+                $allQuestions[] = $allMapQuestions[$item['child_table'] . '_' . $item['child_id']];
+            }
+        }
+        dd($allQuestions);
 
         return view('parts.detail', [
             'part' => $part,

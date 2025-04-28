@@ -18,7 +18,7 @@ enum SkillType: int
     public function label(): string
     {
         return match($this) {
-            self::LISTENING => 'Listening123',
+            self::LISTENING => 'Listening',
             self::SPEAKING => 'Speaking',
             self::READING => 'Reading',
             self::WRITING => 'Writing',

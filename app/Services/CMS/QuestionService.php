@@ -84,11 +84,14 @@ class QuestionService extends BaseService
 
     public function getChoiceQuestionByPart($partId)
     {
-        return $this->choiceQuestionRepository->with('choiceSubQuestions.choiceOptions')->findWhere(['part_id' => $partId]);
+        return $this->choiceQuestionRepository->with('choiceSubQuestions.choiceOptions')
+            ->findWhere(['part_id' => $partId]);
     }
 
     public function getChoiceQuestionById($id)
     {
-        return $this->choiceQuestionRepository->with('choiceSubQuestions.choiceOptions')->find($id);
+        return $this->choiceQuestionRepository
+            ->with('choiceSubQuestions.choiceOptions')
+            ->find($id);
     }
 }

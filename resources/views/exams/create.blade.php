@@ -1,28 +1,42 @@
 @extends('layouts.master')
 
+@section('css')
+    .skill-item {
+        transition: all 0.4s ease;
+    }
+
+    .skill-removed {
+        transform: scale(0.95);
+        text-decoration: line-through;
+        pointer-events: none;
+    }
+
+    .skill-removed .skill-label {
+        opacity: 0.5;
+        color: red;
+    }
+@endsection
+
 @section('contents')
     @php
         $isUpdate = !!isset($exam);
 
-        $skillTypes = \App\Enum\Models\SkillType::options();
+        $skillTypeOptions = \App\Enum\Models\SkillType::options();
+        $oldSkillTypes = [];
         if ($isUpdate) {
-            $skillTypes = $exam->skills->map(function ($skill) {
-                $options = \App\Enum\Models\SkillType::optionFromValue($skill->type);
-                $options['id'] = $skill->id;
-                return $options;
+            $exam->skills->each(function ($skill) use (&$oldSkillTypes) {
+               $oldSkillTypes[$skill->type->value] = $skill->id;
             })->toArray();
+
+            $skillTypeOptions = array_map(function ($type) use ($oldSkillTypes) {
+                $isSelected = in_array($type['value'], array_keys($oldSkillTypes));
+                $type['is_selected'] = $isSelected;
+                $type['id'] = $isSelected ? $oldSkillTypes[$type['value']] : null;
+
+                return $type;
+            }, $skillTypeOptions);
         }
     @endphp
-{{--    <h2 class="mb-2 lh-sm">Create Exam</h2>--}}
-{{--    TODO: make component--}}
-    @foreach (['success', 'error', 'warning', 'info'] as $msg)
-        @if(session($msg))
-            <div class="alert alert-{{ $msg }} alert-dismissible fade show" role="alert">
-                {{ session($msg) }}
-                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-            </div>
-        @endif
-    @endforeach
 
     <div class="mt-4">
         <div class="row g-4">
@@ -77,14 +91,17 @@
                                             <div class="invalid-feedback mt-0 d-block">{{ $errors->first('skills') }}</div>
                                         @endif
                                         <div class="row g-4">
-                                            @foreach ($skillTypes as $option)
-                                                <div class="col-sm-3 skill-item">
+                                            @foreach ($skillTypeOptions as $option)
+                                                @php
+                                                    $isSelectedOption = !$isUpdate ? true : $option['is_selected'];
+                                                @endphp
+                                                <div class="col-sm-3 skill-item {{ $isSelectedOption ? '' : 'skill-removed' }}">
                                                     <div class="card-body p-0">
                                                         <div class="code-to-copy">
-                                                            <div class="toast show" role="alert" aria-live="assertive" aria-atomic="true" data-bs-autohide="false">
+                                                            <div class="toast show skill-toast" role="alert" aria-live="assertive" aria-atomic="true" data-bs-autohide="false">
                                                                 <div class="toast-header border-bottom-0">
-                                                                    <strong class="me-auto">
-                                                                        @if($isUpdate)
+                                                                    <strong class="me-auto skill-label">
+                                                                        @if($isUpdate && $isSelectedOption)
                                                                             <a href="{{ route('admin.skills.detail', $option['id']) }}">
                                                                                 {{ $option['label'] }}
                                                                             </a>
@@ -92,8 +109,22 @@
                                                                             {{ $option['label'] }}
                                                                         @endif
                                                                     </strong>
-                                                                    <input type="hidden" name="skills[]" value="{{ $option['value'] }}">
-                                                                    <button class="btn ms-2 p-0 remove-skill" type="button" data-bs-dismiss="toast" aria-label="Close"><span class="uil uil-times fs-7"></span></button>
+                                                                    <input type="hidden"
+                                                                           name="skills[]"
+                                                                           value="{{ $option['value'] }}"
+                                                                           class="skill-input"
+                                                                           {{ $isSelectedOption ? '' : 'disabled' }}
+                                                                    >
+                                                                    <button class="btn ms-2 p-0 remove-skill {{ $isSelectedOption ? '' : 'd-none' }}"
+                                                                            type="button" aria-label="Remove"
+                                                                    >
+                                                                        <span class="uil uil-times fs-7"></span>
+                                                                    </button>
+                                                                    <button class="btn ms-2 p-0 restore-skill {{ $isSelectedOption ? 'd-none' : '' }}"
+                                                                            type="button" aria-label="Restore"
+                                                                    >
+                                                                        <span class="opacity-100 uil uil-plus fs-7"></span>
+                                                                    </button>
                                                                 </div>
                                                             </div>
                                                         </div>
@@ -126,10 +157,34 @@
 
 @section('js')
 <script>
-    document.addEventListener('click', function (e) {
-        if (e.target.closest('.remove-skill')) {
-            e.target.closest('.skill-item').remove();
-        }
+    // document.addEventListener('click', function (e) {
+    //     if (e.target.closest('.remove-skill')) {
+    //         e.target.closest('.skill-item').remove();
+    //     }
+    // });
+
+    document.addEventListener('DOMContentLoaded', function () {
+        const skillItems = document.querySelectorAll('.skill-item');
+
+        skillItems.forEach(item => {
+            const removeBtn = item.querySelector('.remove-skill');
+            const restoreBtn = item.querySelector('.restore-skill');
+            const skillInput = item.querySelector('.skill-input');
+
+            removeBtn.addEventListener('click', function () {
+                item.classList.add('skill-removed');
+                removeBtn.classList.add('d-none');
+                restoreBtn.classList.remove('d-none');
+                skillInput.disabled = true;
+            });
+
+            restoreBtn.addEventListener('click', function () {
+                item.classList.remove('skill-removed');
+                restoreBtn.classList.add('d-none');
+                removeBtn.classList.remove('d-none');
+                skillInput.disabled = false;
+            });
+        });
     });
 </script>
 @endsection

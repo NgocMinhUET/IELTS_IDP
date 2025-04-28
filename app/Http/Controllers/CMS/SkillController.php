@@ -37,7 +37,11 @@ class SkillController extends CMSController
         DB::beginTransaction();
         try {
             $this->skillService->updateSkill($id, $request->only(['desc', 'duration', 'bonus_time']));
-            $this->partService->upsertPartFromSkill($id, $request->input('parts'));
+
+            $parts = $request->input('parts');
+            if (!empty($parts)) {
+                $this->partService->upsertPartFromSkill($id, $request->input('parts'));
+            }
 
             DB::commit();
 
@@ -46,6 +50,7 @@ class SkillController extends CMSController
                 ->with('success', 'Update skill success');
         } catch (\Throwable $th) {
             DB::rollBack();
+            dd($th);
         }
     }
 }
