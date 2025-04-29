@@ -1,5 +1,5 @@
 <div class="container py-4">
-    <h4 class="mb-4">Create new question</h4>
+    <h4 class="mb-4">Create new question for part {{ $part->title }} of {{ $part->skill->type->label() }}</h4>
     <div class="row g-4">
         <div class="col-md-4">
             <a href="{{ route('admin.parts.questions.create', ['type' => \App\Enum\QuestionType::CHOICE, 'id' => $part->id]) }}" class="text-decoration-none">

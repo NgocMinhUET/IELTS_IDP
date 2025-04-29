@@ -6,7 +6,9 @@
             <div class="col-12">
                 <div class="card shadow-none border my-4">
                     <div class="card-header p-4 border-bottom bg-body">
-                        <h4 class="text-body mb-0">Create Image Map Fill Question</h4>
+                        <h4 class="text-body mb-0">
+                            Create Image Map Fill Question For {{ $part->title }} ( {{ $part->skill->type->label() }})
+                        </h4>
                     </div>
                     <div class="card-body p-4">
 

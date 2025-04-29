@@ -3,6 +3,7 @@
 use App\Http\Controllers\CMS\ExamController;
 use App\Http\Controllers\CMS\FillInContentQuestionController;
 use App\Http\Controllers\CMS\FillInImageQuestionController;
+use App\Http\Controllers\CMS\ParagraphController;
 use App\Http\Controllers\CMS\PartController;
 use App\Http\Controllers\CMS\QuestionController;
 use App\Http\Controllers\CMS\SkillController;
@@ -76,6 +77,13 @@ Route::group(['prefix' => 'admin', 'as' => 'admin.', 'middleware' => []], functi
                 Route::post('/store', [FillInImageQuestionController::class, 'store'])->name('store');
                 Route::get('/{questionId}', [FillInImageQuestionController::class, 'detail'])->name('detail');
                 Route::put('/{questionId}', [FillInImageQuestionController::class, 'update'])->name('update');
+            });
+
+            Route::group(['prefix' => 'paragraphs', 'as' => 'paragraphs.'], function () {
+                Route::get('/create', [ParagraphController::class, 'create'])->name('create');
+                Route::post('/store', [ParagraphController::class, 'store'])->name('store');
+                Route::get('/{paragraphId}', [ParagraphController::class, 'edit'])->name('edit');
+                Route::put('/{paragraphId}', [ParagraphController::class, 'update'])->name('update');
             });
         });
     });

@@ -2,6 +2,8 @@
 
 namespace App\Services\CMS;
 
+use App\Repositories\LBlankContentQuestion\LBlankContentQuestionInterface;
+use App\Repositories\Paragraph\ParagraphInterface;
 use App\Repositories\Part\PartInterface;
 use App\Repositories\QuestionOrder\QuestionOrderInterface;
 use App\Services\BaseService;
@@ -16,11 +18,13 @@ class PartService extends BaseService
     public function __construct(
         public PartInterface $partRepository,
         public QuestionOrderInterface $questionOrderRepository,
+        public ParagraphInterface $paragraphRepository,
+        public LBlankContentQuestionInterface $lBlankContentQuestionRepository,
     ) {}
 
     public function getPart($id)
     {
-        return $this->partRepository->find($id);
+        return $this->partRepository->with('skill')->findOrFail($id);
     }
 
     public function upsertPartFromSkill($skillId, $partPayload): void
@@ -57,5 +61,12 @@ class PartService extends BaseService
     {
         return $this->questionOrderRepository->findWhere(['part_id' => $id])
             ->select('table', 'question_id')->toArray();
+    }
+
+    public function updateOrCreateReadingParagraph($partId, $paragraph)
+    {
+        $this->lBlankContentQuestionRepository->unsetExistedContentInheritQuestion($partId);
+
+        return $this->paragraphRepository->updateOrCreate(['part_id' => $partId], ['content' => $paragraph]);
     }
 }

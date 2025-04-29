@@ -5,6 +5,7 @@ namespace App\Http\Controllers\CMS;
 use App\Enum\QuestionType;
 use App\Http\Requests\Question\CreateQuestionRequest;
 use App\Http\Requests\Question\StoreQuestionRequest;
+use App\Services\CMS\PartService;
 use App\Services\CMS\QuestionService;
 use Illuminate\Support\Facades\DB;
 
@@ -15,6 +16,7 @@ class QuestionController extends CMSController
 {
     public function __construct(
         public QuestionService $questionService,
+        public PartService $partService,
     ) {
     }
 
@@ -29,12 +31,13 @@ class QuestionController extends CMSController
         ];
 
         $type = QuestionType::fromValue($request->input('type'));
-
         if (!$type) abort(404);
 
+        $part = $this->partService->getPart($partId);
 
         return view($type->view(), [
             'partId' => $partId,
+            'part' => $part
         ]);
     }
 

@@ -109,4 +109,14 @@ class BlankContentQuestionService extends BaseService
         return $this->lBlankContentQuestionRepository->with('answers')
             ->findWhere(['part_id' => $partId]);
     }
+
+    public function isHavingQuestionInherit($partId)
+    {
+        return $this->lBlankContentQuestionRepository->isHavingQuestionInherit($partId);
+    }
+
+    public function unsetExistedContentInheritQuestion($partId)
+    {
+        return $this->lBlankContentQuestionRepository->unsetExistedContentInheritQuestion($partId);
+    }
 }

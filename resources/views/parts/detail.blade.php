@@ -15,11 +15,42 @@
         <div class="row g-4">
             <div class="col-12 col-xl-10 order-1 order-xl-0">
                 <div class="accordion" id="accordionExample">
+                    @if($part->skill->type == \App\Enum\Models\SkillType::READING)
+                        <div class="accordion-item">
+                            <h4 class="accordion-header text-center" id="heading_paragraph">
+                                Main Paragraph Of Part {{ $part->title }} ( {{ $part->skill->type->label() }} )
+                            </h4>
+                            <div class="card h-100 shadow-sm border-0 hover-shadow transition mt-2">
+                                @if(empty($paragraph))
+                                    <div class="card-body text-center">
+                                        <div class="fs-3 mb-3">🗒️✍</div>
+                                        <h5 class="card-title">Empty</h5>
+                                        <a href="{{ route('admin.parts.paragraphs.create', $part->id) }}" class="btn btn-primary">
+                                            <span class="fas fa-plus me-2"></span>Create Part Paragraph
+                                        </a>
+                                    </div>
+                                @else
+                                    <div class="card-body">
+                                        <div class="mb-3 text-center align-items-end">
+                                            <a href="{{ route('admin.parts.paragraphs.edit', [$part->id, $paragraph->id]) }}" class="btn btn-primary">
+                                                <span class="fas fa-pen-to-square me-2"></span>Edit Paragraph
+                                            </a>
+                                        </div>
+                                        <div class="mb-3">
+                                            <div class="card pt-4 pb-4 px-2">
+                                                {!! $paragraph->content !!}
+                                            </div>
+                                        </div>
+                                    </div>
+                                @endif
+                            </div>
+                        </div>
+                    @endif
+
                     @foreach($allQuestions as $key => $question)
                         @if ($question instanceof \App\Models\ChoiceQuestion)
                             <div class="accordion-item" id="Q_{{$key}}">
                                 <h2 class="accordion-header" id="heading_{{$key}}">
-
                                     <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapse_{{$key}}" aria-expanded="false" aria-controls="collapse_{{$key}}">
                                         {{ $question->title }}
                                     </button>
@@ -197,7 +228,7 @@
 
             <div class="col-12 col-xl-2">
                 <div class="position-sticky mt-xl-4" style="top: 80px;">
-                    <h5 class="lh-1">List of questions </h5>
+                    <h5 class="lh-1">List of {{ $part->skill->type->label() }} questions </h5>
                     <hr />
                     <ul class="nav nav-vertical flex-column doc-nav" data-doc-nav="data-doc-nav">
                         @foreach($allQuestions as $key => $question)

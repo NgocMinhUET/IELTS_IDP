@@ -18,6 +18,8 @@ use App\Repositories\LBlankContentAnswer\LBlankContentAnswerInterface;
 use App\Repositories\LBlankContentAnswer\LBlankContentAnswerRepository;
 use App\Repositories\LBlankContentQuestion\LBlankContentQuestionInterface;
 use App\Repositories\LBlankContentQuestion\LBlankContentQuestionRepository;
+use App\Repositories\Paragraph\ParagraphInterface;
+use App\Repositories\Paragraph\ParagraphRepository;
 use App\Repositories\Part\PartInterface;
 use App\Repositories\Part\PartRepository;
 use App\Repositories\QuestionOrder\QuestionOrderInterface;
@@ -57,6 +59,7 @@ class RepositoryServiceProvider extends ServiceProvider
             BlankImageQuestionInterface::class => BlankImageQuestionRepository::class,
             BlankImageAnswerInterface::class => BlankImageAnswerRepository::class,
             QuestionOrderInterface::class => QuestionOrderRepository::class,
+            ParagraphInterface::class => ParagraphRepository::class,
         ];
 
         foreach ($repositories as $interface => $repository) {

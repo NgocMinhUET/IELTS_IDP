@@ -1,4 +1,3 @@
-@php use Illuminate\Support\Str; @endphp
 @extends('layouts.master')
 
 @section('contents')
@@ -11,7 +10,7 @@
                             <div class="row g-3 justify-content-between align-items-center">
                                 <div class="col-12 col-md">
                                     <h4 class="text-body mb-0">
-                                        Create Choice Question
+                                        Create Choice Question For {{ $part->title }} ( {{ $part->skill->type->label() }})
                                     </h4>
                                 </div>
                                 <div class="col col-md-auto">

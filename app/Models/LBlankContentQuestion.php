@@ -12,6 +12,7 @@ class LBlankContentQuestion extends Model
     use HasQuestionOrder;
 
     protected $fillable = [
+        'content_inherit',
         'content',
         'part_id',
         'title',
@@ -20,6 +21,9 @@ class LBlankContentQuestion extends Model
         'answer_label',
         'order'
     ];
+
+    const IS_CONTENT_INHERIT = true;
+    const IS_CONTENT_NOT_INHERIT = false;
 
     public function answers(): \Illuminate\Database\Eloquent\Relations\HasMany
     {

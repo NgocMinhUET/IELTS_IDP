@@ -10,7 +10,7 @@
                             <div class="row g-3 justify-content-between align-items-center">
                                 <div class="col-12 col-md">
                                     <h4 class="text-body mb-0">
-                                        Create Drag Drop In Blank Question
+                                        Create Drag Drop In Blank Question For {{ $part->title }} ( {{ $part->skill->type->label() }})
                                     </h4>
                                 </div>
                             </div>
@@ -36,6 +36,16 @@
                                         <textarea id="editor" class="form-control" name="content"></textarea>
                                         @if($errors->has('content'))
                                             <div class="invalid-feedback mt-0 d-block">{{ $errors->first('content') }}</div>
+                                        @endif
+
+                                        @if($part->skill->type == \App\Enum\Models\SkillType::READING)
+                                            <div class="form-check mt-2">
+                                                <input class="form-check-input" id="contentInherit" type="checkbox" name="content_inherit" value="1" />
+                                                <label class="form-check-label" for="contentInherit">
+                                                    Use this content as paragraphs of part
+                                                    <span class="text-warning"> * Replace current paragraphs of part if exist * </span>
+                                                </label>
+                                            </div>
                                         @endif
                                     </div>
 

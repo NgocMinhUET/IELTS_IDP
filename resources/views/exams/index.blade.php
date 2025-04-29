@@ -1,7 +1,7 @@
 @extends('layouts.master')
 
 @section('contents')
-    <div class="mt-4" id="members" data-list='{"valueNames":["customer","email","mobile_number","city","last_active","joined"],"page":10,"pagination":true}'>
+    <div class="mt-4" id="exams">
         <div class="row align-items-center justify-content-between mt-3 g-3">
             <div class="col col-auto">
                 <div class="search-box">

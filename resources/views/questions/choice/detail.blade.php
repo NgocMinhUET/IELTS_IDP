@@ -6,7 +6,6 @@
             <form action="" method="POST">
                 @csrf
                 @method('PUT')
-                <!-- Câu hỏi mẹ -->
                 <div class="mb-3">
                     <label class="form-label">Main Question Content</label>
                     <textarea name="question[content]" class="form-control" rows="3" required>{{ old('question.content', $question->title) }}</textarea>
@@ -14,7 +13,6 @@
 
                 <hr>
 
-                <!-- Danh sách câu hỏi con -->
                 <div id="sub-questions-wrapper">
                     @foreach ($question->choiceSubQuestions as $index => $sub)
                         <div class="card mb-4 sub-question" data-index="{{ $index }}">

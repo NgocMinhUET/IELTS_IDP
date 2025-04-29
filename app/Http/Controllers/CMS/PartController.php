@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\CMS;
 
+use App\Enum\Models\SkillType;
 use App\Services\CMS\BlankContentQuestionService;
 use App\Services\CMS\BlankImageQuestionService;
 use App\Services\CMS\PartService;
@@ -56,10 +57,8 @@ class PartController extends CMSController
 
         return view('parts.detail', [
             'part' => $part,
-            'choiceQuestions' => $choiceQuestions,
-            'fillInBlankQuestions' => $fillInBlankQuestions,
-            'fillInImageQuestions' => $fillInImageQuestions,
             'allQuestions' => $allQuestions,
+            'paragraph' => $part->skill->type === SkillType::READING ? $part->paragraph : null,
         ]);
     }
 

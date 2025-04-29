@@ -1,4 +1,4 @@
-@foreach (['success', 'error'] as $msg)
+@foreach (['success', 'danger'] as $msg)
     @if(session($msg))
         <div class="alert alert-subtle-{{ $msg }} alert-dismissible fade show" role="alert">
             {{ session($msg) }}

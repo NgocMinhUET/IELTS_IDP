@@ -15,4 +15,9 @@ class Part extends Model
     {
         return $this->belongsTo(Skill::class, 'skill_id');
     }
+
+    public function paragraph(): \Illuminate\Database\Eloquent\Relations\HasOne
+    {
+        return $this->hasOne(Paragraph::class, 'part_id');
+    }
 }

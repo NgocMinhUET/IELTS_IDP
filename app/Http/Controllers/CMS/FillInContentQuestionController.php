@@ -3,14 +3,17 @@
 namespace App\Http\Controllers\CMS;
 
 use App\Enum\AnswerType;
+use App\Enum\Models\SkillType;
 use App\Http\Requests\Question\StoreFICQuestionRequest;
 use App\Services\CMS\BlankContentQuestionService;
+use App\Services\CMS\PartService;
 use Illuminate\Support\Facades\DB;
 
 class FillInContentQuestionController extends CMSController
 {
     public function __construct(
         public BlankContentQuestionService $blankContentQuestionService,
+        public PartService $partService,
     ) {
     }
 
@@ -18,6 +21,8 @@ class FillInContentQuestionController extends CMSController
     {
         DB::beginTransaction();
         try {
+            $part = $this->partService->getPart($partId);
+
             $content = $request->input('content');
             $answers = $request->input('answers');
             $placeholders = $request->input('placeholders');
@@ -27,9 +32,17 @@ class FillInContentQuestionController extends CMSController
                 ->replaceBlankInputId($dom, $answers, $placeholders);
             $request->merge(['content' => $newContent]);
 
+            $isContentInherit = $part->skill->type === SkillType::READING && $request->has('content_inherit');
+            $request->merge(['content_inherit' => $isContentInherit]);
+
+            if ($isContentInherit) {
+                // store paragraphs
+                $this->partService->updateOrCreateReadingParagraph($partId, $newContent);
+            }
+
             $question = $this->blankContentQuestionService->storeFillInBlankContentQuestion(
                 $partId,
-                $request->only('title', 'content', 'answer_type', 'answer_label')
+                $request->only('title', 'content', 'content_inherit', 'answer_type', 'answer_label')
             );
             $questionId = $question->id;
 
