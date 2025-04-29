@@ -1,6 +1,20 @@
 <div class="container py-4">
     <h4 class="mb-4">Create new question for part {{ $part->title }} of {{ $part->skill->type->label() }}</h4>
+
     <div class="row g-4">
+    @if($part->skill->type == \App\Enum\Models\SkillType::WRITING)
+        <div class="col-md-4">
+            <a href="{{ route('admin.parts.questions.create', ['type' => \App\Enum\QuestionType::WRITING, 'id' => $part->id]) }}" class="text-decoration-none">
+                <div class="card h-100 shadow-sm border-0 hover-shadow transition">
+                    <div class="card-body text-center">
+                        <div class="fs-3 mb-3">🗒️✍️</div>
+                        <h5 class="card-title">Writing Question</h5>
+                        <p class="card-text text-muted">Create a question for writing skill.</p>
+                    </div>
+                </div>
+            </a>
+        </div>
+    @else
         <div class="col-md-4">
             <a href="{{ route('admin.parts.questions.create', ['type' => \App\Enum\QuestionType::CHOICE, 'id' => $part->id]) }}" class="text-decoration-none">
                 <div class="card h-100 shadow-sm border-0 hover-shadow transition">
@@ -56,16 +70,6 @@
                 </div>
             </a>
         </div>
-        <div class="col-md-4">
-            <a href="{{ route('admin.parts.questions.create', ['type' => 'listening', 'id' => $part->id]) }}" class="text-decoration-none">
-                <div class="card h-100 shadow-sm border-0 hover-shadow transition">
-                    <div class="card-body text-center">
-                        <div class="fs-3 mb-3">🎧</div>
-                        <h5 class="card-title">Listen</h5>
-                        <p class="card-text text-muted"></p>
-                    </div>
-                </div>
-            </a>
-        </div>
+    @endif
     </div>
 </div>

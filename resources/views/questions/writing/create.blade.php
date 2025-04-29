@@ -4,13 +4,6 @@
     @php
         $isUpdate = isset($paragraph);
     @endphp
-
-    @if ($isUpdate && $isParagraphInherit)
-        <div class="alert alert-subtle-warning alert-dismissible fade show" role="alert">
-            * There is currently a question that inherits the content of this paragraph. Please check carefully before making any changes. *
-            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-        </div>
-    @endif
     <div class="mt-4">
         <div class="row g-4">
             <div class="col-12 col-xl-12 order-1 order-xl-0">
@@ -21,9 +14,9 @@
                                 <div class="col-12 col-md">
                                     <h4 class="text-body mb-0">
                                         @if ($isUpdate)
-                                            Update Main Paragraph For Part {{ $part->title }} ( {{ $part->skill->type->label() }})
+                                            Update Writing Question For Part {{ $part->title }} ( {{ $part->skill->type->label() }})
                                         @else
-                                            Create Main Paragraph For Part {{ $part->title }} ( {{ $part->skill->type->label() }})
+                                            Create Writing Question For Part {{ $part->title }} ( {{ $part->skill->type->label() }})
                                         @endif
                                     </h4>
                                 </div>
@@ -32,10 +25,10 @@
                         <div class="card-body p-0">
                             <div class="p-4 code-to-copy">
                                 @if ($isUpdate)
-                                    <form action="{{ route('admin.parts.paragraphs.update', [$part->id, $paragraph->id]) }}" method="POST">
+                                <form action="{{ route('admin.parts.writing-questions.update', [$part->id, $paragraph->id]) }}" method="POST">
                                     @method('PUT')
                                 @else
-                                    <form action="{{ route('admin.parts.paragraphs.store', $part->id) }}" method="POST">
+                                <form action="{{ route('admin.parts.writing-questions.store', $part->id) }}" method="POST">
                                 @endif
                                     @csrf
                                     <div class="mb-3">
@@ -63,7 +56,7 @@
         tinymce.init({
             selector: '#editor',
             plugins: 'code',
-            toolbar: 'bold italic underline | addBlankBtn',
+            toolbar: 'bold italic underline',
             setup: function (editor) {
 
             }

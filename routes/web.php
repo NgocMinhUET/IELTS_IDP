@@ -7,6 +7,7 @@ use App\Http\Controllers\CMS\ParagraphController;
 use App\Http\Controllers\CMS\PartController;
 use App\Http\Controllers\CMS\QuestionController;
 use App\Http\Controllers\CMS\SkillController;
+use App\Http\Controllers\CMS\WritingQuestionController;
 use App\Http\Controllers\ContactController;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\V1\Auth\ForgotPasswordController;
@@ -84,6 +85,12 @@ Route::group(['prefix' => 'admin', 'as' => 'admin.', 'middleware' => []], functi
                 Route::post('/store', [ParagraphController::class, 'store'])->name('store');
                 Route::get('/{paragraphId}', [ParagraphController::class, 'edit'])->name('edit');
                 Route::put('/{paragraphId}', [ParagraphController::class, 'update'])->name('update');
+            });
+
+            Route::group(['prefix' => 'writing-questions', 'as' => 'writing-questions.'], function () {
+                Route::post('/store', [WritingQuestionController::class, 'store'])->name('store');
+                Route::get('/{questionId}', [WritingQuestionController::class, 'edit'])->name('edit');
+                Route::put('/{questionId}', [WritingQuestionController::class, 'update'])->name('update');
             });
         });
     });

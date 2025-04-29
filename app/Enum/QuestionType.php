@@ -12,8 +12,8 @@ enum QuestionType: string
     case CHOICE = 'choice';
     case FILL_IN_IMAGE = 'fill_in_image';
     case DRAG_DROP_IMAGE = 'drag_drop_image';
-    case MATCH_SENTENCE = 'match_sentence';
-    case LISTING = 'listing';
+    case SPEAKING = 'speaking';
+    case WRITING = 'writing';
 
     public function view(): string
     {
@@ -23,7 +23,7 @@ enum QuestionType: string
             self::CHOICE => 'questions.choice.create',
             self::FILL_IN_IMAGE => 'questions.fill_in_image.create',
             self::DRAG_DROP_IMAGE => 'questions.fill_in_image.create',
-            self::MATCH_SENTENCE => 'questions.choice.create',
+            self::WRITING => 'questions.writing.create',
         };
     }
 }

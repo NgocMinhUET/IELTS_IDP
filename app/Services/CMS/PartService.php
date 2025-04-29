@@ -2,6 +2,7 @@
 
 namespace App\Services\CMS;
 
+use App\Enum\Models\SkillType;
 use App\Repositories\LBlankContentQuestion\LBlankContentQuestionInterface;
 use App\Repositories\Paragraph\ParagraphInterface;
 use App\Repositories\Part\PartInterface;
@@ -57,9 +58,9 @@ class PartService extends BaseService
         }
     }
 
-    public function getAllQuestionOrdersOfPart($id)
+    public function getAllQuestionOrdersOfPart($id, SkillType $skillType)
     {
-        return $this->questionOrderRepository->findWhere(['part_id' => $id])
+        return $this->questionOrderRepository->getAllQuestionOrdersOfPart($id,  $skillType)
             ->select('table', 'question_id')->toArray();
     }
 
@@ -68,5 +69,10 @@ class PartService extends BaseService
         $this->lBlankContentQuestionRepository->unsetExistedContentInheritQuestion($partId);
 
         return $this->paragraphRepository->updateOrCreate(['part_id' => $partId], ['content' => $paragraph]);
+    }
+
+    public function updatePartDesc($partId, $desc)
+    {
+        return $this->partRepository->update(['desc' => $desc], $partId);
     }
 }

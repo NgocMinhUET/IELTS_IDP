@@ -14,7 +14,24 @@
     <div class="mt-4">
         <div class="row g-4">
             <div class="col-12 col-xl-10 order-1 order-xl-0">
-                <div class="accordion" id="accordionExample">
+                <div class="accordion">
+                    <div class="">
+                        <form action="{{ route('admin.parts.update', $part->id) }}" method="POST">
+                            @csrf
+                            @method('PUT')
+                            <div class="mb-3">
+                                <label class="form-label mb-1" for="skill">Part Description</label>
+                                <div class="d-flex p-2">
+                                    <input type="text" class="form-control me-2" name="desc" placeholder="Enter part desc" value="{{ $part->desc }}">
+                                    <button type="submit" class="btn btn-primary pt-3 pb-3">Save</button>
+                                </div>
+                                @if($errors->has('desc'))
+                                    <div class="invalid-feedback p-2 mt-0 d-block">{{ $errors->first('desc') }}</div>
+                                @endif
+                            </div>
+                        </form>
+                    </div>
+
                     @if($part->skill->type == \App\Enum\Models\SkillType::READING)
                         <div class="accordion-item">
                             <h4 class="accordion-header text-center" id="heading_paragraph">
@@ -217,9 +234,36 @@
                                 </div>
                             </div>
                         @endif
+
+                        @if($question instanceof \App\Models\WritingQuestion)
+                            <div class="accordion-item" id="Q_{{$key}}">
+                                <h2 class="accordion-header" id="heading_3_{{ $key }}">
+                                    <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse"
+                                            data-bs-target="#collapse_3_{{ $key }}" aria-expanded="false" aria-controls="collapse_3_{{ $key }}">
+                                        {{ $question->title ?? 'Writing Question ' . ($key + 1) }}
+                                    </button>
+                                </h2>
+                                <div id="collapse_3_{{ $key }}" class="accordion-collapse collapse"
+                                     aria-labelledby="heading_{{ $key }}" data-bs-parent="#accordionExample">
+                                    <div class="accordion-body">
+                                        <div class="container py-4">
+                                            <div class="card mb-4">
+                                                <div class="card-body">
+                                                    <div class="mb-3">
+                                                        <div class="card pt-4 pb-4 px-2">
+                                                            {!! $question->content !!}
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        @endif
                     @endforeach
 
-                    <div class="accordion-item">
+                    <div class="accordion-item border-bottom-0">
                         @component('components.question_types', ['part' => $part])
                         @endcomponent
                     </div>
@@ -234,7 +278,7 @@
                         @foreach($allQuestions as $key => $question)
                         <li class="nav-item">
                             <a class="nav-link" href="#Q_{{$key}}">
-                                {{ $question->title }}
+                                {{ $question->title ?? 'Writing Question ' . ($key + 1) }}
                             </a>
                         </li>
                         @endforeach
