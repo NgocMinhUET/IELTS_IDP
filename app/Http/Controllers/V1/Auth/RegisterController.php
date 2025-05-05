@@ -17,7 +17,6 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\Auth\ActiveAccountRequest;
 use App\Http\Requests\Auth\RegisterRequest;
 use App\Http\Requests\Auth\ResendOtpRequest;
-use App\Models\Otp;
 use App\Models\User;
 use App\Notifications\UserRegisteredSuccessfully;
 use App\Services\OtpService;
@@ -32,16 +31,12 @@ class RegisterController extends Controller
     public PasswordResetInterface $passwordResetRepository;
     public AuthInterface $authRepository;
 
-    private OtpService $service;
-
     public function __construct(
         AuthInterface          $authRepository,
-        OtpService             $service,
         PasswordResetInterface $passwordResetRepository,
     ) {
         $this->authRepository = $authRepository;
         $this->passwordResetRepository = $passwordResetRepository;
-        $this->service = $service;
     }
 
     /**
@@ -100,7 +95,7 @@ class RegisterController extends Controller
      * @return ResponseFactory|\Symfony\Component\HttpFoundation\Response
      * @throws Exception
      */
-    public function verify(ActiveAccountRequest $request): \Symfony\Component\HttpFoundation\Response|ResponseFactory
+    public function verify(ActiveAccountRequest $request)
     {
         try {
             DB::beginTransaction();
@@ -111,7 +106,7 @@ class RegisterController extends Controller
                 ->first();
 
             if (!$user) {
-                return ResponseApi::bad([], __('auth.otp.invalid_or_expired'));
+                return redirect()->to(env('APP_FRONTEND_URL') . '/verify/fail?email=' . $user?->email);
             }
 
             $user = $this->authRepository->activeUser([
@@ -120,15 +115,15 @@ class RegisterController extends Controller
 
             if (!$user) {
                 DB::rollBack();
-                return ResponseApi::unauthorized();
+                return redirect()->to(env('APP_FRONTEND_URL') . '/verify/fail?email=' . $user?->email);
             }
 
             DB::commit();
 
-            return redirect('http://localhost:5173/');
+            return redirect()->to(env('APP_FRONTEND_URL') . '/verify/success?email=' . $user?->email);
         } catch (Exception $exception) {
             DB::rollBack();
-            throw $exception;
+            return redirect()->to(env('APP_FRONTEND_URL') . '/verify/fail?email=' . $user?->email);
         }
     }
 
@@ -148,7 +143,7 @@ class RegisterController extends Controller
         ]);
     }
 
-    public function resendOtp(ResendOtpRequest $request): \Symfony\Component\HttpFoundation\Response|ResponseFactory
+    public function resendVerify(ResendOtpRequest $request): \Symfony\Component\HttpFoundation\Response|ResponseFactory
     {
         try {
             $email = $request->get('email');
@@ -160,16 +155,19 @@ class RegisterController extends Controller
             if ($user->is_active) return ResponseApi::bad([], __('auth.account_already_active'));
 
             // Check limit resend otp
-            $otp = Otp::where('email', $email)
-                ->where('expires_at', '>', Carbon::now())
+            $oldLink = User::where('remember_token', $email)
+                ->where('updated_at', '>', Carbon::now())
                 ->first();
 
-            if ($otp) return ResponseApi::bad([], __('auth.otp.limit'));
+            if ($oldLink) return ResponseApi::bad([], __('auth.otp.limit'));
 
-            $otp = $this->service->createOrUpdateOtp($email);
+            // Generate token
+            $token = Str::random(50);
+            $user->remember_token = $token;
+            $user->save();
 
-            // send mail otp
-            $user->notify(new UserRegisteredSuccessfully($otp));
+            // send mail active
+            $user->notify(new UserRegisteredSuccessfully($token));
 
             return ResponseApi::success(__('auth.otp.resend_success'));
         } catch (Exception $exception) {

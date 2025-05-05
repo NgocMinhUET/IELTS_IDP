@@ -18,7 +18,7 @@ Route::group(['middleware' => ['localization', 'cors']], function () {
 
             Route::get('/verify', [RegisterController::class, 'verify'])->name('API_003');
 
-            Route::post('/resend-otp', [RegisterController::class, 'resendOtp'])->name('API_004');
+            Route::post('/resend-verify', [RegisterController::class, 'resendVerify'])->name('API_004');
 
             Route::group(['prefix' => 'password'], function () {
 
