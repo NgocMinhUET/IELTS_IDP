@@ -8,12 +8,12 @@ use App\Services\BaseService;
 class WritingQuestionService extends BaseService
 {
     public function __construct(
-        public WritingQuestionInterface $writingQuestionInterface,
+        public WritingQuestionInterface $writingQuestionRepository,
     ) {}
 
     public function store($partId, $content)
     {
-        return $this->writingQuestionInterface->create([
+        return $this->writingQuestionRepository->create([
             'part_id' => $partId,
             'content' => $content,
         ]);
@@ -21,7 +21,7 @@ class WritingQuestionService extends BaseService
 
     public function getWritingQuestionByPart($partId)
     {
-        return $this->writingQuestionInterface
+        return $this->writingQuestionRepository
             ->findWhere(['part_id' => $partId]);
     }
 }

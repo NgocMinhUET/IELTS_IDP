@@ -26,6 +26,8 @@ use App\Repositories\QuestionOrder\QuestionOrderInterface;
 use App\Repositories\QuestionOrder\QuestionOrderRepository;
 use App\Repositories\Skill\SkillInterface;
 use App\Repositories\Skill\SkillRepository;
+use App\Repositories\Test\TestInterface;
+use App\Repositories\Test\TestRepository;
 use App\Repositories\WritingQuestion\WritingQuestionInterface;
 use App\Repositories\WritingQuestion\WritingQuestionRepository;
 use Illuminate\Support\ServiceProvider;
@@ -63,6 +65,7 @@ class RepositoryServiceProvider extends ServiceProvider
             QuestionOrderInterface::class => QuestionOrderRepository::class,
             ParagraphInterface::class => ParagraphRepository::class,
             WritingQuestionInterface::class => WritingQuestionRepository::class,
+            TestInterface::class => TestRepository::class,
         ];
 
         foreach ($repositories as $interface => $repository) {

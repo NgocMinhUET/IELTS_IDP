@@ -1,5 +1,7 @@
 <?php
 
+use App\Http\Controllers\V1\SkillController;
+use App\Http\Controllers\V1\TestController;
 use Illuminate\Support\Facades\Route;
 
 use App\Http\Controllers\V1\Auth\AuthController;
@@ -46,5 +48,8 @@ Route::group(['middleware' => ['localization', 'cors']], function () {
         });
 
         Route::group(['middleware' => ['auth:api', 'auth.active']], function () {});
+
+        Route::get('test/{id}', [TestController::class, 'getDetailTest']);
+        Route::get('questions', [SkillController::class, 'getQuestions']);
     });
 });
