@@ -22,7 +22,7 @@ enum QuestionType: string
             self::DRAG_DROP_IN_CONTENT => 'questions.drag_drop_in_content.create',
             self::CHOICE => 'questions.choice.create',
             self::FILL_IN_IMAGE => 'questions.fill_in_image.create',
-            self::DRAG_DROP_IMAGE => 'questions.fill_in_image.create',
+            self::DRAG_DROP_IMAGE => 'questions.drag_drop_in_image.create',
             self::WRITING => 'questions.writing.create',
         };
     }

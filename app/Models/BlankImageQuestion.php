@@ -2,6 +2,8 @@
 
 namespace App\Models;
 
+use App\Enum\AnswerType;
+use App\Enum\QuestionTypeAPI;
 use App\Models\Traits\HasQuestionOrder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
@@ -26,7 +28,8 @@ class BlankImageQuestion extends Model
     protected $with = ['answers'];
 
     protected $appends = [
-        'content'
+        'content',
+        'type', // detail question type for API
     ];
 
     public function answers(): \Illuminate\Database\Eloquent\Relations\HasMany
@@ -47,11 +50,17 @@ class BlankImageQuestion extends Model
         ';
 
         foreach ($this->answers as $answer) {
+            if (empty($answer->input_identify)) continue;
             $x = intval($answer['x']);
             $y = intval($answer['y']);
             $placeholder = htmlspecialchars($answer['placeholder'], ENT_QUOTES);
             $inputIdentify = $answer->input_identify;
             $inputId = 'input_blank_' . $inputIdentify;
+
+            $inputStyle = 'width: 124px; height: 27px; border-radius: 5px; text-align: center;';
+            if ($this->answer_type == AnswerType::DRAG_DROP->value) {
+                $inputStyle = 'width: 124px; height: 27px; border: 2px dashed #c5c5c5; border-radius: 5px; text-align: center;';
+            }
 
             $html .= '
                 <div 
@@ -63,8 +72,8 @@ class BlankImageQuestion extends Model
                         placeholder="' . $placeholder . '" 
                         readonly
                         data-blank-id="' . $inputIdentify . '"
-                        class="form-control"
-                        style="width: 120px;"
+                        class=""
+                        style="' . $inputStyle . '"
                     >
                 </div>
             ';
@@ -73,5 +82,11 @@ class BlankImageQuestion extends Model
         $html .= '</div>';
 
         return $html;
+    }
+
+    public function getTypeAttribute(): int
+    {
+        return $this->answer_type == AnswerType::FILL->value ? QuestionTypeAPI::FILL_IMAGE->value :
+            QuestionTypeAPI::DRAG_DROP_IMAGE->value;
     }
 }

@@ -28,7 +28,11 @@ class SkillController extends Controller
         // get audio if skill is listening
 
         $response = [];
+        $response['skill_type'] = $skill->type->value;
+        $response['skill_label'] = $skill->type->name ?? '';
+        $response['skill_desc'] = $skill->desc ?? '';
         $response['duration'] = $skill->duration;
+        $response['audio'] = '';
         $parts = $this->partService->getQuestionsOfSkill($skill);
         $response['parts'] = $parts;
 

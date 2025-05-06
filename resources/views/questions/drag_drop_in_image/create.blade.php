@@ -7,7 +7,7 @@
                 <div class="card shadow-none border my-4">
                     <div class="card-header p-4 border-bottom bg-body">
                         <h4 class="text-body mb-0">
-                            Create Image Map Fill Question For Part {{ $part->title }} ( {{ $part->skill->type->label() }})
+                            Create Drag Drop In Image Question For Part {{ $part->title }} ( {{ $part->skill->type->label() }})
                         </h4>
                     </div>
                     <div class="card-body p-4">
@@ -15,7 +15,7 @@
                         <form action="{{ route('admin.parts.fii-questions.store', $partId) }}" method="POST" enctype="multipart/form-data">
                             @csrf
 
-                            <input type="hidden" name="answer_type" value="{{ \App\Enum\AnswerType::FILL }}">
+                            <input type="hidden" name="answer_type" value="{{ \App\Enum\AnswerType::DRAG_DROP->value }}">
                             <div class="mb-3">
                                 <label class="form-label">Question <span class="text-danger">*</span></label>
                                 <textarea name="title"
@@ -45,11 +45,39 @@
 
                             {{-- List Answers --}}
                             <div id="answers-wrapper" class="mb-4" style="display: {{ $errors->has('answers') ? 'block' : 'none' }};">
-                                <h6>Answer for Blanks <span class="text-danger">*</span></h6>
+{{--                                <h6>Correct Answers <span class="text-danger">*</span></h6>--}}
+                                <label class="form-label">Correct Answers <span class="text-danger">*</span></label>
                                 @if($errors->has('answers'))
                                     <div class="invalid-feedback mt-0 d-block">{{ $errors->first('answers') }}</div>
                                 @endif
                                 <div id="answer-list"></div>
+                                <hr>
+                            </div>
+
+
+                            <div id="distractor_answers-wrapper" class="mb-4" style="display: {{ $errors->has('distractor_answers') ? 'block' : 'none' }};">
+                                <label class="form-label">Other Distractor Answers</label>
+                                @if($errors->has('distractor_answers'))
+                                    <div class="invalid-feedback mt-0 d-block">{{ $errors->first('distractor_answers') }}</div>
+                                @endif
+                                <div class="row g-2 distractor-answer-list">
+                                    <!-- JavaScript add answer -->
+                                </div>
+                                <button type="button" class="btn btn-outline-secondary mt-2 add-distractor-answer" data-sub-index="${index}">+ Add Answer</button>
+                                <hr>
+                            </div>
+
+
+                            <div id="answer_label-wrapper" class="mb-4" style="display: {{ $errors->has('answer_label') ? 'block' : 'none' }};">
+                                <label class="form-label">All Answers Label</label>
+                                <input name="answer_label" type="text"
+                                       class="form-control {{ $errors->has('answer_label') ? 'is-invalid' : '' }}"
+                                       placeholder=""
+                                       value="{{ old('answer_label', '') }}"
+                                >
+                                @if($errors->has('answer_label'))
+                                    <div class="invalid-feedback mt-0">{{ $errors->first('answer_label') }}</div>
+                                @endif
                             </div>
 
                             <button type="submit" class="btn btn-success">Save</button>
@@ -96,12 +124,15 @@
     <script>
         let blankIndex = 0;
 
+        // Upload image
         document.getElementById('image-upload').addEventListener('change', function (e) {
             const reader = new FileReader();
             reader.onload = function (event) {
                 document.getElementById('uploaded-image').src = event.target.result;
                 document.getElementById('image-container').style.display = 'block';
                 document.getElementById('answers-wrapper').style.display = 'block';
+                document.getElementById('distractor_answers-wrapper').style.display = 'block';
+                document.getElementById('answer_label-wrapper').style.display = 'block';
 
                 const uploadImage =  document.getElementById('uploaded-image');
                 uploadImage.onload = function () {
@@ -112,10 +143,9 @@
 
             };
             reader.readAsDataURL(e.target.files[0]);
-
-
         });
 
+        // Click Image Event
         document.getElementById('uploaded-image').addEventListener('click', function (e) {
             const rect = this.getBoundingClientRect();
             console.log(rect, e)
@@ -133,6 +163,7 @@
             modal.show();
         });
 
+        // Submit Modal
         document.getElementById('modal-form').addEventListener('submit', function (e) {
             e.preventDefault();
 
@@ -145,6 +176,7 @@
 
             const imageContainer = document.getElementById('image-container');
 
+            // Add input to image
             const input = document.createElement('input');
             input.type = 'text';
             input.placeholder = placeholder;
@@ -154,9 +186,13 @@
             input.style.top = `${y}px`;
             input.style.transform = 'translate(-50%, -50%)';
             input.style.width = '120px';
+            input.style.border = '2px dashed #c5c5c5';
+            input.style.borderRadius = '5px';
+            input.style.textAlign = 'center';
             input.setAttribute('readonly', true);
             imageContainer.appendChild(input);
 
+            // Add answer preview with remove button
             const answerHtml = `
             <div class="input-group mb-2" data-index="${blankIndex}">
                 <span class="input-group-text">Answer for ${placeholder}</span>
@@ -179,20 +215,45 @@
         });
 
         function removeBlank(index) {
+            // Remove input in the image
             const input = document.querySelector(`.blank-input[data-id="${index}"]`);
             if (input) {
                 input.remove();
             }
 
+            // Remove answer preview
             const answerItem = document.querySelector(`#answer-list div[data-index="${index}"]`);
             if (answerItem) {
-                answerItem.nextElementSibling.remove(); // xóa hidden input x
-                answerItem.nextElementSibling.remove(); // xóa hidden input y
-                answerItem.nextElementSibling.remove(); // xóa hidden input w
-                answerItem.nextElementSibling.remove(); // xóa hidden input h
-                answerItem.nextElementSibling.remove(); // xóa hidden input placeholder
-                answerItem.remove(); // xóa dòng input-group
+                answerItem.nextElementSibling.remove(); // remove hidden input x
+                answerItem.nextElementSibling.remove(); // remove hidden input y
+                answerItem.nextElementSibling.remove(); // remove hidden input w
+                answerItem.nextElementSibling.remove(); // remove hidden input h
+                answerItem.nextElementSibling.remove(); // remove hidden input placeholder
+                answerItem.remove(); // remove input-group
             }
         }
+
+        function generateAnswerHtml() {
+            return `
+            <div class="col-md-6 answer-item">
+                <div class="input-group">
+                    <input type="text" name="distractor_answers[]" class="form-control" placeholder="Answer text" required>
+                    <button type="button" class="btn btn-outline-danger remove-answer">×</button>
+                </div>
+            </div>
+        `;
+        }
+
+        // add distractor answers event
+        document.addEventListener('click', function (e) {
+            if (e.target.classList.contains('add-distractor-answer')) {
+                const answerList = document.querySelector(`.distractor-answer-list`);
+                answerList.insertAdjacentHTML('beforeend', generateAnswerHtml());
+            }
+
+            if (e.target.classList.contains('remove-answer')) {
+                e.target.closest('.answer-item').remove();
+            }
+        });
     </script>
 @endsection

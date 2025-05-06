@@ -10,7 +10,7 @@
                             <div class="row g-3 justify-content-between align-items-center">
                                 <div class="col-12 col-md">
                                     <h4 class="text-body mb-0">
-                                        Create Fill In Blank Question For {{ $part->title }} ( {{ $part->skill->type->label() }})
+                                        Create Fill In Blank Question For Part {{ $part->title }} ( {{ $part->skill->type->label() }})
                                     </h4>
                                 </div>
                             </div>
@@ -138,7 +138,9 @@
                     const modalEl = bootstrap.Modal.getInstance(document.getElementById('blankModal'));
 
                     if (answer.trim() !== '') {
-                        const inputHtml = `<input type="text" class="blank-fill" placeholder="${placeholder}" data-blank-id="${blankIndex}" readonly>`;
+                        const inputHtml = `<input type="text"
+                            style="border: 2px solid black; border-radius: 5px; text-align: center"
+                            class="blank-fill" placeholder="${placeholder}" data-blank-id="${blankIndex}" readonly>`;
                         editor.insertContent(inputHtml);
 
                         document.getElementById('answer-list').insertAdjacentHTML('beforeend', renderAnswerInput(blankIndex, placeholder, answer));

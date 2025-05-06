@@ -4,11 +4,11 @@ namespace App\Models\Traits;
 
 use Illuminate\Support\Str;
 
-trait HasInputIdentify
+trait HasAnswerIdentify
 {
-    public function getInputIdentifyAttribute(): string
+    public function getAnswerIdentifyAttribute(): string
     {
-        return self::INPUT_IDENTIFY_PREFIX .  Str::random(4) . $this->id . Str::random(4);
+        return self::ANSWER_IDENTIFY_PREFIX .  Str::random(3) . $this->id . Str::random(3);
     }
     public static function formatId($id): string
     {
@@ -16,13 +16,13 @@ trait HasInputIdentify
             $id = 0;
         }
 
-        return self::INPUT_IDENTIFY_PREFIX .  Str::random(4) . $id . Str::random(4);
+        return self::ANSWER_IDENTIFY_PREFIX .  Str::random(3) . $id . Str::random(3);
     }
 
     public static function toOriginId(string $formattedId): bool|int
     {
-        $prefixLength = strlen(self::INPUT_IDENTIFY_PREFIX);
-        $randomLength = 4;
+        $prefixLength = strlen(self::ANSWER_IDENTIFY_PREFIX);
+        $randomLength = 3;
 
         $start = $prefixLength + $randomLength;
         $length = strlen($formattedId) - $start - $randomLength;

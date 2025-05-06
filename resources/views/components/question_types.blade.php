@@ -54,7 +54,7 @@
                     <div class="card-body text-center">
                         <div class="fs-3 mb-3">🖼️🎯</div>
                         <h5 class="card-title">Image Drag-and-Drop</h5>
-                        <p class="card-text text-muted">Create a question where students drag and drop answers onto specific positions within an image.</p>
+                        <p class="card-text text-muted">Create a question where students drag and drop answers into specific positions within an image.</p>
                     </div>
                 </div>
             </a>

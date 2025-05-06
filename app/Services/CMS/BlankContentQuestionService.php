@@ -29,7 +29,6 @@ class BlankContentQuestionService extends BaseService
         $inputTags = $xpath->query('//input[@data-blank-id]');
 
         if ($inputTags->length !== count($answers) || array_keys($answers) !== array_keys($placeholders)) {
-            dd(array_keys($answers), array_keys($placeholders), $inputTags->length, count($answers));
             throw new BadRequestHttpException('Incorrect answers found');
         }
 
@@ -44,7 +43,7 @@ class BlankContentQuestionService extends BaseService
         foreach ($inputTags as $input) {
             $oldAnswerId = $input->getAttribute('data-blank-id');
             $newAnswerId = $oldAnswerId . uniqid();
-            $input->setAttribute('data-id', $newAnswerId);
+            $input->setAttribute('data-blank-id', $newAnswerId);
 
             $answers[$newAnswerId] = $answers[$oldAnswerId];
             $placeholders[$newAnswerId] = $placeholders[$oldAnswerId];

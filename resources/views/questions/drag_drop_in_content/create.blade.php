@@ -10,7 +10,7 @@
                             <div class="row g-3 justify-content-between align-items-center">
                                 <div class="col-12 col-md">
                                     <h4 class="text-body mb-0">
-                                        Create Drag Drop In Blank Question For {{ $part->title }} ( {{ $part->skill->type->label() }})
+                                        Create Drag Drop In Blank Question For Part {{ $part->title }} ( {{ $part->skill->type->label() }})
                                     </h4>
                                 </div>
                             </div>
@@ -69,7 +69,7 @@
                                         <div class="row g-2 distractor-answer-list">
                                             <!-- JavaScript add answer -->
                                         </div>
-                                        <button type="button" class="btn btn-outline-secondary mt-2 add-answer" data-sub-index="${index}">+ Add Answer</button>
+                                        <button type="button" class="btn btn-outline-secondary mt-2 add-distractor-answer" data-sub-index="${index}">+ Add Answer</button>
                                     </div>
 
                                     <div class="mb-4">
@@ -150,7 +150,6 @@
                     }
                 });
 
-                // Remove blank input in editor and answer list
                 document.addEventListener('click', function (e) {
                     if (e.target.classList.contains('remove-blank')) {
                         const id = e.target.dataset.blankId;
@@ -166,7 +165,9 @@
                     const modalEl = bootstrap.Modal.getInstance(document.getElementById('blankModal'));
 
                     if (answer.trim() !== '') {
-                        const inputHtml = `<input type="text" class="blank-fill" placeholder="${placeholder}" data-blank-id="${blankIndex}" readonly>`;
+                        const inputHtml = `<input type="text" class="blank-fill"
+                            style="border: 2px dashed #c5c5c5; border-radius: 5px; text-align: center"
+                            placeholder="${placeholder}" data-blank-id="${blankIndex}" readonly>`;
                         editor.insertContent(inputHtml);
 
                         document.getElementById('answer-list').insertAdjacentHTML('beforeend', renderAnswerInput(blankIndex, placeholder, answer));
@@ -191,9 +192,9 @@
         `;
         }
 
-        // event add distractor answers
+        // add distractor answers event
         document.addEventListener('click', function (e) {
-            if (e.target.classList.contains('add-answer')) {
+            if (e.target.classList.contains('add-distractor-answer')) {
                 const answerList = document.querySelector(`.distractor-answer-list`);
                 answerList.insertAdjacentHTML('beforeend', generateAnswerHtml());
             }
