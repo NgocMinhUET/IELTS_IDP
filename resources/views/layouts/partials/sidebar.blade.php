@@ -1,8 +1,11 @@
 @php
     $isExamRoot = false;
+    $isTestRoot = false;
     if (isset($breadcrumbs)) {
         if (array_key_exists('Exam', $breadcrumbs)) {
             $isExamRoot = true;
+        } else if (array_key_exists('Test', $breadcrumbs)) {
+            $isTestRoot = true;
         }
     }
 @endphp
@@ -16,11 +19,11 @@
                     <!-- parent pages-->
                     <div class="nav-item-wrapper">
                         <a class="nav-link dropdown-indicator label-1 @if ($isExamRoot) active @endif"
-                           href="#nv-home"
+                           href="#nv-exam"
                            role="button"
                            data-bs-toggle="collapse"
                            aria-expanded="@if (Route::is('admin.exams.*')) true @else false @endif"
-                           aria-controls="nv-home"
+                           aria-controls="nv-exam"
                         >
                             <div class="d-flex align-items-center">
                                 <div class="dropdown-indicator-icon-wrapper">
@@ -34,7 +37,7 @@
                         </a>
                         <div class="parent-wrapper label-1">
                             <ul class="nav collapse parent @if (Route::is('admin.exams.*')) show @endif"
-                                data-bs-parent="#navbarVerticalCollapse" id="nv-home">
+                                data-bs-parent="#navbarVerticalCollapse" id="nv-exam">
                                 <li class="nav-item">
                                     <a class="nav-link @if(Route::is('admin.exams.index')) active @endif"
                                        href="{{ route('admin.exams.index') }}"
@@ -60,13 +63,67 @@
                     </div>
                 </li>
                 <li class="nav-item">
+                    <!-- parent pages-->
+                    <div class="nav-item-wrapper">
+                        <a class="nav-link dropdown-indicator label-1 @if ($isTestRoot) active @endif"
+                           href="#nv-test"
+                           role="button"
+                           data-bs-toggle="collapse"
+                           aria-expanded="@if (Route::is('admin.tests.*')) true @else false @endif"
+                           aria-controls="nv-test"
+                        >
+                            <div class="d-flex align-items-center">
+                                <div class="dropdown-indicator-icon-wrapper">
+                                    <span class="fas fa-caret-right dropdown-indicator-icon"></span>
+                                </div>
+                                <span class="nav-link-icon">
+                                    <span data-feather="compass"></span>
+                                </span>
+                                <span class="nav-link-text">Test</span>
+                            </div>
+                        </a>
+                        <div class="parent-wrapper label-1">
+                            <ul class="nav collapse parent @if (Route::is('admin.tests.*')) show @endif"
+                                data-bs-parent="#navbarVerticalCollapse" id="nv-test">
+                                <li class="nav-item">
+                                    <a class="nav-link @if(Route::is('admin.tests.index')) active @endif"
+                                       href="{{ route('admin.tests.index') }}"
+                                    >
+                                        <div class="d-flex align-items-center">
+                                            <span class="nav-link-text">List</span>
+                                        </div>
+                                    </a>
+                                    <!-- more inner pages-->
+                                </li>
+                                <li class="nav-item">
+                                    <a class="nav-link @if(Route::is('admin.tests.create')) active @endif"
+                                       href="{{ route('admin.tests.create') }}"
+                                    >
+                                        <div class="d-flex align-items-center">
+                                            <span class="nav-link-text">Create</span>
+                                        </div>
+                                    </a>
+                                    <!-- more inner pages-->
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
+                </li>
+                <li class="nav-item">
                     <!-- label-->
 {{--                    <p class="navbar-vertical-label">Pages--}}
 {{--                    </p>--}}
                     <hr class="navbar-vertical-line" />
                     <!-- parent pages-->
-                    <div class="nav-item-wrapper"><a class="nav-link label-1" href="#" role="button" data-bs-toggle="" aria-expanded="false">
-                            <div class="d-flex align-items-center"><span class="nav-link-icon"><span data-feather="compass"></span></span><span class="nav-link-text-wrapper"><span class="nav-link-text">Test</span></span>
+                    <div class="nav-item-wrapper">
+                        <a class="nav-link label-1" href="#" role="button" data-bs-toggle="" aria-expanded="false">
+                            <div class="d-flex align-items-center">
+                                <span class="nav-link-icon">
+                                    <span data-feather="compass"></span>
+                                </span>
+                                <span class="nav-link-text-wrapper">
+                                    <span class="nav-link-text">Test</span>
+                                </span>
                             </div>
                         </a>
                     </div>
