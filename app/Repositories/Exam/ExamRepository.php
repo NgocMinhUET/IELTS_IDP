@@ -16,4 +16,9 @@ class ExamRepository extends BaseRepository implements ExamInterface
     {
         return Exam::class;
     }
+
+    public function getPickupExams()
+    {
+        return $this->model->select('id', 'title')->get();
+    }
 }

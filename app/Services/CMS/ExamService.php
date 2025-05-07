@@ -21,6 +21,11 @@ class ExamService extends BaseService
         return $this->examRepository->with('skills')->paginate(10);
     }
 
+    public function getPickupExams()
+    {
+        return $this->examRepository->getPickupExams();
+    }
+
     public function getExam($id)
     {
         return $this->examRepository->with('skills')->find($id);

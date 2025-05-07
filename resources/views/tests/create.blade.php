@@ -1,5 +1,9 @@
 @extends('layouts.master')
 
+@section('css-link')
+    <link href="{{ asset('build/vendors/flatpickr/flatpickr.min.css') }}" rel="stylesheet" />
+@endsection
+
 @section('css')
     .exam-item {
         transition: all 0.4s ease;
@@ -40,9 +44,9 @@
                             </div>
                         </div>
                         <div class="card-body p-0">
-                            <div class="p-4 code-to-copy">
+                            <div class="p-4">
                                 @if($isUpdate)
-                                <form class="row g-3" action="{{ route('admin.tests.update', $exam->id) }}" method="POST">
+                                <form class="row g-3" action="{{ route('admin.tests.update', $test->id) }}" method="POST">
                                     @method('put')
                                 @else
                                 <form class="row g-3" novalidate="" action="{{ route('admin.tests.store') }}" method="POST">
@@ -51,51 +55,83 @@
                                     <div class="mb-3">
                                         <label class="form-label" for="descTextarea">Description</label>
                                         <textarea class="form-control  {{ $errors->has('desc') ? 'is-invalid' : '' }}"
-                                                  id="descTextarea" name="desc" rows="3">{{ old('desc', $exam->desc ?? '') }}</textarea>
+                                                  id="descTextarea" name="desc" rows="3">{{ old('desc', $test->desc ?? '') }}</textarea>
                                         @if($errors->has('desc'))
                                             <div class="invalid-feedback mt-0">{{ $errors->first('desc') }}</div>
                                         @endif
                                     </div>
 
                                     <div class="mb-3">
-                                        <label class="form-label mb-1" for="exam">Select Exam <span class="text-danger">*</span></label>
+                                        <div class="row">
+                                            <div class="col-6">
+                                                <label class="form-label" for="datetimepicker">Start Date Time</label>
+                                                <input class="form-control datetimepicker flatpickr-input"
+                                                       name="start_time"
+                                                       type="text"
+                                                       placeholder="yyyy-mm-dd hour : minute"
+                                                       data-options="{&quot;enableTime&quot;:true,&quot;dateFormat&quot;:&quot;Y-m-d H:i&quot;,&quot;disableMobile&quot;:true}"
+                                                       readonly="readonly"
+                                                       value="{{ $isUpdate ? ($test->start_time ?: '') : '' }}"
+                                                >
+                                                @if($errors->has('start_time'))
+                                                    <div class="invalid-feedback mt-0 d-block">{{ $errors->first('start_time') }}</div>
+                                                @endif
+                                            </div>
+                                            <div class="col-6">
+                                                <label class="form-label" for="datetimepicker">End Date Time</label>
+                                                <input class="form-control datetimepicker flatpickr-input"
+                                                       name="end_time"
+                                                       type="text"
+                                                       placeholder="yyyy-mm-dd hour : minute"
+                                                       data-options="{&quot;enableTime&quot;:true,&quot;dateFormat&quot;:&quot;Y-m-d H:i&quot;,&quot;disableMobile&quot;:true}"
+                                                       readonly="readonly"
+                                                       value="{{ $isUpdate ? ($test->end_time ?: '') : '' }}"
+                                                >
+                                                @if($errors->has('end_time'))
+                                                    <div class="invalid-feedback mt-0 d-block">{{ $errors->first('end_time') }}</div>
+                                                @endif
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <div class="mb-3">
+                                        <label class="form-label mb-1" for="exam">Pickup Exam <span class="text-danger">*</span></label>
                                         @if($errors->has('exams'))
                                             <div class="invalid-feedback mt-0 d-block">{{ $errors->first('exams') }}</div>
                                         @endif
-                                        <div class="row g-4">
-                                            <div class="col-sm-3 exam-item {{ false ? '' : 'exam-removed' }}">
-                                                <div class="card-body p-0">
-                                                    <div class="code-to-copy">
-                                                        <div class="toast show exam-toast" role="alert" aria-live="assertive" aria-atomic="true" data-bs-autohide="false">
+                                        <div class="row mb-3">
+                                            <div class="col-auto">
+                                                <div class="d-flex align-items-center">
+                                                    <button type="button" class="btn btn-outline-primary" data-bs-toggle="modal" data-bs-target="#examModal">
+                                                        <span class="fas fa-plus me-2"></span>Pickup
+                                                    </button>
+                                                </div>
+                                            </div>
+
+                                        </div>
+                                        <div class="pickup-exam row g-4">
+                                            @if($isUpdate)
+                                                @php $exam = $test->exam; @endphp
+                                                <div class="col-sm-3 exam-item exam-card">
+                                                    <div class="card-body p-0">
+                                                        <div class="toast show exam-toast" role="alert" data-bs-autohide="false">
                                                             <div class="toast-header border-bottom-0">
                                                                 <strong class="me-auto exam-label">
-                                                                    @if($isUpdate && $isSelectedOption)
-                                                                        <a href="{{ route('admin.exams.detail', 1) }}">
-                                                                            {{ $a = 'TEMP' }}
-                                                                        </a>
-                                                                    @else
-                                                                        {{ $b = 'TEMP2' }}
-                                                                    @endif
+                                                                    <a href="{{ route('admin.exams.detail', $exam->id) }}">{{ $exam->title }}</a>
                                                                 </strong>
                                                                 <input type="hidden"
                                                                        name="exams[]"
-                                                                       value=""
+                                                                       value="{{ $exam->id }}"
                                                                        class="exam-input"
                                                                 >
-                                                                <button class="btn ms-2 p-0 remove-exam {{ true ? '' : 'd-none' }}"
-                                                                        type="button" aria-label="Remove"
-                                                                >
+                                                                <button class="btn ms-2 p-0 remove-exam" type="button" aria-label="Remove">
                                                                     <span class="uil uil-times fs-7"></span>
-                                                                </button>
-                                                                <button class="btn ms-2 p-0 restore-exam {{ true ? 'd-none' : '' }}"
-                                                                        type="button" aria-label="Restore"
-                                                                >
-                                                                    <span class="opacity-100 uil uil-plus fs-7"></span>
                                                                 </button>
                                                             </div>
                                                         </div>
                                                     </div>
                                                 </div>
+                                            @endif
                                         </div>
                                     </div>
 
@@ -118,31 +154,97 @@
             </div>
         </div>
     </div>
+
+    <x-exam_select_modal :exams="$allExams" />
 @endsection
 
 @section('js')
+<script src="{{ asset('build/vendors/flatpickr/flatpickr.min.js') }}"></script>
 <script>
-    document.addEventListener('DOMContentLoaded', function () {
-        const examItems = document.querySelectorAll('.exam-item');
+    const examDetailUrl = @json(route('admin.exams.detail', '__ID__'));
+    const selectedExams = new Map();
 
-        examItems.forEach(item => {
-            const removeBtn = item.querySelector('.remove-exam');
-            const restoreBtn = item.querySelector('.restore-exam');
-            const examInput = item.querySelector('.exam-input');
+    document.addEventListener('DOMContentLoaded', () => {
+        initSelectedExamsFromDOM();
+        renderSelectedExams();
+    });
 
-            removeBtn.addEventListener('click', function () {
-                item.classList.add('exam-removed');
-                removeBtn.classList.add('d-none');
-                restoreBtn.classList.remove('d-none');
-                examInput.disabled = true;
+    function initSelectedExamsFromDOM() {
+        document.querySelectorAll('.exam-card').forEach(card => {
+            const input = card.querySelector('.exam-input');
+            const id = input.value;
+            const title = card.querySelector('.exam-label a').textContent.trim();
+            if (id && title) {
+                selectedExams.set(id, title);
+            }
+        });
+    }
+
+    function renderSelectedExams() {
+        const container = document.querySelector(".pickup-exam.row.g-4");
+        container.querySelectorAll('.exam-card').forEach(c => c.remove());
+
+        selectedExams.forEach((title, id) => {
+            const card = document.createElement('div');
+            let url = examDetailUrl.replace('__ID__', id);
+            card.className = "col-sm-3 exam-item exam-card";
+            card.innerHTML = `
+                <div class="card-body p-0">
+                  <div class="toast show exam-toast" role="alert" data-bs-autohide="false">
+                    <div class="toast-header border-bottom-0">
+                      <strong class="me-auto exam-label">
+                        <a href="${url}" target="_blank">${title}</a>
+                      </strong>
+                      <input type="hidden" name="exams[]" value="${id}" class="exam-input">
+                      <button class="btn ms-2 p-0 remove-exam" type="button" aria-label="Remove">
+                        <span class="uil uil-times fs-7"></span>
+                      </button>
+                    </div>
+                  </div>
+                </div>
+            `;
+            container.appendChild(card);
+
+            card.querySelector('.remove-exam').addEventListener('click', () => {
+                // remove from Map && re-render
+                selectedExams.delete(id);
+                renderSelectedExams();
             });
+        });
+    }
 
-            restoreBtn.addEventListener('click', function () {
-                item.classList.remove('exam-removed');
-                restoreBtn.classList.add('d-none');
-                removeBtn.classList.remove('d-none');
-                examInput.disabled = false;
-            });
+    // Click button submit select exam modal event
+    document.getElementById("confirm-exam-select").addEventListener("click", () => {
+        document.querySelectorAll(".exam-checkbox").forEach(cb => {
+            const id = cb.value;
+            const name = cb.dataset.name;
+            if (cb.checked) {
+                selectedExams.set(id, name);
+            } else {
+                if (selectedExams.has(id) && cb.closest('label')) {
+                    selectedExams.delete(id);
+                }
+            }
+        });
+
+        renderSelectedExams();
+        bootstrap.Modal.getInstance(document.getElementById('examModal')).hide();
+    });
+
+    // re-check checkbox & clear old state
+    document.getElementById('examModal').addEventListener('show.bs.modal', () => {
+        const searchInput = document.getElementById('exam-search');
+        searchInput.value = '';
+
+        document.querySelectorAll('#exam-list .list-group-item').forEach(item => {
+            item.classList.remove('d-none');
+        });
+
+        document.getElementById('exam-placeholder').classList.add('d-none');
+
+        // re-check selected checkbox
+        document.querySelectorAll(".exam-checkbox").forEach(cb => {
+            cb.checked = selectedExams.has(cb.value);
         });
     });
 </script>

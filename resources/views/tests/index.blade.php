@@ -41,7 +41,7 @@
                                         <thead>
                                         <tr>
                                             <th class="align-middle" scope="col" style="width:30%; min-width:200px;">DESCRIPTION</th>
-                                            <th class="align-middle pe-3" scope="col" style="width:30%; min-width:200px;">EXAM DESCRIPTION</th>
+                                            <th class="align-middle pe-3" scope="col" style="width:30%; min-width:200px;">EXAM</th>
                                             <th class="align-middle" scope="col" style="width:25%;">TIME</th>
                                             <th class="sort align-middle text-end" scope="col" data-sort="created_at" style="width:15%; min-width:200px;">CREATED AT</th>
                                         </tr>
@@ -56,7 +56,7 @@
                                                     </a>
                                                 </td>
                                                 <td class="align-middle white-space-nowrap">
-                                                    <h6>{{ $test->exam->desc }}</h6>
+                                                    <h6>{{ $test->exam->title }}</h6>
                                                 </td>
                                                 <td class="align-middle white-space-nowrap">
                                                     {{ $test->start_time }} ~ {{ $test->end_time }}

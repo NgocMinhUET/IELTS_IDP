@@ -32,6 +32,8 @@
     <!-- ===============================================-->
     @include('layouts.partials.styles')
 
+    @yield('css-link')
+
     <style>
         @yield('css')
     </style>

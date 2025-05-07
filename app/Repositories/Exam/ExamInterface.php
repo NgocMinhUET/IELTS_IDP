@@ -6,4 +6,5 @@ use App\Repositories\BaseInterface;
 
 interface ExamInterface extends BaseInterface
 {
+    public function getPickupExams();
 }
