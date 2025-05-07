@@ -90,7 +90,7 @@ class AuthController extends Controller
      */
     public function me(): ResponseFactory|Response
     {
-        $user = auth()->user()->load('team');
+        $user = auth()->user();
 
         // remove last login
         unset($user->last_login_at);

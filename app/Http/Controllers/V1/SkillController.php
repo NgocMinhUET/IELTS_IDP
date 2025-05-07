@@ -15,6 +15,17 @@ class SkillController extends Controller
         public PartService $partService
     ) {}
 
+    public function getSkillForExam(Request $request)
+    {
+        // skill id
+        if (!$request->has('exam_id')) {
+            return ResponseApi::bad();
+        }
+
+        $examId = $request->input('exam_id');
+        return ResponseApi::success('', $this->skillService->getSkillByExam($examId));
+    }
+
     public function getQuestions(Request $request)
     {
         // skill id

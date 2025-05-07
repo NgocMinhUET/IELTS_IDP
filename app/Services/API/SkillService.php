@@ -14,4 +14,11 @@ class SkillService
     {
         return $this->skillRepository->find($id);
     }
+
+    public function getSkillByExam($examId)
+    {
+        return $this->skillRepository->findWhere([
+            'exam_id' => $examId,
+        ]);
+    }
 }

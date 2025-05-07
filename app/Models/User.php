@@ -38,11 +38,6 @@ class User extends Authenticatable implements JWTSubject, MustVerifyEmail
 
     protected $appends = ['avatar_full'];
 
-    public function team()
-    {
-        return $this->hasOne(Team::class, 'id', 'team_id');
-    }
-
     public function getAvatarFullAttribute()
     {
         return $this->avatar ? Config::get('app.image_url') . '/' . $this->avatar : null;

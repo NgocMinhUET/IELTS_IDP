@@ -30,7 +30,6 @@ Route::get('/', function () {
 Route::get('/contact', function () {
     return view('contact');
 });
-Route::post('/contact/submit', [ContactController::class, 'submit'])->name('contact.submit');
 
 Route::get('/policy', function () {
     return view('policy');

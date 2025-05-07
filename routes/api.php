@@ -50,6 +50,7 @@ Route::group(['middleware' => ['localization', 'cors']], function () {
         Route::group(['middleware' => ['auth:api', 'auth.active']], function () {});
 
         Route::get('test/{id}', [TestController::class, 'getDetailTest']);
-        Route::get('questions', [SkillController::class, 'getQuestions']);
+        Route::get('/skills', [SkillController::class, 'getSkillForExam']);
+        Route::get('/questions', [SkillController::class, 'getQuestions']);
     });
 });
