@@ -166,7 +166,7 @@
 
                     if (answer.trim() !== '') {
                         const inputHtml = `<input type="text" class="blank-fill"
-                            style="border: 2px dashed #c5c5c5; border-radius: 5px; text-align: center"
+                            style="border: 2px dashed #c5c5c5; border-radius: 5px; text-align: center; width: 172px; height: 24px;"
                             placeholder="${placeholder}" data-blank-id="${blankIndex}" readonly>`;
                         editor.insertContent(inputHtml);
 

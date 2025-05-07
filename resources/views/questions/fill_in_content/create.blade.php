@@ -139,7 +139,7 @@
 
                     if (answer.trim() !== '') {
                         const inputHtml = `<input type="text"
-                            style="border: 2px solid black; border-radius: 5px; text-align: center"
+                            style="border: 2px solid black; border-radius: 5px; text-align: center; width: 172px; height: 24px;"
                             class="blank-fill" placeholder="${placeholder}" data-blank-id="${blankIndex}" readonly>`;
                         editor.insertContent(inputHtml);
 

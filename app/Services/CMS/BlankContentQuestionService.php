@@ -44,6 +44,18 @@ class BlankContentQuestionService extends BaseService
             $oldAnswerId = $input->getAttribute('data-blank-id');
             $newAnswerId = $oldAnswerId . uniqid();
             $input->setAttribute('data-blank-id', $newAnswerId);
+            $input->removeAttribute('readonly');
+
+            // Remove width height in style attribute
+            $style = $input->getAttribute('style');
+            $style = preg_replace('/\bwidth\s*:\s*[^;]+;?/i', '', $style);
+            $style = preg_replace('/\bheight\s*:\s*[^;]+;?/i', '', $style);
+            $style = trim(preg_replace('/;;+/', ';', $style), "; \t\n\r");
+            if (!empty($style)) {
+                $input->setAttribute('style', $style . ';');
+            } else {
+                $input->removeAttribute('style');
+            }
 
             $answers[$newAnswerId] = $answers[$oldAnswerId];
             $placeholders[$newAnswerId] = $placeholders[$oldAnswerId];

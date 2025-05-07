@@ -147,6 +147,13 @@
 
         // Click Image Event
         document.getElementById('uploaded-image').addEventListener('click', function (e) {
+            if (isDragging) {
+                // Nếu vừa kéo xong, bỏ qua click
+                e.stopPropagation();
+                e.preventDefault();
+                return;
+            }
+
             const rect = this.getBoundingClientRect();
             console.log(rect, e)
             const x = e.clientX - rect.left;
@@ -184,13 +191,14 @@
             input.className = 'position-absolute blank-input';
             input.style.left = `${x}px`;
             input.style.top = `${y}px`;
-            input.style.transform = 'translate(-50%, -50%)';
+            // input.style.transform = 'translate(-50%, -50%)';
             input.style.width = '120px';
             input.style.border = '2px dashed #c5c5c5';
             input.style.borderRadius = '5px';
             input.style.textAlign = 'center';
             input.setAttribute('readonly', true);
             imageContainer.appendChild(input);
+            makeInputDraggable(input);
 
             // Add answer preview with remove button
             const answerHtml = `
@@ -255,5 +263,53 @@
                 e.target.closest('.answer-item').remove();
             }
         });
+
+        let isDragging = false; // global flag
+
+        function makeInputDraggable(input) {
+            let offsetX, offsetY;
+            const image = document.getElementById('uploaded-image');
+
+            input.addEventListener('mousedown', function (e) {
+                isDragging = false; // reset flag
+                offsetX = e.offsetX;
+                offsetY = e.offsetY;
+
+                function onMouseMove(ev) {
+                    isDragging = true;
+                    const rect = image.getBoundingClientRect();
+
+                    let x = ev.clientX - rect.left - offsetX;
+                    let y = ev.clientY - rect.top - offsetY;
+
+                    // Drag/drop in image zone
+                    const maxX = image.offsetWidth - input.offsetWidth;
+                    const maxY = image.offsetHeight - input.offsetHeight;
+
+                    x = Math.max(0, Math.min(x, maxX));
+                    y = Math.max(0, Math.min(y, maxY));
+
+                    input.style.left = `${x}px`;
+                    input.style.top = `${y}px`;
+
+                    // New position applies
+                    const index = input.dataset.id;
+                    document.querySelector(`input[name="answers[${index}][x]"]`).value = x;
+                    document.querySelector(`input[name="answers[${index}][y]"]`).value = y;
+                }
+
+                function onMouseUp() {
+                    document.removeEventListener('mousemove', onMouseMove);
+                    document.removeEventListener('mouseup', onMouseUp);
+
+                    setTimeout(() => { isDragging = false; }, 100);
+                }
+
+                document.addEventListener('mousemove', onMouseMove);
+                document.addEventListener('mouseup', onMouseUp);
+            });
+
+            input.style.cursor = 'grab';
+        }
     </script>
 @endsection
