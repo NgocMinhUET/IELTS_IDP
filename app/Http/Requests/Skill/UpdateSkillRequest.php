@@ -21,6 +21,7 @@ class UpdateSkillRequest extends FormRequest
             'bonus_time' => 'nullable|numeric',
             'parts' => 'required|array',
             'parts.*.title' => 'required|max:255',
+            'audio' => 'nullable|mimes:mp3,wav|mimetypes:audio/mpeg,audio/wav|max:102400',
         ];
     }
 }

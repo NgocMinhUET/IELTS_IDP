@@ -2,10 +2,15 @@
 
 namespace App\Http\Controllers\CMS;
 
+use App\Enum\Models\SkillType;
 use App\Http\Requests\Skill\UpdateSkillRequest;
 use App\Services\CMS\PartService;
 use App\Services\CMS\SkillService;
+use Illuminate\Http\Request;
+use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Validator;
+use Illuminate\Validation\ValidationException;
 
 class SkillController extends CMSController
 {
@@ -32,8 +37,13 @@ class SkillController extends CMSController
         ]);
     }
 
+    /**
+     * @throws ValidationException
+     */
     public function update($id, UpdateSkillRequest $request)
     {
+        $skill = $this->otherRequestValidate($id, $request);
+
         DB::beginTransaction();
         try {
             $this->skillService->updateSkill($id, $request->only(['desc', 'duration', 'bonus_time']));
@@ -41,6 +51,10 @@ class SkillController extends CMSController
             $parts = $request->input('parts');
             if (!empty($parts)) {
                 $this->partService->upsertPartFromSkill($id, $request->input('parts'));
+            }
+
+            if ($skill->type == SkillType::LISTENING) {
+                // TODO: store audio file
             }
 
             DB::commit();
@@ -52,5 +66,24 @@ class SkillController extends CMSController
             DB::rollBack();
             dd($th);
         }
+    }
+
+    /**
+     * @throws ValidationException
+     */
+    public function otherRequestValidate($id, Request $request)
+    {
+        $skill = $this->skillService->getSkill($id);
+
+        if ($skill->type == SkillType::LISTENING) {
+            if (!$request->audio instanceof UploadedFile) {
+                $validator = Validator::make([], []);
+                $validator->errors()->add('audio', 'Audio file is required for this skill');
+
+                throw new \Illuminate\Validation\ValidationException($validator);
+            }
+        }
+
+        return $skill;
     }
 }
