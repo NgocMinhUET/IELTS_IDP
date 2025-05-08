@@ -54,7 +54,7 @@ class SkillController extends CMSController
             }
 
             if ($skill->type == SkillType::LISTENING) {
-                // TODO: store audio file
+                $this->skillService->storeListeningSkillAudioFile($skill, $request->audio);
             }
 
             DB::commit();
@@ -80,7 +80,7 @@ class SkillController extends CMSController
                 $validator = Validator::make([], []);
                 $validator->errors()->add('audio', 'Audio file is required for this skill');
 
-                throw new \Illuminate\Validation\ValidationException($validator);
+                throw new ValidationException($validator);
             }
         }
 

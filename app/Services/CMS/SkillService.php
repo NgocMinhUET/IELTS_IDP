@@ -2,8 +2,10 @@
 
 namespace App\Services\CMS;
 
+use App\Models\Skill;
 use App\Repositories\Skill\SkillInterface;
 use App\Services\BaseService;
+use Illuminate\Http\UploadedFile;
 
 /**
  * Class SkillService.
@@ -65,5 +67,10 @@ class SkillService extends BaseService
     public function getSkillsByExam($examId)
     {
         return $this->skillRepository->findWhere(['exam_id' => $examId]);
+    }
+
+    public function storeListeningSkillAudioFile(Skill $skill, UploadedFile $audioFile): \Illuminate\Database\Eloquent\Model
+    {
+        return $skill->addMedia($audioFile, 'local', 'public');
     }
 }

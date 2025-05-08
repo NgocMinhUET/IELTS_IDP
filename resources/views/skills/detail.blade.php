@@ -50,10 +50,10 @@
                                             <input type="file" name="audio" id="audio-input" hidden/>
                                             <div class="dz-message m-0" data-dz-message="data-dz-message">
                                                 <div class="dz-message-text">
-                                                    <img class="me-2" src="{{ asset('build/assets/img/icons/cloud-upload.svg') }}" width="25" alt="" />Drop your file here
+                                                    <img class="me-2" src="{{ asset('build/assets/img/icons/cloud-upload.svg') }}" width="25" alt="" />Drop audio file here
                                                 </div>
                                             </div>
-                                            <div class="dz-preview dz-preview-multiple m-0 d-flex flex-column">
+                                            <div class="dz-preview dz-preview-multiple m-0 d-flex flex-column" style="min-height: 0">
                                                 <div class="d-flex pb-3 border-bottom border-translucent media px-2">
                                                     <div class="border p-2 rounded-2 me-2">
                                                         <img class="rounded-2 dz-image" src="{{ asset('build/assets/img/icons/file.png') }}" alt="..." data-dz-thumbnail="data-dz-thumbnail" />
