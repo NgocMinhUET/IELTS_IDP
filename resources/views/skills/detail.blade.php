@@ -38,8 +38,30 @@
                                     </div>
 
                                     @if ($skill->type == \App\Enum\Models\SkillType::LISTENING)
+                                    @php
+                                        $audioUrl = $skill->getFirstMediaUrl();
+                                    @endphp
+                                    @if ($audioUrl)
                                     <div class="mb-3">
-                                        <label class="form-label" for="audioTextarea">Audio <span class="text-danger">*</span></label>
+                                        <label class="form-label" for="audioTextarea">
+                                            Current Audio File
+                                        </label>
+                                        <div>
+                                            <audio controls>
+                                                <source src="{{ $audioUrl }}" type="audio/mpeg">
+                                                Your browser does not support the audio element.
+                                            </audio>
+                                        </div>
+                                    </div>
+                                    @endif
+                                    <div class="mb-3">
+                                        <label class="form-label" for="audioTextarea">
+                                            @if ($audioUrl)
+                                                Change Audio File
+                                            @else
+                                                Upload Audio File <span class="text-danger">*</span>
+                                            @endif
+                                        </label>
                                         @if($errors->has('audio'))
                                             <div class="invalid-feedback mt-0 d-block">{{ $errors->first('audio') }}</div>
                                         @endif
@@ -180,18 +202,21 @@
             }
 
             const dz = Dropzone.forElement(dropzoneEl);
+            const hiddenInput = document.querySelector('#audio-input');
+            const dataTransfer = new DataTransfer();
 
             dz.on("addedfile", function (file) {
-
-                // const maxSize = 5 * 1024 * 1024;
-                // if (file.size > maxSize) {
-                //     dz.removeFile(file);
-                //     alert("Invalid");
-                // }
-
-                const dataTransfer = new DataTransfer();
+                dataTransfer.items.clear(); // prepare for one file upload only
                 dataTransfer.items.add(file);
-                const hiddenInput = document.querySelector('#audio-input');
+
+                if (hiddenInput) {
+                    hiddenInput.files = dataTransfer.files;
+                }
+            });
+
+            dz.on("removedfile", function (file) {
+                dataTransfer.items.clear(); // clear all files
+
                 if (hiddenInput) {
                     hiddenInput.files = dataTransfer.files;
                 }

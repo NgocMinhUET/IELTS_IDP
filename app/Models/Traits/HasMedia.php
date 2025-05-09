@@ -61,7 +61,7 @@ trait HasMedia
                 $media->delete();
             });
 
-        return $this->addMedia($file, $collection, $disk, $visibility);
+        return $this->addMedia($file, $disk, $visibility, $collection);
     }
 
     public function getFirstMediaUrl(string $collection = null): ?string

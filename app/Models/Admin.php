@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Enum\UserRole;
 use Filament\Models\Contracts\FilamentUser;
 use Filament\Panel;
 use Illuminate\Foundation\Auth\User as Authenticatable;
@@ -23,7 +24,9 @@ class Admin extends Authenticatable implements FilamentUser
         'password',
         'address',
         'phone',
-        'status'
+        'status',
+        'role',
+        'created_by',
     ];
 
     /**
@@ -42,10 +45,16 @@ class Admin extends Authenticatable implements FilamentUser
      */
     protected $casts = [
         'password' => 'hashed',
+        'role' => UserRole::class,
     ];
 
     public function canAccessPanel(Panel $panel): bool
     {
         return true;
+    }
+
+    public function createdBy(): \Illuminate\Database\Eloquent\Relations\BelongsTo
+    {
+        return $this->belongsTo(Admin::class, 'created_by');
     }
 }

@@ -24,7 +24,6 @@ class Skill extends Model
     protected $appends = [
         'code',
         'skill_type',
-//        'full_url',
     ];
 
     public string $defaultMediaCollection = 'audio';
@@ -48,20 +47,4 @@ class Skill extends Model
     {
         return $this->getRawOriginal('type');
     }
-
-//    public function getFullUrlAttribute(): string
-//    {
-//        $disk = Storage::disk($this->disk);
-//
-//        if ($this->visibility == 'public') {
-//            return $disk->url($this->path);
-//        }
-//
-//        if ($this->disk === 's3') {
-//            return $disk->temporaryUrl($this->path, now()->addMinutes(15));
-//        }
-//
-//        // Local private — dùng signed route (bạn cần định nghĩa sẵn)
-//        return route('secure.local.audio', ['path' => $this->path], true);
-//    }
 }

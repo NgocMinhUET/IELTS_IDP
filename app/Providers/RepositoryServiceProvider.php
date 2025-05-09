@@ -2,6 +2,8 @@
 
 namespace App\Providers;
 
+use App\Repositories\Admin\AdminInterface;
+use App\Repositories\Admin\AdminRepository;
 use App\Repositories\BlankImageAnswer\BlankImageAnswerInterface;
 use App\Repositories\BlankImageAnswer\BlankImageAnswerRepository;
 use App\Repositories\BlankImageQuestion\BlankImageQuestionInterface;
@@ -66,6 +68,7 @@ class RepositoryServiceProvider extends ServiceProvider
             ParagraphInterface::class => ParagraphRepository::class,
             WritingQuestionInterface::class => WritingQuestionRepository::class,
             TestInterface::class => TestRepository::class,
+            AdminInterface::class => AdminRepository::class,
         ];
 
         foreach ($repositories as $interface => $repository) {

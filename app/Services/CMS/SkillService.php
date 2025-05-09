@@ -14,9 +14,13 @@ use Illuminate\Http\UploadedFile;
  */
 class SkillService extends BaseService
 {
+    public string $storageDisk = 'local';
     public function __construct(
         public SkillInterface $skillRepository,
-    ) {}
+    ) {
+        //TODO: open there if s3 config is set
+//        $this->storageDisk = config('filesystems.default');
+    }
 
     public function storeSkillFromExam($examId, $skillTypes)
     {
@@ -71,6 +75,11 @@ class SkillService extends BaseService
 
     public function storeListeningSkillAudioFile(Skill $skill, UploadedFile $audioFile): \Illuminate\Database\Eloquent\Model
     {
-        return $skill->addMedia($audioFile, 'local', 'public');
+        return $skill->addMedia($audioFile, $this->storageDisk);
+    }
+
+    public function updateListeningSkillAudioFile(Skill $skill, UploadedFile $audioFile): \Illuminate\Database\Eloquent\Model
+    {
+        return $skill->updateMedia($audioFile, $this->storageDisk, 'public');
     }
 }

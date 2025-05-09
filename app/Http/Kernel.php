@@ -66,5 +66,7 @@ class Kernel extends HttpKernel
         'localization' => \App\Http\Middleware\Localization::class,
         'auth.active' => \App\Http\Middleware\AccountIsActive::class,
         'cors' => \App\Http\Middleware\Cors::class,
+        'role.admin' => \App\Http\Middleware\RoleAdmin::class,
+        'role.teacher' => \App\Http\Middleware\RoleTeacher::class,
     ];
 }

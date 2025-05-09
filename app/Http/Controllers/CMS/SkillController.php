@@ -42,7 +42,7 @@ class SkillController extends CMSController
      */
     public function update($id, UpdateSkillRequest $request)
     {
-        $skill = $this->otherRequestValidate($id, $request);
+        [$skill, $isExistedAudio] = $this->otherUpdateRequestValidate($id, $request);
 
         DB::beginTransaction();
         try {
@@ -53,8 +53,13 @@ class SkillController extends CMSController
                 $this->partService->upsertPartFromSkill($id, $request->input('parts'));
             }
 
-            if ($skill->type == SkillType::LISTENING) {
-                $this->skillService->storeListeningSkillAudioFile($skill, $request->audio);
+            if ($skill->type == SkillType::LISTENING && $request->has('audio')) {
+                $uploadAudio = $request->audio;
+                if ($isExistedAudio) {
+                    $this->skillService->updateListeningSkillAudioFile($skill, $uploadAudio);
+                } else {
+                    $this->skillService->storeListeningSkillAudioFile($skill, $uploadAudio);
+                }
             }
 
             DB::commit();
@@ -71,19 +76,33 @@ class SkillController extends CMSController
     /**
      * @throws ValidationException
      */
-    public function otherRequestValidate($id, Request $request)
+    public function otherUpdateRequestValidate($id, Request $request): array
     {
         $skill = $this->skillService->getSkill($id);
+        $isExistedAudio = !!$skill->media;
 
         if ($skill->type == SkillType::LISTENING) {
-            if (!$request->audio instanceof UploadedFile) {
-                $validator = Validator::make([], []);
-                $validator->errors()->add('audio', 'Audio file is required for this skill');
+            $hasRequestAudio = $request->has('audio');
+            if (!$isExistedAudio && !$hasRequestAudio) {
+                $this->throwInvalidAudioFileException();
+            }
 
-                throw new ValidationException($validator);
+            if ($hasRequestAudio && !$request->audio instanceof UploadedFile) {
+                $this->throwInvalidAudioFileException();
             }
         }
 
-        return $skill;
+        return [$skill, $isExistedAudio];
+    }
+
+    /**
+     * @throws ValidationException
+     */
+    public function throwInvalidAudioFileException()
+    {
+        $validator = Validator::make([], []);
+        $validator->errors()->add('audio', 'Audio file is required for this skill');
+
+        throw new ValidationException($validator);
     }
 }

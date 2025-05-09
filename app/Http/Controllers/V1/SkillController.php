@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\V1;
 
 use App\Common\ResponseApi;
+use App\Enum\Models\SkillType;
 use App\Http\Controllers\Controller;
 use App\Services\API\PartService;
 use App\Services\API\SkillService;
@@ -36,8 +37,6 @@ class SkillController extends Controller
         $skillId = $request->input('target_id');
         $skill = $this->skillService->getSkill($skillId);
 
-        // get audio if skill is listening
-
         $response = [];
         $response['skill_type'] = $skill->type->value;
         $response['skill_label'] = $skill->type->name ?? '';
@@ -46,6 +45,12 @@ class SkillController extends Controller
         $response['audio'] = '';
         $parts = $this->partService->getQuestionsOfSkill($skill);
         $response['parts'] = $parts;
+
+        // get audio if skill is listening
+        if ($skill->type == SkillType::LISTENING) {
+            $response['audio'] = $skill->getFirstMediaUrl() ?? '';
+        }
+
 
         return ResponseApi::success('', $response);
     }

@@ -68,6 +68,8 @@ class Handler extends ExceptionHandler
      */
     public function render($request, Throwable $e): \Illuminate\Foundation\Application|View|Factory|\Illuminate\Http\Response|JsonResponse|RedirectResponse|Application|Response
     {
+        return parent::render($request, $e);
+
         if($e instanceof ModelNotFoundException) {
             return ResponseApi::dataNotFound();
         }
