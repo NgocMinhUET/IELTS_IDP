@@ -25,12 +25,10 @@ class UserRepository extends BaseRepository implements UserInterface
         return User::class;
     }
 
-    /**
-     * @return LengthAwarePaginator|Collection|mixed
-     */
-    public function getDataPaginate(): mixed
+    public function getPaginateStudents(): LengthAwarePaginator
     {
-        return $this->paginate(\App\Enum\User\User::LIMIT->value);
+        return $this->model->with('createdBy')
+            ->paginate(10);
     }
 
     /**

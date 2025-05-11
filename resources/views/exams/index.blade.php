@@ -2,6 +2,8 @@
 
 @section('contents')
     <div class="mt-4" id="exams">
+        <x-spinner></x-spinner>
+
         <div class="row align-items-center justify-content-between mt-3 g-3">
             <div class="col col-auto">
                 <div class="search-box">
@@ -40,10 +42,12 @@
                                     <table class="table table-sm fs-9 mb-0">
                                         <thead>
                                         <tr>
-                                            <th class="align-middle" scope="col" style="width:30%; min-width:200px;">TITLE</th>
-                                            <th class="align-middle pe-3" scope="col" style="width:35%; min-width:200px;">DESCRIPTION</th>
+                                            <th class="align-middle" scope="col" style="width:20%; min-width:200px;">TITLE</th>
+                                            <th class="align-middle pe-3" scope="col" style="width:20%; min-width:200px;">DESCRIPTION</th>
                                             <th class="align-middle" scope="col" style="width:20%;">SKILLS</th>
-                                            <th class="sort align-middle text-end" scope="col" data-sort="created_at" style="width:15%; min-width:200px;">CREATED AT</th>
+                                            <th class="align-middle" scope="col" style="width:20%;">CREATED BY</th>
+                                            <th class="align-middle" scope="col" style="width:10%;">STATUS</th>
+                                            <th class="sort align-middle text-end" scope="col" data-sort="created_at" style="width:10%; min-width:200px;">CREATED AT</th>
                                         </tr>
                                         </thead>
                                         <tbody class="list" id="members-table-body">
@@ -66,6 +70,35 @@
                                                     @endphp
                                                     {{ $skillList }}
                                                 </td>
+                                                <td class="align-middle white-space-nowrap">
+                                                    @php
+                                                        $createdBy = $exam->createdBy;
+                                                        $createdByTxt = '';
+                                                        if ($createdBy) {
+                                                            $createdByTxt = $createdBy->name . '( ' . $createdBy->email . ' )';
+                                                        }
+                                                    @endphp
+                                                    <h6>{{ $createdByTxt  }}</h6>
+                                                </td>
+                                                @admin
+                                                <td class="align-middle white-space-nowrap">
+                                                    <select class="form-select form-select-sm status-select"
+                                                            data-id="{{ $exam->id }}"
+                                                            data-url="{{ route('admin.exams.status', $exam->id) }}">
+                                                        @foreach(\App\Enum\Models\ApproveStatus::cases() as $status)
+                                                            <option value="{{ $status->value }}" {{ $exam->approve_status == $status ? 'selected' : '' }}>
+                                                                {{ ucfirst($status->label()) }}
+                                                            </option>
+                                                        @endforeach
+                                                    </select>
+                                                    <div class="spinner-border spinner-border-sm text-primary d-none ms-2" role="status"></div>
+                                                </td>
+                                                @endadmin
+                                                @teacher
+                                                <td class="align-middle white-space-nowrap">
+                                                    <h6 class="{{ $exam->approve_status->textColor() }}">{{ $exam->approve_status->label() }}</h6>
+                                                </td>
+                                                @endteacher
                                                 <td class="align-middle white-space-nowrap text-end">
                                                     <h6>{{ $exam->created_at }}</h6>
                                                 </td>
@@ -87,4 +120,59 @@
             </div>
         </div>
     </div>
+@endsection
+
+@section('js')
+<script>
+    const globalSpinner = document.getElementById('global-spinner');
+    const alertContainer = document.getElementById('alert-container');
+    const examContainer = document.getElementById('exams');
+
+    function showSuccessAlert(message) {
+        const alert = document.createElement('div');
+        alert.className = "alert alert-subtle-success alert-dismissible fade show";
+        alert.setAttribute('role', 'alert');
+        alert.innerHTML = `
+        ${message}
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    `;
+        examContainer.before(alert);
+    }
+
+    document.querySelectorAll('.status-select').forEach(select => {
+        let previousValue = select.value;
+
+        select.addEventListener('focus', () => {
+            previousValue = select.value;
+        });
+
+        select.addEventListener('change', async function () {
+            const newStatus = this.value;
+            const url = this.dataset.url;
+
+            globalSpinner.style.display = 'flex';
+
+            try {
+                const response = await fetch(url, {
+                    method: 'PATCH',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-CSRF-TOKEN': '{{ csrf_token() }}',
+                    },
+                    body: JSON.stringify({ status: newStatus }),
+                });
+
+                if (response.status !== 200) throw new Error('Update failed');
+
+                showSuccessAlert('Change status success');
+                previousValue = newStatus;
+            } catch (e) {
+                alert('Failed to update status.');
+                this.value = previousValue;
+            } finally {
+                globalSpinner.style.display = 'none';
+            }
+        });
+    });
+</script>
 @endsection

@@ -1,5 +1,5 @@
 @if(!empty($breadcrumbs))
-    <nav class="mb-3" aria-label="breadcrumb">
+    <nav class="mb-3" aria-label="breadcrumb" id="breadcrumb">
         <ol class="breadcrumb mb-0">
             @foreach($breadcrumbs as $breadcrumb => $url)
                 @if(!empty($url))

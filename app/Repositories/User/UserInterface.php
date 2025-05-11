@@ -11,6 +11,6 @@ use App\Repositories\BaseInterface;
  */
 interface UserInterface extends BaseInterface
 {
-    public function getDataPaginate();
+    public function getPaginateStudents();
     public function createUser(array $params);
 }

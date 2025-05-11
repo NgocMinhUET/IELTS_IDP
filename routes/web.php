@@ -9,6 +9,7 @@ use App\Http\Controllers\CMS\ParagraphController;
 use App\Http\Controllers\CMS\PartController;
 use App\Http\Controllers\CMS\QuestionController;
 use App\Http\Controllers\CMS\SkillController;
+use App\Http\Controllers\CMS\StudentController;
 use App\Http\Controllers\CMS\TeacherController;
 use App\Http\Controllers\CMS\TestController;
 use App\Http\Controllers\CMS\WritingQuestionController;
@@ -65,6 +66,9 @@ Route::group(['middleware' => ['auth:admin']], function () {
             Route::get('/', [ExamController::class, 'index'])->name('index');
             Route::get('/create', [ExamController::class, 'create'])->name('create');
             Route::post('/store', [ExamController::class, 'store'])->name('store');
+            Route::patch('/{id}/status', [ExamController::class, 'updateApproveStatus'])
+                ->middleware('role.admin')
+                ->name('status');
             Route::get('/{id}', [ExamController::class, 'detail'])->name('detail');
             Route::put('/{id}', [ExamController::class, 'update'])->name('update');
         });
@@ -118,6 +122,16 @@ Route::group(['middleware' => ['auth:admin']], function () {
             Route::post('/store', [TeacherController::class, 'store'])->name('store');
             Route::get('/{id}', [TeacherController::class, 'detail'])->name('detail');
             Route::put('/{id}', [TeacherController::class, 'update'])->name('update');
+        });
+
+        Route::group(['prefix' => 'students', 'as' => 'students.'], function () {
+            Route::get('/', [StudentController::class, 'index'])->name('index');
+            Route::get('/create', [StudentController::class, 'create'])->name('create');
+            Route::post('/store', [StudentController::class, 'store'])->name('store');
+            Route::get('/import', [StudentController::class, 'import'])->name('import');
+            Route::post('/import', [StudentController::class, 'executeImport'])->name('import.execute');
+            Route::get('/{id}', [StudentController::class, 'detail'])->name('detail');
+            Route::put('/{id}', [StudentController::class, 'update'])->name('update');
         });
     });
 });

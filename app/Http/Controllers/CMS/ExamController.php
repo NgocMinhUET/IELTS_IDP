@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\CMS;
 
 use App\Http\Requests\Exam\StoreExamRequest;
+use App\Http\Requests\Exam\UpdateApproveStatusRequest;
 use App\Services\CMS\ExamService;
 use App\Services\CMS\SkillService;
 use Illuminate\Support\Facades\DB;
@@ -86,5 +87,10 @@ class ExamController extends CMSController
             DB::rollBack();
             dd($th);
         }
+    }
+
+    public function updateApproveStatus($id, UpdateApproveStatusRequest $request): void
+    {
+        $this->examService->updateApproveStatus($id, $request->status);
     }
 }

@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\CMS;
 
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 
@@ -19,11 +20,16 @@ class AuthController extends CMSController
             'password' => ['required'],
         ]);
 
+        // apply is active account condition for query
+        $credentials[] = fn (Builder $query) => $query->isActive();
+
         if (Auth::attempt($credentials, $request->has('remember'))) {
+
             $request->session()->regenerate();
 
-            return redirect(Auth::user()->role->redirectCMSRoute());
+            return redirect()->intended(Auth::user()->role->redirectCMSRoute());
         }
+
 
         return back()->withErrors([
             'email' => 'The provided credentials do not match our records.',

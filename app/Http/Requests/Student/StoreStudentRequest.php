@@ -1,10 +1,10 @@
 <?php
 
-namespace App\Http\Requests\Teacher;
+namespace App\Http\Requests\Student;
 
 use Illuminate\Foundation\Http\FormRequest;
 
-class StoreTeacherRequest extends FormRequest
+class StoreStudentRequest extends FormRequest
 {
 //    public function authorize()
 //    {
@@ -14,14 +14,16 @@ class StoreTeacherRequest extends FormRequest
     public function rules(): array
     {
         $isUpdate = $this->method() === 'PUT';
-        $emailRule = $isUpdate ? 'required|email|unique:admins,email,' . $this->id :
-            'required|email|unique:admins,email';
+        $emailRule = $isUpdate ? 'required|email|unique:users,email,' . $this->id :
+            'required|email|unique:users,email';
 
         $rules = [
             'email' => $emailRule,
             'name' => 'required|string|max:255',
             'password' => 'required|string|max:255',
             'is_active' => 'required|in:0,1',
+            'search_prefix' => 'nullable|string|max:255',
+            'code' => 'required|string|max:255',
         ];
 
         if ($isUpdate) {

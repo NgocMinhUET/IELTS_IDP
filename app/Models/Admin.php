@@ -5,6 +5,7 @@ namespace App\Models;
 use App\Enum\UserRole;
 use Filament\Models\Contracts\FilamentUser;
 use Filament\Panel;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Laravel\Sanctum\HasApiTokens;
@@ -27,6 +28,7 @@ class Admin extends Authenticatable implements FilamentUser
         'status',
         'role',
         'created_by',
+        'is_active',
     ];
 
     /**
@@ -56,5 +58,25 @@ class Admin extends Authenticatable implements FilamentUser
     public function createdBy(): \Illuminate\Database\Eloquent\Relations\BelongsTo
     {
         return $this->belongsTo(Admin::class, 'created_by');
+    }
+
+    public function scopeIsActive(Builder $query): Builder
+    {
+        return $query->where('is_active', true);
+    }
+
+    public function scopeIsNotActive(Builder $query): Builder
+    {
+        return $query->where('is_active', false);
+    }
+
+    public function isAdmin(): bool
+    {
+        return $this->role == UserRole::ADMIN;
+    }
+
+    public function isTeacher(): bool
+    {
+        return $this->role == UserRole::TEACHER;
     }
 }

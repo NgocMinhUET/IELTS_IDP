@@ -8,7 +8,7 @@
 
 @section('contents')
     @php
-        $isUpdate = !!isset($teacher);
+        $isUpdate = !!isset($student);
     @endphp
 
     <div class="mt-4">
@@ -20,7 +20,7 @@
                             <div class="row g-3 justify-content-between align-items-center">
                                 <div class="col-12 col-md">
                                     <h4 class="text-body mb-0">
-                                        {{ $isUpdate ? 'Detail Teacher' : 'Create Teacher' }}
+                                        {{ $isUpdate ? 'Detail Student' : 'Create Student' }}
                                     </h4>
                                 </div>
                                 <div class="col col-md-auto">
@@ -31,16 +31,39 @@
                         <div class="card-body p-0">
                             <div class="p-4">
                                 @if($isUpdate)
-                                <form class="row g-3" action="{{ route('admin.teachers.update', $teacher->id) }}" method="POST">
-                                    @method('put')
+                                <form class="row g-3" action="{{ route('admin.students.update', $student->id) }}" method="POST">
+                                @method('put')
                                 @else
-                                <form class="row g-3" novalidate="" action="{{ route('admin.teachers.store') }}" method="POST">
-                                @endif
+                                <form class="row g-3" novalidate="" action="{{ route('admin.students.store') }}" method="POST">
+                                    @endif
                                     @csrf
+                                    <div class="mb-3">
+                                        <div class="row">
+                                            <div class="col-6">
+                                                <label class="form-label" for="codeTextarea">Code <span class="text-danger">*</span></label>
+                                                <input class="form-control  {{ $errors->has('code') ? 'is-invalid' : '' }}"
+                                                       value="{{ $isUpdate ? ($student->code ?: '') : '' }}"
+                                                       id="codeTextarea" name="code" type="text">
+                                                @if($errors->has('code'))
+                                                    <div class="invalid-feedback mt-0">{{ $errors->first('code') }}</div>
+                                                @endif
+                                            </div>
+                                            <div class="col-6">
+                                                <label class="form-label" for="prefixTextarea">Search Prefix</label>
+                                                <input class="form-control  {{ $errors->has('search_prefix') ? 'is-invalid' : '' }}"
+                                                       value="{{ $isUpdate ? ($student->search_prefix ?: '') : '' }}"
+                                                       id="prefixTextarea" name="search_prefix" type="text">
+                                                @if($errors->has('search_prefix'))
+                                                    <div class="invalid-feedback mt-0">{{ $errors->first('search_prefix') }}</div>
+                                                @endif
+                                            </div>
+                                        </div>
+                                    </div>
+
                                     <div class="mb-3">
                                         <label class="form-label" for="emailTextarea">Email <span class="text-danger">*</span></label>
                                         <input class="form-control  {{ $errors->has('email') ? 'is-invalid' : '' }}"
-                                               value="{{ $isUpdate ? ($teacher->email ?: '') : '' }}"
+                                               value="{{ $isUpdate ? ($student->email ?: '') : '' }}"
                                                id="emailTextarea" name="email" type="email">
                                         @if($errors->has('email'))
                                             <div class="invalid-feedback mt-0">{{ $errors->first('email') }}</div>
@@ -50,7 +73,7 @@
                                     <div class="mb-3">
                                         <label class="form-label" for="nameTextarea">Name <span class="text-danger">*</span></label>
                                         <input class="form-control  {{ $errors->has('name') ? 'is-invalid' : '' }}"
-                                               value="{{ $isUpdate ? ($teacher->name ?: '') : '' }}"
+                                               value="{{ $isUpdate ? ($student->name ?: '') : '' }}"
                                                id="nameTextarea" name="name" type="text">
                                         @if($errors->has('name'))
                                             <div class="invalid-feedback mt-0">{{ $errors->first('name') }}</div>
@@ -58,25 +81,25 @@
                                     </div>
 
                                     @if($isUpdate)
-                                    <div class="mb-3">
-                                        <label class="form-label" for="newPasswordTextarea">New Password</label>
-                                        <input class="form-control  {{ $errors->has('new_password') ? 'is-invalid' : '' }}"
-                                               value="" placeholder="Enter new password"
-                                               id="newPasswordTextarea" name="new_password" type="text">
-                                        @if($errors->has('new_password'))
-                                            <div class="invalid-feedback mt-0">{{ $errors->first('new_password') }}</div>
-                                        @endif
-                                    </div>
+                                        <div class="mb-3">
+                                            <label class="form-label" for="newPasswordTextarea">New Password</label>
+                                            <input class="form-control  {{ $errors->has('new_password') ? 'is-invalid' : '' }}"
+                                                   value="" placeholder="Enter new password"
+                                                   id="newPasswordTextarea" name="new_password" type="text">
+                                            @if($errors->has('new_password'))
+                                                <div class="invalid-feedback mt-0">{{ $errors->first('new_password') }}</div>
+                                            @endif
+                                        </div>
                                     @else
-                                    <div class="mb-3">
-                                        <label class="form-label" for="passwordTextarea">Password <span class="text-danger">*</span></label>
-                                        <input class="form-control  {{ $errors->has('password') ? 'is-invalid' : '' }}"
-                                               value="{{ $isUpdate ? ($teacher->password ?: '') : '' }}"
-                                               id="passwordTextarea" name="password" type="text">
-                                        @if($errors->has('password'))
-                                            <div class="invalid-feedback mt-0">{{ $errors->first('password') }}</div>
-                                        @endif
-                                    </div>
+                                        <div class="mb-3">
+                                            <label class="form-label" for="passwordTextarea">Password <span class="text-danger">*</span></label>
+                                            <input class="form-control  {{ $errors->has('password') ? 'is-invalid' : '' }}"
+                                                   value="{{ $isUpdate ? ($student->password ?: '') : '' }}"
+                                                   id="passwordTextarea" name="password" type="text">
+                                            @if($errors->has('password'))
+                                                <div class="invalid-feedback mt-0">{{ $errors->first('password') }}</div>
+                                            @endif
+                                        </div>
                                     @endif
 
                                     <div class="mb-3">
@@ -89,7 +112,7 @@
                                                     name="is_active"
                                                     id="activeStatus"
                                                     value="1"
-                                                    {{ $isUpdate ? ($teacher->is_active ? 'checked' : '') : 'checked' }}>
+                                                    {{ $isUpdate ? ($student->is_active ? 'checked' : '') : 'checked' }}>
                                             <label class="form-check-label" for="activeStatus">
                                                 Active
                                             </label>
@@ -102,7 +125,7 @@
                                                     name="is_active"
                                                     id="inactiveStatus"
                                                     value="0"
-                                                    {{ $isUpdate ? ($teacher->is_active ? '' : 'checked') : '' }}>
+                                                    {{ $isUpdate ? ($student->is_active ? '' : 'checked') : '' }}>
                                             <label class="form-check-label" for="inactiveStatus">
                                                 Not Active
                                             </label>

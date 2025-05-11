@@ -6,14 +6,19 @@
             <div class="col col-auto">
                 <div class="search-box">
                     <form class="position-relative">
-                        <input class="form-control search-input search" type="search" placeholder="Search teachers" aria-label="Search" />
+                        <input class="form-control search-input search" type="search" placeholder="Search students" aria-label="Search" />
                         <span class="fas fa-search search-box-icon"></span>
                     </form>
                 </div>
             </div>
             <div class="col-auto">
                 <div class="d-flex align-items-center">
-                    <a href="{{ route('admin.teachers.create') }}" class="btn btn-primary"><span class="fas fa-plus me-2"></span>Create Teacher</a>
+                    <a href="{{ route('admin.students.import') }}" class="btn btn-primary" style="margin-right: 10px">
+                        <span class="fas fa-upload me-2"></span>Import Students
+                    </a>
+                    <a href="{{ route('admin.students.create') }}" class="btn btn-primary">
+                        <span class="fas fa-plus me-2"></span>Create Student
+                    </a>
                 </div>
             </div>
         </div>
@@ -26,7 +31,7 @@
                             <div class="row g-3 justify-content-between align-items-center">
                                 <div class="col-12 col-md">
                                     <h4 class="text-body mb-0">
-                                        List Teachers
+                                        List Students
                                     </h4>
                                 </div>
                                 <div class="col col-md-auto">
@@ -40,27 +45,35 @@
                                     <table class="table table-sm fs-9 mb-0">
                                         <thead>
                                         <tr>
+                                            <th class="align-middle" scope="col" style="width:10%; min-width:200px;">CODE</th>
                                             <th class="align-middle" scope="col" style="width:25%; min-width:200px;">NAME</th>
-                                            <th class="align-middle pe-3" scope="col" style="width:25%; min-width:200px;">EMAIL</th>
+                                            <th class="align-middle pe-3" scope="col" style="width:20%; min-width:200px;">EMAIL</th>
                                             <th class="align-middle pe-3" scope="col" style="width:10%; min-width:200px;">STATUS</th>
-                                            <th class="align-middle" scope="col" style="width:25%;">CREATED BY</th>
+                                            <th class="align-middle" scope="col" style="width:20%;">CREATED BY</th>
                                             <th class="sort align-middle text-end" scope="col" data-sort="created_at" style="width:15%; min-width:200px;">CREATED AT</th>
                                         </tr>
                                         </thead>
                                         <tbody class="list" id="members-table-body">
-                                        @if(!empty($teachers))
-                                            @foreach($teachers as $teacher)
+                                        @if(!empty($students))
+                                            @foreach($students as $student)
                                                 <tr class="hover-actions-trigger btn-reveal-trigger position-static">
                                                     <td class="pt-3 pb-3 align-middle white-space-nowrap">
-                                                        <a class="d-flex align-items-center text-body text-hover-1000" href="{{ route('admin.teachers.detail', $teacher->id) }}">
-                                                            <h6>{{ $teacher->name }}</h6>
+                                                        <a class="d-flex align-items-center text-body text-hover-1000"
+                                                           href="{{ route('admin.students.detail', $student->id) }}">
+                                                            <h6>{{ $student->code }}</h6>
+                                                        </a>
+                                                    </td>
+                                                    <td class="pt-3 pb-3 align-middle white-space-nowrap">
+                                                        <a class="d-flex align-items-center text-body text-hover-1000"
+                                                           href="{{ route('admin.students.detail', $student->id) }}">
+                                                            <h6>{{ $student->name }}</h6>
                                                         </a>
                                                     </td>
                                                     <td class="align-middle white-space-nowrap">
-                                                        <h6>{{ $teacher->email }}</h6>
+                                                        <h6>{{ $student->email }}</h6>
                                                     </td>
                                                     <td class="align-middle white-space-nowrap">
-                                                        @if($teacher->is_active)
+                                                        @if($student->is_active)
                                                             <h6><i class="fas fa-circle-check text-success" title="Active"></i> Active</h6>
                                                         @else
                                                             <h6><i class="fas fa-circle-xmark text-danger" title="Not Active"></i> Not Active</h6>
@@ -68,7 +81,7 @@
                                                     </td>
                                                     <td class="align-middle white-space-nowrap">
                                                         @php
-                                                            $createdBy = $teacher->createdBy;
+                                                            $createdBy = $student->createdBy;
                                                             $createdByTxt = '';
                                                             if ($createdBy) {
                                                                 $createdByTxt = $createdBy->name . '( ' . $createdBy->email . ' )';
@@ -77,7 +90,7 @@
                                                         <h6>{{ $createdByTxt  }}</h6>
                                                     </td>
                                                     <td class="align-middle white-space-nowrap text-end">
-                                                        <h6>{{ $teacher->created_at }}</h6>
+                                                        <h6>{{ $student->created_at }}</h6>
                                                     </td>
                                                 </tr>
                                             @endforeach
@@ -90,7 +103,7 @@
 
                                 <div class="mt-3">
                                     <nav aria-label="Page navigation">
-                                        {{ $teachers->links('pagination::bootstrap-5') }}
+                                        {{ $students->links('pagination::bootstrap-5') }}
                                     </nav>
                                 </div>
                             </div>

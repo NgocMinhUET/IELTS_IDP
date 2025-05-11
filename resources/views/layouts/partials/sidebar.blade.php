@@ -30,7 +30,7 @@
                                     <span class="fas fa-caret-right dropdown-indicator-icon"></span>
                                 </div>
                                 <span class="nav-link-icon">
-                                    <span data-feather="compass"></span>
+                                    <i class="fa-solid fa-compass"></i>
                                 </span>
                                 <span class="nav-link-text">Test</span>
                             </div>
@@ -87,7 +87,7 @@
                                     <span class="fas fa-caret-right dropdown-indicator-icon"></span>
                                 </div>
                                 <span class="nav-link-icon">
-                                    <span data-feather="book-open"></span>
+                                    <i class="fa-solid fa-file-contract"></i>
                                 </span>
                                 <span class="nav-link-text">Exam</span>
                             </div>
@@ -114,24 +114,27 @@
                                         </div>
                                     </a>
                                 </li>
-
-                                @admin
-                                <li class="nav-item">
-                                    <a class="nav-link @if(Route::is('admin.tests.create')) active @endif"
-                                       href="{{ route('admin.tests.create') }}"
-                                    >
-                                        <div class="d-flex align-items-center">
-                                            <span class="nav-link-text">Pending Exam</span>
-                                        </div>
-                                    </a>
-                                </li>
-                                @endadmin
                             </ul>
                         </div>
                     </div>
                 </li>
 
                 @admin
+                <li class="nav-item">
+                    <!-- parent pages-->
+                    <div class="nav-item-wrapper"><a class="nav-link label-1" href="#" role="button" data-bs-toggle="" aria-expanded="false">
+                            <div class="d-flex align-items-center">
+                                <span class="nav-link-icon">
+                                    <i class="fa-solid fa-user-tie"></i>
+                                </span>
+                                <span class="nav-link-text-wrapper">
+                                    <span class="nav-link-text">Admin</span>
+                                </span>
+                            </div>
+                        </a>
+                    </div>
+                </li>
+
                 <li class="nav-item">
                     <hr class="navbar-vertical-line" />
                     <!-- parent pages-->
@@ -141,7 +144,7 @@
                         >
                             <div class="d-flex align-items-center">
                                 <span class="nav-link-icon">
-                                    <span data-feather="users"></span>
+                                    <i class="fa-solid fa-person-chalkboard"></i>
                                 </span>
                                 <span class="nav-link-text-wrapper">
                                     <span class="nav-link-text">Teacher</span>
@@ -154,8 +157,16 @@
 
                 <li class="nav-item">
                     <!-- parent pages-->
-                    <div class="nav-item-wrapper"><a class="nav-link label-1" href="#" role="button" data-bs-toggle="" aria-expanded="false">
-                            <div class="d-flex align-items-center"><span class="nav-link-icon"><span data-feather="users"></span></span><span class="nav-link-text-wrapper"><span class="nav-link-text">Members</span></span>
+                    <div class="nav-item-wrapper">
+                        <a class="nav-link label-1 @if(Route::is('admin.students.*')) active @endif"
+                           href="{{ route('admin.students.index') }}" role="button" data-bs-toggle="" aria-expanded="false">
+                            <div class="d-flex align-items-center">
+                                <span class="nav-link-icon">
+                                    <i class="fa-solid fa-graduation-cap"></i>
+                                </span>
+                                <span class="nav-link-text-wrapper">
+                                    <span class="nav-link-text">Members</span>
+                                </span>
                             </div>
                         </a>
                     </div>
@@ -164,7 +175,13 @@
                 <li class="nav-item">
                     <!-- parent pages-->
                     <div class="nav-item-wrapper"><a class="nav-link label-1" href="#" role="button" data-bs-toggle="" aria-expanded="false">
-                            <div class="d-flex align-items-center"><span class="nav-link-icon"><span data-feather="bell"></span></span><span class="nav-link-text-wrapper"><span class="nav-link-text">Notifications</span></span>
+                            <div class="d-flex align-items-center">
+                                <span class="nav-link-icon">
+                                    <i class="fa-solid fa-bell"></i>
+                                </span>
+                                <span class="nav-link-text-wrapper">
+                                    <span class="nav-link-text">Notifications</span>
+                                </span>
                             </div>
                         </a>
                     </div>

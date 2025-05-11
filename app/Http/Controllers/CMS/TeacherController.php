@@ -38,7 +38,7 @@ class TeacherController extends CMSController
 
     public function store(StoreTeacherRequest $request)
     {
-        $teacherPayload = $request->only(['name', 'email', 'password']);
+        $teacherPayload = $request->only(['name', 'email', 'password', 'is_active']);
 
         $teacher = $this->teacherService->storeTeacher($teacherPayload);
 
@@ -61,7 +61,7 @@ class TeacherController extends CMSController
 
     public function update(StoreTeacherRequest $request, $id)
     {
-        $teacherPayload = $request->only(['name', 'email', 'new_password']);
+        $teacherPayload = $request->only(['name', 'email', 'new_password', 'is_active']);
 
         $teacher = $this->teacherService->updateTeacher($teacherPayload, $id);
 

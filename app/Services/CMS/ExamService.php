@@ -18,7 +18,7 @@ class ExamService extends BaseService
 
     public function getPaginateExams()
     {
-        return $this->examRepository->with('skills')->paginate(10);
+        return $this->examRepository->getPaginateExams();
     }
 
     public function getPickupExams()
@@ -33,11 +33,18 @@ class ExamService extends BaseService
 
     public function storeExam($examPayload)
     {
+        $examPayload['created_by'] = auth()->id();
+
         return $this->examRepository->create($examPayload);
     }
 
     public function updateExam($id, $payload)
     {
         return $this->examRepository->update($payload, $id);
+    }
+
+    public function updateApproveStatus($id, $status)
+    {
+        return $this->examRepository->update(['approve_status' => $status], $id);
     }
 }

@@ -16,6 +16,7 @@ return new class extends Migration
                 ->default(\App\Enum\UserRole::TEACHER->value)
                 ->after('email');
             $table->unsignedBigInteger('created_by')->nullable()->after('role');
+            $table->boolean('is_active')->default(true)->after('password');
         });
     }
 
@@ -27,6 +28,7 @@ return new class extends Migration
         Schema::table('admins', function (Blueprint $table) {
             $table->dropColumn('role');
             $table->dropColumn('created_by');
+            $table->dropColumn('is_active');
         });
     }
 };
