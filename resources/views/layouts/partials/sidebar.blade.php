@@ -56,18 +56,6 @@
                                         </div>
                                     </a>
                                 </li>
-
-                                @admin
-                                <li class="nav-item">
-                                    <a class="nav-link @if(Route::is('admin.tests.create')) active @endif"
-                                       href="{{ route('admin.tests.create') }}"
-                                    >
-                                        <div class="d-flex align-items-center">
-                                            <span class="nav-link-text">Pending Test</span>
-                                        </div>
-                                    </a>
-                                </li>
-                                @endadmin
                             </ul>
                         </div>
                     </div>

@@ -47,6 +47,8 @@ class AuthController extends Controller
         PasswordResetInterface $passwordResetRepository,
         AuthInterface $authRepository,
     ) {
+        parent::__construct();
+
         $this->passwordResetRepository = $passwordResetRepository;
         $this->authRepository = $authRepository;
     }

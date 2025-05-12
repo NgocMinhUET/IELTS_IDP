@@ -3,9 +3,10 @@
 namespace App\Http\Controllers\CMS;
 
 use App\Http\Requests\Test\StoreTestRequest;
+use App\Http\Requests\Test\UpdateApproveStatusRequest;
 use App\Services\CMS\ExamService;
-use App\Services\CMS\SkillService;
 use App\Services\CMS\TestService;
+use Illuminate\Support\Facades\DB;
 
 class TestController extends CMSController
 {
@@ -42,13 +43,21 @@ class TestController extends CMSController
 
     public function store(StoreTestRequest $request)
     {
-        $request->merge(['exam_id' => ($request->exams)[0]]);
+        DB::beginTransaction();
+        try {
+            $request->merge(['exam_id' => ($request->exams)[0]]);
 
-        $test = $this->testService->storeTest($request->only(['desc', 'start_time', 'end_time', 'exam_id']));
+            $test = $this->testService->storeTest($request->only(['desc', 'start_time', 'end_time', 'exam_id', 'exams']));
 
-        return redirect()
-            ->route('admin.tests.detail', $test->id)
-            ->with('success', 'Test created.');
+            DB::commit();
+
+            return redirect()
+                ->route('admin.tests.detail', $test->id)
+                ->with('success', 'Test created.');
+        } catch (\Throwable $th) {
+            DB::rollBack();
+            abort(500);
+        }
     }
 
     public function detail($id)
@@ -66,12 +75,25 @@ class TestController extends CMSController
 
     public function update(StoreTestRequest $request, $id)
     {
-        $request->merge(['exam_id' => ($request->exams)[0]]);
+        DB::beginTransaction();
+        try {
+            $request->merge(['exam_id' => ($request->exams)[0]]);
 
-        $test = $this->testService->updateTest($id, $request->only(['desc', 'start_time', 'end_time', 'exam_id']));
+            $test = $this->testService->updateTest($id, $request->only(['desc', 'start_time', 'end_time', 'exam_id', 'exams']));
 
-        return redirect()
-            ->route('admin.tests.detail', $test->id)
-            ->with('success', 'Test updated.');
+            DB::commit();
+
+            return redirect()
+                ->route('admin.tests.detail', $test->id)
+                ->with('success', 'Test updated.');
+        } catch (\Throwable $th) {
+            DB::rollBack();
+            abort(500);
+        }
+    }
+
+    public function updateApproveStatus($id, UpdateApproveStatusRequest $request): void
+    {
+        $this->testService->updateApproveStatus($id, $request->status);
     }
 }

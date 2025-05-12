@@ -77,6 +77,11 @@ class User extends Authenticatable implements JWTSubject, MustVerifyEmail
         return $this->belongsTo(Admin::class, 'created_by');
     }
 
+    public function tests(): \Illuminate\Database\Eloquent\Relations\BelongsToMany
+    {
+        return $this->belongsToMany(Test::class);
+    }
+
     public function scopeIsActive(Builder $query): Builder
     {
         return $query->where('is_active', true);

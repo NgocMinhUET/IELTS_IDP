@@ -45,4 +45,10 @@ class UserRepository extends BaseRepository implements UserInterface
 
         return $create;
     }
+
+    public function countActiveUserByIds(array $userIds)
+    {
+        return $this->model->whereIn('id', $userIds)
+            ->isActive()->count();
+    }
 }

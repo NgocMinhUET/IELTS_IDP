@@ -9,4 +9,6 @@ interface ExamInterface extends BaseInterface
     public function getPaginateExams();
 
     public function getPickupExams();
+
+    public function countApprovedExamByIds(array $ids);
 }

@@ -36,6 +36,13 @@ class ExamRepository extends BaseRepository implements ExamInterface
 
     public function getPickupExams()
     {
-        return $this->model->select('id', 'title')->get();
+        return $this->model->select('id', 'title')
+            ->isApproved()->get();
+    }
+
+    public function countApprovedExamByIds(array $ids)
+    {
+        return $this->model->whereIn('id', $ids)
+            ->isApproved()->count();
     }
 }

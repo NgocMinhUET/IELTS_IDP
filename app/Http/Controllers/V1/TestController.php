@@ -18,4 +18,9 @@ class TestController extends Controller
 
         return ResponseApi::success('', $testDetail);
     }
+
+    public function enrollTest($id)
+    {
+
+    }
 }

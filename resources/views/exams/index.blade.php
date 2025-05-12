@@ -80,6 +80,7 @@
                                                     @endphp
                                                     <h6>{{ $createdByTxt  }}</h6>
                                                 </td>
+
                                                 @admin
                                                 <td class="align-middle white-space-nowrap">
                                                     <select class="form-select form-select-sm status-select"
@@ -94,11 +95,13 @@
                                                     <div class="spinner-border spinner-border-sm text-primary d-none ms-2" role="status"></div>
                                                 </td>
                                                 @endadmin
+
                                                 @teacher
                                                 <td class="align-middle white-space-nowrap">
                                                     <h6 class="{{ $exam->approve_status->textColor() }}">{{ $exam->approve_status->label() }}</h6>
                                                 </td>
                                                 @endteacher
+
                                                 <td class="align-middle white-space-nowrap text-end">
                                                     <h6>{{ $exam->created_at }}</h6>
                                                 </td>

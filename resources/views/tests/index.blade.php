@@ -1,7 +1,9 @@
 @extends('layouts.master')
 
 @section('contents')
-    <div class="mt-4" id="exams">
+    <div class="mt-4" id="tests">
+        <x-spinner></x-spinner>
+
         <div class="row align-items-center justify-content-between mt-3 g-3">
             <div class="col col-auto">
                 <div class="search-box">
@@ -40,10 +42,12 @@
                                     <table class="table table-sm fs-9 mb-0">
                                         <thead>
                                         <tr>
-                                            <th class="align-middle" scope="col" style="width:30%; min-width:200px;">DESCRIPTION</th>
-                                            <th class="align-middle pe-3" scope="col" style="width:30%; min-width:200px;">EXAM</th>
-                                            <th class="align-middle" scope="col" style="width:25%;">TIME</th>
-                                            <th class="sort align-middle text-end" scope="col" data-sort="created_at" style="width:15%; min-width:200px;">CREATED AT</th>
+                                            <th class="align-middle" scope="col" style="width:20%; min-width:200px;">DESCRIPTION</th>
+                                            <th class="align-middle pe-3" scope="col" style="width:20%; min-width:200px;">EXAM</th>
+                                            <th class="align-middle" scope="col" style="width:20%;">TIME</th>
+                                            <th class="align-middle" scope="col" style="width:20%;">CREATED BY</th>
+                                            <th class="align-middle" scope="col" style="width:10%;">STATUS</th>
+                                            <th class="sort align-middle text-end" scope="col" data-sort="created_at" style="width:10%; min-width:200px;">CREATED AT</th>
                                         </tr>
                                         </thead>
                                         <tbody class="list" id="members-table-body">
@@ -61,6 +65,38 @@
                                                 <td class="align-middle white-space-nowrap">
                                                     {{ $test->start_time }} ~ {{ $test->end_time }}
                                                 </td>
+                                                <td class="align-middle white-space-nowrap">
+                                                    @php
+                                                        $createdBy = $test->createdBy;
+                                                        $createdByTxt = '';
+                                                        if ($createdBy) {
+                                                            $createdByTxt = $createdBy->name . '( ' . $createdBy->email . ' )';
+                                                        }
+                                                    @endphp
+                                                    <h6>{{ $createdByTxt  }}</h6>
+                                                </td>
+
+                                                @admin
+                                                <td class="align-middle white-space-nowrap">
+                                                    <select class="form-select form-select-sm status-select"
+                                                            data-id="{{ $test->id }}"
+                                                            data-url="{{ route('admin.tests.status', $test->id) }}">
+                                                        @foreach(\App\Enum\Models\ApproveStatus::cases() as $status)
+                                                            <option value="{{ $status->value }}" {{ $test->approve_status == $status ? 'selected' : '' }}>
+                                                                {{ ucfirst($status->label()) }}
+                                                            </option>
+                                                        @endforeach
+                                                    </select>
+                                                    <div class="spinner-border spinner-border-sm text-primary d-none ms-2" role="status"></div>
+                                                </td>
+                                                @endadmin
+
+                                                @teacher
+                                                <td class="align-middle white-space-nowrap">
+                                                    <h6 class="{{ $test->approve_status->textColor() }}">{{ $test->approve_status->label() }}</h6>
+                                                </td>
+                                                @endteacher
+
                                                 <td class="align-middle white-space-nowrap text-end">
                                                     <h6>{{ $test->created_at }}</h6>
                                                 </td>
@@ -85,4 +121,60 @@
             </div>
         </div>
     </div>
+@endsection
+
+@section('js')
+    <script>
+        const globalSpinner = document.getElementById('global-spinner');
+        const alertContainer = document.getElementById('alert-container');
+        const testContainer = document.getElementById('tests');
+
+        function showSuccessAlert(message) {
+            const alert = document.createElement('div');
+            alert.className = "alert alert-subtle-success alert-dismissible fade show";
+            alert.setAttribute('role', 'alert');
+            alert.innerHTML = `
+        ${message}
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    `;
+            testContainer.before(alert);
+        }
+
+        document.querySelectorAll('.status-select').forEach(select => {
+            let previousValue = select.value;
+
+            select.addEventListener('focus', () => {
+                previousValue = select.value;
+            });
+
+            select.addEventListener('change', async function () {
+                const newStatus = this.value;
+                const url = this.dataset.url;
+
+                globalSpinner.style.display = 'flex';
+
+                try {
+                    const response = await fetch(url, {
+                        method: 'PATCH',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'X-CSRF-TOKEN': '{{ csrf_token() }}',
+                        },
+                        body: JSON.stringify({ status: newStatus }),
+                    });
+
+                    if (response.status !== 200) throw new Error('Update failed');
+
+                    showSuccessAlert('Change status success');
+                    previousValue = newStatus;
+                } catch (e) {
+                    console.error(e);
+                    alert('Failed to update status.');
+                    this.value = previousValue;
+                } finally {
+                    globalSpinner.style.display = 'none';
+                }
+            });
+        });
+    </script>
 @endsection

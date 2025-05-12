@@ -27,6 +27,11 @@ class Exam extends Model
         return $this->belongsTo(Admin::class, 'created_by');
     }
 
+    public function tests(): \Illuminate\Database\Eloquent\Relations\BelongsToMany
+    {
+        return $this->belongsToMany(Test::class);
+    }
+
     public function scopeIsApproved(Builder $query): Builder
     {
         return $query->where('approve_status', ApproveStatus::APPROVED);

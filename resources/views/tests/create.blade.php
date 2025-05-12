@@ -111,7 +111,8 @@
                                         </div>
                                         <div class="pickup-exam row g-4">
                                             @if($isUpdate)
-                                                @php $exam = $test->exam; @endphp
+{{--                                                @php $exam = $test->exam; @endphp--}}
+                                                @foreach($test->exams as $exam)
                                                 <div class="col-sm-3 exam-item exam-card">
                                                     <div class="card-body p-0">
                                                         <div class="toast show exam-toast" role="alert" data-bs-autohide="false">
@@ -131,6 +132,7 @@
                                                         </div>
                                                     </div>
                                                 </div>
+                                                @endforeach
                                             @endif
                                         </div>
                                     </div>
@@ -213,7 +215,7 @@
         });
     }
 
-    // Click button submit select exam modal event
+    // Click the button submit select exam modal event
     document.getElementById("confirm-exam-select").addEventListener("click", () => {
         document.querySelectorAll(".exam-checkbox").forEach(cb => {
             const id = cb.value;
@@ -231,7 +233,7 @@
         bootstrap.Modal.getInstance(document.getElementById('examModal')).hide();
     });
 
-    // re-check checkbox & clear old state
+    // re-check the checkbox and clear the old state
     document.getElementById('examModal').addEventListener('show.bs.modal', () => {
         const searchInput = document.getElementById('exam-search');
         searchInput.value = '';
@@ -242,7 +244,7 @@
 
         document.getElementById('exam-placeholder').classList.add('d-none');
 
-        // re-check selected checkbox
+        // re-check the selected checkbox
         document.querySelectorAll(".exam-checkbox").forEach(cb => {
             cb.checked = selectedExams.has(cb.value);
         });

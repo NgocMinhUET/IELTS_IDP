@@ -58,6 +58,9 @@ Route::group(['middleware' => ['auth:admin']], function () {
             Route::get('/', [TestController::class, 'index'])->name('index');
             Route::get('/create', [TestController::class, 'create'])->name('create');
             Route::post('/store', [TestController::class, 'store'])->name('store');
+            Route::patch('/{id}/status', [TestController::class, 'updateApproveStatus'])
+                ->middleware('role.admin')
+                ->name('status');
             Route::get('/{id}', [TestController::class, 'detail'])->name('detail');
             Route::put('/{id}', [TestController::class, 'update'])->name('update');
         });
