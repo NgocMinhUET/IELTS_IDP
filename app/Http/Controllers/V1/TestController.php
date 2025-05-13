@@ -4,7 +4,9 @@ namespace App\Http\Controllers\V1;
 
 use App\Common\ResponseApi;
 use App\Http\Controllers\Controller;
+use App\Http\Requests\Test\EnrollTestAPIRequest;
 use App\Services\API\TestService;
+use Illuminate\Support\Facades\DB;
 
 class TestController extends Controller
 {
@@ -12,15 +14,31 @@ class TestController extends Controller
         public TestService $testService,
     ) {}
 
-    public function getDetailTest($id): \Symfony\Component\HttpFoundation\Response|\Illuminate\Contracts\Routing\ResponseFactory
+    public function getTests(): \Symfony\Component\HttpFoundation\Response|\Illuminate\Contracts\Routing\ResponseFactory
     {
-        $testDetail = $this->testService->getDetailTest($id);
+        $tests = $this->testService->getAssignedToUserTests();
 
-        return ResponseApi::success('', $testDetail);
+        return ResponseApi::success('', $tests);
     }
 
-    public function enrollTest($id)
+    /**
+     * @throws \Throwable
+     */
+    public function enrollTest(EnrollTestAPIRequest $request): \Symfony\Component\HttpFoundation\Response|\Illuminate\Contracts\Routing\ResponseFactory
     {
+        DB::beginTransaction();
+        try {
+            $testID = $request->input('test_id');
 
+            $testDetail = $this->testService->enrollTest($testID);
+
+            DB::commit();
+
+            return ResponseApi::success('', $testDetail);
+        } catch (\Throwable $th) {
+            DB::rollBack();
+
+            throw $th;
+        }
     }
 }

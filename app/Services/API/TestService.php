@@ -2,9 +2,13 @@
 
 namespace App\Services\API;
 
+use App\Enum\Models\ExamSessionStatus;
+use App\Models\Test;
 use App\Repositories\Exam\ExamInterface;
+use App\Repositories\ExamSession\ExamSessionInterface;
 use App\Repositories\Skill\SkillInterface;
 use App\Repositories\Test\TestInterface;
+use Symfony\Component\HttpKernel\Exception\HttpException;
 
 class TestService
 {
@@ -12,23 +16,37 @@ class TestService
         public TestInterface $testRepository,
         public ExamInterface $examRepository,
         public SkillInterface $skillRepository,
+        public ExamSessionInterface $examSessionRepository,
     ) {}
 
-    public function getDetailTest($id): array
+    public function enrollTest($id): array
     {
-        $test = $this->testRepository->find($id);
-        $exam = $this->examRepository->find($test->exam_id);
-        $skills = $this->skillRepository->findByField('exam_id', $test->exam_id);
+        $userId = auth()->id();
+        $test = $this->validateTest($id, $userId);
+
+        $exam = $this->getRandomExamOfTest($test, $userId);
+
+        $examSession = $this->examSessionRepository->create([
+            'test_id' => $test->id,
+            'user_id' => $userId,
+            'exam_id' => $exam->id,
+            'status' => ExamSessionStatus::ISSUE
+        ]);
+        $examSessionToken = $examSession->generateEncryptedToken();
+
+        $skills = $this->skillRepository->findByField('exam_id', $exam->id);
 
         return [
-            'desc' => $test->desc,
+            'exam_session_token' => $examSessionToken,
+            'desc' => $test->desc ?? '',
             'start_time' => $test->start_time,
             'end_time' => $test->end_time,
             'exam' => [
                 'title' => $exam->title,
-                'desc' => $exam->desc,
+                'desc' => $exam->desc ?? '',
                 'skills' => $skills->map(function ($skill) {
                     return [
+                        'id' => $skill->id,
                         'code' => $skill->code,
                         'type' => $skill->type->value,
                         'desc' => $skill->desc,
@@ -38,5 +56,43 @@ class TestService
                 })
             ]
         ];
+    }
+
+    private function validateTest($id, $userId)
+    {
+        $test = $this->testRepository->getAssignedToUserTest($id, $userId);
+
+        if (!$test) {
+            throw new HttpException(403, 'You are not assigned to this test.');
+        }
+
+        return $test;
+    }
+
+    public function getRandomExamOfTest(Test $test, $userId)
+    {
+        // exam ids belong to this test
+        $testExamIds = $test->exams()->pluck('id')->toArray();
+        if (empty($testExamIds)) {
+            throw new HttpException(409, 'Test has no exam');
+        }
+
+        $issuedExamIds = $this->examSessionRepository->getIssuedExamIds($test->id, $userId)
+            ->pluck('exam_id')->toArray();
+
+        $availableExamIds = array_diff($testExamIds, $issuedExamIds);
+
+        if (empty($availableExamIds)) {
+            $availableExamIds = $testExamIds;
+        }
+
+        return $this->examRepository->find($availableExamIds[array_rand($availableExamIds)]);
+    }
+
+    public function getAssignedToUserTests()
+    {
+        $userId = auth()->id();
+
+        return $this->testRepository->getAssignedToUserTests($userId);
     }
 }

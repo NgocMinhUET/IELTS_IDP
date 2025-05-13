@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use App\Enum\Models\ApproveStatus;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
@@ -34,5 +35,38 @@ class Test extends Model
     public function createdBy(): \Illuminate\Database\Eloquent\Relations\BelongsTo
     {
         return $this->belongsTo(Admin::class, 'created_by');
+    }
+
+    public function scopeIsApproved(Builder $query): Builder
+    {
+        return $query->where('approve_status', ApproveStatus::APPROVED);
+    }
+
+    public function scopeInPublicDateTime(Builder $query): Builder
+    {
+        $now = now();
+        return $query->where(function ($subQuery) use ($now) {
+            $subQuery->where(function ($query) use ($now) {
+                $query->where('start_time', '<=', $now)
+                    ->where('end_time', '>=', $now);
+            })
+                ->orWhere(function ($query) use ($now) {
+                    $query->whereNull('start_time')
+                        ->where('end_time', '>=', $now);
+                })
+                ->orWhere(function ($query) use ($now) {
+                    $query->whereNull('end_time')
+                        ->where('start_time', '<=', $now);
+                })
+                ->orWhere(function ($query) {
+                    $query->whereNull('start_time')
+                        ->whereNull('end_time');
+                });
+        });
+    }
+
+    public function scopeIsActive(Builder $query): Builder
+    {
+        return $query->isApproved()->inPublicDateTime();
     }
 }

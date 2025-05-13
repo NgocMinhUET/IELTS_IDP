@@ -48,8 +48,10 @@ Route::group(['middleware' => ['localization', 'cors']], function () {
         });
 
         Route::group(['middleware' => ['auth:api', 'auth.active']], function () {
-            Route::post('test/{id}/enroll', [TestController::class, 'enrollTest']);
-            Route::get('test/{id}', [TestController::class, 'getDetailTest']);
+            Route::group(['prefix' => 'tests'], function () {
+                Route::get('/', [TestController::class, 'getTests']);
+                Route::post('enroll', [TestController::class, 'enrollTest']);
+            });
             Route::get('/skills', [SkillController::class, 'getSkillForExam']);
             Route::get('/questions', [SkillController::class, 'getQuestions']);
         });

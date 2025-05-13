@@ -16,6 +16,8 @@ use App\Repositories\ChoiceSubQuestion\ChoiceSubQuestionInterface;
 use App\Repositories\ChoiceSubQuestion\ChoiceSubQuestionRepository;
 use App\Repositories\Exam\ExamInterface;
 use App\Repositories\Exam\ExamRepository;
+use App\Repositories\ExamSession\ExamSessionInterface;
+use App\Repositories\ExamSession\ExamSessionRepository;
 use App\Repositories\LBlankContentAnswer\LBlankContentAnswerInterface;
 use App\Repositories\LBlankContentAnswer\LBlankContentAnswerRepository;
 use App\Repositories\LBlankContentQuestion\LBlankContentQuestionInterface;
@@ -28,6 +30,10 @@ use App\Repositories\QuestionOrder\QuestionOrderInterface;
 use App\Repositories\QuestionOrder\QuestionOrderRepository;
 use App\Repositories\Skill\SkillInterface;
 use App\Repositories\Skill\SkillRepository;
+use App\Repositories\SkillAnswer\SkillAnswerInterface;
+use App\Repositories\SkillAnswer\SkillAnswerRepository;
+use App\Repositories\SkillSession\SkillSessionInterface;
+use App\Repositories\SkillSession\SkillSessionRepository;
 use App\Repositories\Test\TestInterface;
 use App\Repositories\Test\TestRepository;
 use App\Repositories\WritingQuestion\WritingQuestionInterface;
@@ -69,6 +75,9 @@ class RepositoryServiceProvider extends ServiceProvider
             WritingQuestionInterface::class => WritingQuestionRepository::class,
             TestInterface::class => TestRepository::class,
             AdminInterface::class => AdminRepository::class,
+            ExamSessionInterface::class => ExamSessionRepository::class,
+            SkillSessionInterface::class => SkillSessionRepository::class,
+            SkillAnswerInterface::class => SkillAnswerRepository::class,
         ];
 
         foreach ($repositories as $interface => $repository) {
