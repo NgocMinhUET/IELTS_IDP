@@ -17,6 +17,7 @@ return new class extends Migration
             $table->unsignedBigInteger('test_id');
             $table->unsignedBigInteger('user_id');
             $table->unsignedBigInteger('exam_id');
+            $table->dateTime('expired_at')->nullable();
             $table->tinyInteger('status')->default(ExamSessionStatus::ISSUE->value);
             $table->timestamps();
 

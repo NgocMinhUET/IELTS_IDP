@@ -4,6 +4,7 @@ namespace App\Services\API;
 
 use App\Enum\Models\ExamSessionStatus;
 use App\Models\ExamSession;
+use App\Models\Skill;
 use App\Repositories\ExamSession\ExamSessionInterface;
 use Symfony\Component\HttpKernel\Exception\HttpException;
 
@@ -24,20 +25,25 @@ class ExamSessionService
         return $examSessionId;
     }
 
-    public function validateExamSessionFromToken($encryptedToken)
+    public function validateExamSessionFromToken($encryptedToken, $includeStatus = true)
     {
         $examSessionId = $this->decryptExamSessionId($encryptedToken);
 
         $userId = auth()->id();
 
-        $examSession = $this->examSessionRepository->findWhere([
+        $findConditions = [
             'id' => $examSessionId,
             'user_id' => $userId,
-            'status' => ['status', '<>', ExamSessionStatus::ENDED]
-        ])->first();
+        ];
+
+        if ($includeStatus) {
+            $findConditions['status'] = ['status', 'NOTIN', [ExamSessionStatus::IN_USE, ExamSessionStatus::CLOSE]];
+        }
+
+        $examSession = $this->examSessionRepository->findWhere($findConditions)->first();
 
         if (!$examSession) {
-            throw new HttpException('403', 'You are not allowed to access this exam session');
+            throw new HttpException('400', 'Invalid token');
         }
 
         return $examSession;
@@ -46,5 +52,21 @@ class ExamSessionService
     public function decryptExamSession($encryptedToken)
     {
         return ExamSession::decryptToken($encryptedToken);
+    }
+
+    public function setExamSessionStatusAndExpiredAfterGetSkillQuestion($examSessionId, Skill $skill)
+    {
+        $afterSeconds = ($skill->duration ?? 0) + ($skill->bonus_time ?? 0) + config('const.token_expiration_bonus');
+
+
+        return $this->examSessionRepository->update([
+            'expired_at' => now()->addSeconds($afterSeconds),
+            'status' => ExamSessionStatus::IN_USE,
+        ], $examSessionId);
+    }
+
+    public function getExamSessionFromId($id)
+    {
+        return $this->examSessionRepository->find($id);
     }
 }

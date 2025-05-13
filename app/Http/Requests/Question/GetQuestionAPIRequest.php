@@ -10,7 +10,8 @@ class GetQuestionAPIRequest extends ApiRequest
     {
         return [
             'target_id' => 'required|integer|exists:skills,id',
-            'exam_session_token' => 'required|string'
+            'exam_session_token' => 'required|string',
+            'skill_session_token' => 'nullable|string',
         ];
     }
 }

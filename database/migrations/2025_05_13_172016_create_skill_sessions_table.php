@@ -16,9 +16,12 @@ return new class extends Migration
             $table->id();
             $table->unsignedBigInteger('exam_session_id');
             $table->unsignedBigInteger('skill_id');
-            $table->dateTime('expired_at')->nullable();
+            $table->dateTime('expired_at');
+            $table->dateTime('submit_expired_at');
             $table->tinyInteger('status')->default(SkillSessionStatus::IN_PROGRESS->value);
             $table->timestamps();
+
+            $table->unique(['exam_session_id', 'skill_id']);
         });
     }
 

@@ -58,7 +58,7 @@ class TestService
         ];
     }
 
-    private function validateTest($id, $userId)
+    public function validateTest($id, $userId)
     {
         $test = $this->testRepository->getAssignedToUserTest($id, $userId);
 

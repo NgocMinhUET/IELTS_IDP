@@ -68,7 +68,7 @@ class Handler extends ExceptionHandler
      */
     public function render($request, Throwable $e): \Illuminate\Foundation\Application|View|Factory|\Illuminate\Http\Response|JsonResponse|RedirectResponse|Application|Response
     {
-//        dd($e);
+        dd($e);
         if ($request->is('api/*')) {
             return $this->handleApiException($request, $e);
         }

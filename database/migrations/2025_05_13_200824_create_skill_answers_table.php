@@ -1,5 +1,6 @@
 <?php
 
+use App\Enum\Models\AnswerResult;
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
@@ -17,7 +18,8 @@ return new class extends Migration
             $table->string('question_model');
             $table->unsignedBigInteger('question_id');
             $table->tinyInteger('question_type');
-            $table->json('answer');
+            $table->longText('answer');
+            $table->tinyInteger('answer_result')->default(AnswerResult::PENDING);
             $table->timestamps();
 
             $table->unique(['skill_session_id', 'question_model', 'question_id']);
@@ -29,6 +31,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('exam_answers');
+        Schema::dropIfExists('skill_answers');
     }
 };

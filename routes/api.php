@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\V1\SkillAnswerController;
 use App\Http\Controllers\V1\SkillController;
 use App\Http\Controllers\V1\TestController;
 use Illuminate\Support\Facades\Route;
@@ -54,6 +55,7 @@ Route::group(['middleware' => ['localization', 'cors']], function () {
             });
             Route::get('/skills', [SkillController::class, 'getSkillForExam']);
             Route::get('/questions', [SkillController::class, 'getQuestions']);
+            Route::post('/answers', [SkillAnswerController::class, 'submitAnswer']);
         });
     });
 });
