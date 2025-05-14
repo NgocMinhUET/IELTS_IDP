@@ -1,0 +1,81 @@
+<?php
+
+namespace App\Services\API;
+
+use App\Enum\Models\ExamSessionStatus;
+use App\Models\ExamSession;
+use App\Models\Skill;
+use App\Repositories\ExamSession\ExamSessionInterface;
+use Symfony\Component\HttpKernel\Exception\HttpException;
+
+class ExamSessionService
+{
+    public function __construct(
+        public ExamSessionInterface $examSessionRepository,
+    ) {}
+
+    public function decryptExamSessionId($encryptedToken): int
+    {
+        $examSessionId = ExamSession::decryptTokenId($encryptedToken);
+
+        if (!$examSessionId) {
+            throw new HttpException('400', 'Invalid token');
+        }
+
+        return $examSessionId;
+    }
+
+    public function validateExamSessionFromToken($encryptedToken, $includeStatus = true)
+    {
+        $examSessionId = $this->decryptExamSessionId($encryptedToken);
+
+        $userId = auth()->id();
+
+        $findConditions = [
+            'id' => $examSessionId,
+            'user_id' => $userId,
+        ];
+
+        if ($includeStatus) {
+            $findConditions['status'] = ['status', 'NOTIN', [ExamSessionStatus::IN_USE, ExamSessionStatus::CLOSE]];
+        }
+
+        $examSession = $this->examSessionRepository->findWhere($findConditions)->first();
+
+        if (!$examSession) {
+            throw new HttpException('400', 'Invalid token');
+        }
+
+        return $examSession;
+    }
+
+    public function decryptExamSession($encryptedToken)
+    {
+        return ExamSession::decryptToken($encryptedToken);
+    }
+
+    public function setExamSessionStatusAndExpiredAfterGetSkillQuestion($examSessionId, Skill $skill)
+    {
+        $afterSeconds = ($skill->duration ?? 0) + ($skill->bonus_time ?? 0) + config('const.token_expiration_bonus');
+
+
+        return $this->examSessionRepository->update([
+            'expired_at' => now()->addSeconds($afterSeconds),
+            'status' => ExamSessionStatus::IN_USE,
+        ], $examSessionId);
+    }
+
+    public function getExamSessionFromId($id)
+    {
+        return $this->examSessionRepository->find($id);
+    }
+
+
+    //TODO: refactor
+    public function updateExamSessionStatusAfterSkillSubmit(ExamSession $examSession): bool
+    {
+        return $examSession->update([
+            'status' => ExamSessionStatus::END,
+        ]);
+    }
+}

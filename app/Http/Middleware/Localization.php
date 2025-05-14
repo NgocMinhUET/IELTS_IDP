@@ -8,7 +8,7 @@ class Localization
 {
     public function handle($request, Closure $next)
     {
-        $lang = ($request->hasHeader('X-localization')) ? $request->header('X-localization') : 'ja';
+        $lang = ($request->hasHeader('X-localization')) ? $request->header('X-localization') : 'en';
 
         app()->setLocale($lang);
 

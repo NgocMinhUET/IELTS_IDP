@@ -68,33 +68,34 @@ class Handler extends ExceptionHandler
      */
     public function render($request, Throwable $e): \Illuminate\Foundation\Application|View|Factory|\Illuminate\Http\Response|JsonResponse|RedirectResponse|Application|Response
     {
-        if($e instanceof ModelNotFoundException) {
+        dd($e);
+        if ($request->is('api/*')) {
+            return $this->handleApiException($request, $e);
+        }
+
+        return parent::render($request, $e);
+    }
+
+    public function handleApiException($request, Throwable $e): \Illuminate\Foundation\Application|View|Factory|\Illuminate\Http\Response|JsonResponse|RedirectResponse|Application|Response
+    {
+        if ($e instanceof HttpException) {
+            return $this->buildResponseHttpExceptionAPI($e);
+        }
+
+        if ($e instanceof ModelNotFoundException) {
             return ResponseApi::dataNotFound();
         }
 
-        if($e instanceof AuthorizationException) {
+        if ($e instanceof AuthorizationException) {
             return ResponseApi::forbidden();
         }
 
-        if($e instanceof AuthenticationException) {
+        if ($e instanceof AuthenticationException) {
             return ResponseApi::unauthorized();
         }
 
-        if($e instanceof NotFoundHttpException) {
-            return ResponseApi::bad([]);
-        }
-
-        if($e instanceof \PDOException) {
-            dd($e);
-            return ResponseApi::error('Database error.');
-        }
-
-        if($e instanceof RouteNotFoundException) {
-            return ResponseApi::bad([], 'Route not found');
-        }
-
-        if($e instanceof HttpException) {
-            return ResponseApi::error($e->getMessage(), $e->getStatusCode());
+        if ($e instanceof RouteNotFoundException) {
+            return ResponseApi::bad();
         }
 
         if($e instanceof ApiException) {
@@ -105,6 +106,19 @@ class Handler extends ExceptionHandler
             return ResponseApi::error($message, $statusCode, $errors);
         }
 
-        return parent::render($request, $e);
+        return ResponseApi::error();
+    }
+
+    public function buildResponseHttpExceptionAPI(HttpException $e): \Illuminate\Foundation\Application|View|Factory|\Illuminate\Http\Response|JsonResponse|RedirectResponse|Application|Response
+    {
+        $statusCode = $e->getStatusCode();
+
+        return match ($statusCode) {
+            400 => ResponseApi::bad(),
+            401 => ResponseApi::unauthorized(),
+            403 => ResponseApi::forbidden(),
+            404 => ResponseApi::dataNotFound(),
+            default => ResponseApi::error(),
+        };
     }
 }

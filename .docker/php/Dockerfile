@@ -23,6 +23,8 @@ RUN apt-get update && apt-get install -y \
 
 RUN docker-php-ext-install gd
 
+RUN docker-php-ext-install zip
+
 RUN docker-php-ext-install bcmath mbstring intl opcache
 
 RUN docker-php-ext-install pdo pdo_mysql mysqli

@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use Illuminate\Contracts\Auth\MustVerifyEmail;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
@@ -23,7 +24,10 @@ class User extends Authenticatable implements JWTSubject, MustVerifyEmail
         'explanation',
         'is_active',
         'last_login_at',
-        'avatar'
+        'avatar',
+        'created_by',
+        'code',
+        'search_prefix',
     ];
 
     protected $hidden = [
@@ -37,11 +41,6 @@ class User extends Authenticatable implements JWTSubject, MustVerifyEmail
     ];
 
     protected $appends = ['avatar_full'];
-
-    public function team()
-    {
-        return $this->hasOne(Team::class, 'id', 'team_id');
-    }
 
     public function getAvatarFullAttribute()
     {
@@ -71,5 +70,25 @@ class User extends Authenticatable implements JWTSubject, MustVerifyEmail
     public function getJWTCustomClaims(): array
     {
         return [];
+    }
+
+    public function createdBy(): \Illuminate\Database\Eloquent\Relations\BelongsTo
+    {
+        return $this->belongsTo(Admin::class, 'created_by');
+    }
+
+    public function tests(): \Illuminate\Database\Eloquent\Relations\BelongsToMany
+    {
+        return $this->belongsToMany(Test::class);
+    }
+
+    public function scopeIsActive(Builder $query): Builder
+    {
+        return $query->where('is_active', true);
+    }
+
+    public function scopeIsNotActive(Builder $query): Builder
+    {
+        return $query->where('is_active', false);
     }
 }

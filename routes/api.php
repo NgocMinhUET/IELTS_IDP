@@ -1,5 +1,8 @@
 <?php
 
+use App\Http\Controllers\V1\SkillAnswerController;
+use App\Http\Controllers\V1\SkillController;
+use App\Http\Controllers\V1\TestController;
 use Illuminate\Support\Facades\Route;
 
 use App\Http\Controllers\V1\Auth\AuthController;
@@ -45,6 +48,14 @@ Route::group(['middleware' => ['localization', 'cors']], function () {
             });
         });
 
-        Route::group(['middleware' => ['auth:api', 'auth.active']], function () {});
+        Route::group(['middleware' => ['auth:api', 'auth.active']], function () {
+            Route::group(['prefix' => 'tests'], function () {
+                Route::get('/', [TestController::class, 'getTests']);
+                Route::post('enroll', [TestController::class, 'enrollTest']);
+            });
+            Route::get('/skills', [SkillController::class, 'getSkillForExam']);
+            Route::get('/questions', [SkillController::class, 'getQuestions']);
+            Route::post('/answers', [SkillAnswerController::class, 'submitAnswer']);
+        });
     });
 });

@@ -2,6 +2,8 @@
 
 namespace App\Providers;
 
+use App\Http\Controllers\CMS\CMSController;
+use Illuminate\Support\Facades\View;
 use Illuminate\Support\ServiceProvider;
 use Illuminate\Database\Schema\Blueprint;
 
@@ -26,6 +28,14 @@ class AppServiceProvider extends ServiceProvider
             /** @var Blueprint $this */
             $this->timestamps();
             $this->softDeletes();
+        });
+
+        // append breadcrumbs to view
+        View::composer('*', function ($view) {
+            $routeController = optional(request()->route())?->controller;
+            if ($routeController instanceof CMSController && property_exists($routeController, 'breadcrumbs')) {
+                $view->with('breadcrumbs', $routeController->breadcrumbs);
+            }
         });
     }
 }
