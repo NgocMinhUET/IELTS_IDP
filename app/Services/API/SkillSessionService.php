@@ -44,7 +44,7 @@ class SkillSessionService
         $session = $this->getSkillSessionFromToken($token);
 
         if ($session->expired_at < now() || $session->status == SkillSessionStatus::SUBMITTED) {
-//            throw new HttpException(400,'Token expired');
+            throw new HttpException(400,'Token expired');
         }
 
         return $session;

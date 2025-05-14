@@ -16,7 +16,7 @@ return new class extends Migration
             $table->id();
             $table->unsignedBigInteger('skill_session_id');
             $table->string('question_model');
-            $table->string('question_id'); //TODO: refactor
+            $table->unsignedBigInteger('question_id');
             $table->tinyInteger('question_type');
             $table->longText('answer');
             $table->tinyInteger('answer_result')->default(AnswerResult::PENDING);

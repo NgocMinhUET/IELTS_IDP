@@ -69,4 +69,13 @@ class ExamSessionService
     {
         return $this->examSessionRepository->find($id);
     }
+
+
+    //TODO: refactor
+    public function updateExamSessionStatusAfterSkillSubmit(ExamSession $examSession): bool
+    {
+        return $examSession->update([
+            'status' => ExamSessionStatus::END,
+        ]);
+    }
 }

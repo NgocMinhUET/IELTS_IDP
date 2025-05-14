@@ -9,10 +9,12 @@ use App\Models\BlankImageAnswer;
 use App\Models\ChoiceOptions;
 use App\Models\ChoiceSubQuestion;
 use App\Models\LBlankContentAnswer;
+use App\Models\LBlankContentQuestion;
 use App\Models\Skill;
 use App\Models\WritingQuestion;
 use App\Repositories\SkillAnswer\SkillAnswerInterface;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 use Symfony\Component\HttpKernel\Exception\HttpException;
 
 class SkillAnswerService
@@ -31,14 +33,24 @@ class SkillAnswerService
         $insertData = [];
         $now = now();
 
+        //TODO: refactor this code
         foreach ($compareAnswers as $compareAnswer) {
+            if ($compareAnswer['question_type'] == QuestionTypeAPI::FILL_CONTENT->value || $compareAnswer['question_type'] == QuestionTypeAPI::FILL_IMAGE->value) {
+                if ($compareAnswer['question_model'] == (new LBlankContentQuestion)->getTable()) {
+                    $compareAnswer['question_id'] = DB::table('l_blank_content_answers')->where('input_identify', $compareAnswer['question_id'])->first()->id;
+                } else {
+                    $compareAnswer['question_id'] = DB::table('blank_image_answers')->where('input_identify', $compareAnswer['question_id'])->first()->id;
+                }
+            }
             $insertData[] = [
                 'skill_session_id' => $skillSessionId,
                 'question_model' => $compareAnswer['question_model'],
                 'question_id' => $compareAnswer['question_id'],
                 'question_type' => $compareAnswer['question_type'],
                 'answer' => $compareAnswer['answer'],
-                'answer_result' => $compareAnswer['is_correct'] ? AnswerResult::CORRECT->value : AnswerResult::INCORRECT->value,
+                'answer_result' => isset($compareAnswer['is_correct']) ?
+                    ($compareAnswer['is_correct'] ? AnswerResult::CORRECT->value : AnswerResult::INCORRECT->value) :
+                    AnswerResult::PENDING,
                 'created_at' => $now,
                 'updated_at' => $now,
             ];
@@ -154,5 +166,28 @@ class SkillAnswerService
         }
 
         return $convertAnswers;
+    }
+
+    public function compareWritingAnswer($answerPayload, $writingQuestions)
+    {
+        $answerResult = [];
+        foreach ($answerPayload as $answer) {
+            $found = [];
+            foreach ($writingQuestions as $writingQuestion) {
+                if ($writingQuestion['question_id'] == $answer['question_id']
+                    && $writingQuestion['question_model'] == $answer['question_model']
+                    && $writingQuestion['question_type'] == $answer['question_type']) {
+                    $found = $writingQuestion;
+                    break;
+                }
+            }
+            if (empty($found)) {
+                throw new HttpException(400, 'Bad Request');
+            }
+
+            $answerResult[] = $answer;
+        }
+
+        return $answerResult;
     }
 }

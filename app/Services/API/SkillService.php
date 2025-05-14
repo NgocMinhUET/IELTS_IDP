@@ -47,9 +47,16 @@ class SkillService
         return $questionAndAnswers;
     }
 
-    public function getAllWritingSkillQuestionsAndAnswers(Skill $skill)
+    public function getAllWritingSkillQuestionsAndAnswers(Skill $skill): array
     {
-        dd(123);
+        $parts = $this->getPartsOfSkill($skill->id);
+
+        $writingQuestions = [];
+        foreach ($parts as $part) {
+            $writingQuestions = array_merge($writingQuestions, $this->getAllWritingQuestionsOfPart($part->id));
+        }
+
+        return $writingQuestions;
     }
 
     public function getPartsOfSkill($skillId)
@@ -57,7 +64,25 @@ class SkillService
         return $this->partRepository->findByField('skill_id', $skillId);
     }
 
-    public function getAllListeningOrReadingQuestionsOfPart($partId)
+    public function getAllWritingQuestionsOfPart($partId): array
+    {
+        $questions = $this->writingQuestionRepository
+            ->findWhere(['part_id' => $partId]);
+
+        $writingQuestions = [];
+        foreach ($questions as $question) {
+            $tmp = [
+                'question_id' => $question->id,
+                'question_model' => $question->getTable(),
+                'question_type' => $question->type,
+            ];
+            $writingQuestions[] = $tmp;
+        }
+
+        return $writingQuestions;
+    }
+
+    public function getAllListeningOrReadingQuestionsOfPart($partId): array
     {
         $choiceQuestions = $this->choiceQuestionRepository->with('choiceSubQuestions.choiceOptions')
             ->findWhere(['part_id' => $partId]);

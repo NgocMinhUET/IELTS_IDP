@@ -33,12 +33,12 @@ class SkillAnswerController extends Controller
         $examSession = $this->examSessionService->getExamSessionFromId($skillSession->exam_session_id);
 
         if ($examSession->user_id != $userId) {
-//            throw new HttpException(403, 'The session not allowed to submit answers.');
+            throw new HttpException(403, 'The session not allowed to submit answers.');
         }
 
         $skill = $this->skillService->getSkill($skillSession->skill_id);
         if ($skill->exam_id != $examSession->exam_id) {
-//            throw new HttpException(403, 'The session not allowed to submit answers.');
+            throw new HttpException(403, 'The session not allowed to submit answers.');
         }
 
         $answerPayload = $this->skillAnswerService->validateAnswerPayload($request);
@@ -49,24 +49,30 @@ class SkillAnswerController extends Controller
 
             $compareAnswers = $this->skillAnswerService->storeAnswerAndGetResult($answerPayload, $skillQuestions);
 
-            try {
-                DB::beginTransaction();
-                $this->skillAnswerService->storeAnswerAfterCompare($compareAnswers, $skillSession->id);
-
-                $this->skillSessionService->removeToken($skillSession);
-                DB::commit();
-            } catch (\Throwable $exception) {
-                DB::rollBack();
-
-                throw $exception;
-            }
-
             $result = $this->skillAnswerService->buildResultScoreResponse($compareAnswers);
         } else {
-            //TODO::
-            $skillQuestions = $this->skillService->getAllWritingSkillQuestionsAndAnswers($skill);
+            $writingQuestions = $this->skillService->getAllWritingSkillQuestionsAndAnswers($skill);
 
-            $result = $this->skillAnswerService->storeAnswer($request, $skillQuestions);
+            $compareAnswers = $this->skillAnswerService->compareWritingAnswer($answerPayload, $writingQuestions);
+
+            $result = [];
+        }
+
+        try {
+            DB::beginTransaction();
+            $this->skillAnswerService->storeAnswerAfterCompare($compareAnswers, $skillSession->id);
+
+            // remove skill session
+            $this->skillSessionService->removeToken($skillSession);
+
+            //update exam session
+            //TODO: refactor if this last skill
+            $this->examSessionService->updateExamSessionStatusAfterSkillSubmit($examSession);
+            DB::commit();
+        } catch (\Throwable $exception) {
+            DB::rollBack();
+
+            throw $exception;
         }
 
         return ResponseApi::success('', $result);
