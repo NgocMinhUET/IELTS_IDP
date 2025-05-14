@@ -44,6 +44,7 @@ class TestService
             'exam' => [
                 'title' => $exam->title,
                 'desc' => $exam->desc ?? '',
+                'id' => $exam->id,
                 'skills' => $skills->map(function ($skill) {
                     return [
                         'id' => $skill->id,
