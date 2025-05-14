@@ -2,6 +2,8 @@
 
 namespace App\Services\API;
 
+use App\Enum\AnswerType;
+use App\Enum\QuestionTypeAPI;
 use App\Models\Skill;
 use App\Repositories\BlankImageQuestion\BlankImageQuestionInterface;
 use App\Repositories\ChoiceQuestion\ChoiceQuestionInterface;
@@ -33,16 +35,16 @@ class SkillService
         ]);
     }
 
-    public function getAllListenOrReadingSkillQuestionsAndAnswers(Skill $skill)
+    public function getAllListenOrReadingSkillQuestionsAndAnswers(Skill $skill): array
     {
         $parts = $this->getPartsOfSkill($skill->id);
 
-        $questionAndAnswers = collect();
+        $questionAndAnswers = [];
         foreach ($parts as $part) {
-            $questionAndAnswers = $questionAndAnswers->merge($this->getAllListeningOrReadingQuestionsOfPart($part->id));
+            $questionAndAnswers = array_merge($questionAndAnswers, $this->getAllListeningOrReadingQuestionsOfPart($part->id));
         }
 
-        dd($questionAndAnswers);
+        return $questionAndAnswers;
     }
 
     public function getAllWritingSkillQuestionsAndAnswers(Skill $skill)
@@ -66,8 +68,49 @@ class SkillService
         $fillInImageQuestions = $this->blankImageQuestionRepository->with('answers')
             ->findWhere(['part_id' => $partId]);
 
-        dd($choiceQuestions->toArray());
+        $questionAndAnswers = [];
 
-        return $choiceQuestions->merge($fillInBlankQuestions->merge($fillInImageQuestions));
+        foreach ($choiceQuestions as $choiceQuestion) {
+            foreach ($choiceQuestion->choiceSubQuestions as $choiceSubQuestion) {
+                $questionAndAnswer = [
+                    'question_id' => $choiceSubQuestion->id,
+                    'question_model' => $choiceSubQuestion->getTable(),
+                    'answer_id' => $choiceSubQuestion->choiceOptions->where('is_correct', true)
+                        ->pluck('id')->toArray(),
+                    'answer' => null,
+                    'question_type' => $choiceQuestion->type,
+                ];
+                $questionAndAnswers[] = $questionAndAnswer;
+            }
+        }
+
+
+        $questionAndAnswers = array_merge($questionAndAnswers, $this->makeBlankQuestionAndAnswerArray($fillInBlankQuestions));
+
+        return array_merge($questionAndAnswers, $this->makeBlankQuestionAndAnswerArray($fillInImageQuestions));
+    }
+
+    public function makeBlankQuestionAndAnswerArray($blankQuestions): array
+    {
+        $questionAndAnswers = [];
+        foreach ($blankQuestions as $question) {
+            $tableModel = $question->getTable();
+            $questionType = $question->type;
+            $answerType = $question->answer_type;
+
+            foreach ($question->answers as $answer) {
+                if (!is_null($answer->input_identify)) {
+                    $questionAndAnswers[] = [
+                        'question_id' => $answer->input_identify,
+                        'question_type' => $questionType,
+                        'question_model' => $tableModel,
+                        'answer_id' => $answerType == AnswerType::FILL->value ? null : $answer->id,
+                        'answer' => $answerType == AnswerType::FILL->value ? $answer->answer : null,
+                    ];
+                }
+            }
+        }
+
+        return $questionAndAnswers;
     }
 }

@@ -13,9 +13,9 @@ class SubmitAnswerAPIRequest extends ApiRequest
         return [
             'skill_session_token' => 'required|string',
             'answers' => 'required|array',
-            'answers.*.question_id' => 'required|string|max:255',
-            'answers.*.answer' => 'required|string',
-            'answers.*.question_type' => ['required', 'integer', Rule::in(QuestionTypeAPI::values())],
+//            'answers.*.question_id' => 'required|string|max:255',
+//            'answers.*.answer' => 'required|string',
+//            'answers.*.question_type' => ['required', 'integer', Rule::in(QuestionTypeAPI::values())],
         ];
     }
 }

@@ -10,6 +10,7 @@ use App\Services\API\ExamSessionService;
 use App\Services\API\SkillAnswerService;
 use App\Services\API\SkillService;
 use App\Services\API\SkillSessionService;
+use Illuminate\Support\Facades\DB;
 use Symfony\Component\HttpKernel\Exception\HttpException;
 
 class SkillAnswerController extends Controller
@@ -21,6 +22,9 @@ class SkillAnswerController extends Controller
         public SkillService $skillService,
     ) {}
 
+    /**
+     * @throws \Throwable
+     */
     public function submitAnswer(SubmitAnswerAPIRequest $request)
     {
         $userId = auth()->id();
@@ -29,23 +33,42 @@ class SkillAnswerController extends Controller
         $examSession = $this->examSessionService->getExamSessionFromId($skillSession->exam_session_id);
 
         if ($examSession->user_id != $userId) {
-            throw new HttpException(403, 'The session not allowed to submit answers.');
+//            throw new HttpException(403, 'The session not allowed to submit answers.');
         }
 
         $skill = $this->skillService->getSkill($skillSession->skill_id);
         if ($skill->exam_id != $examSession->exam_id) {
-            throw new HttpException(403, 'The session not allowed to submit answers.');
+//            throw new HttpException(403, 'The session not allowed to submit answers.');
         }
+
+        $answerPayload = $this->skillAnswerService->validateAnswerPayload($request);
 
         //TODO: refactor speaking skill
         if (in_array($skill->type, [SkillType::LISTENING, SkillType::READING])) {
             $skillQuestions = $this->skillService->getAllListenOrReadingSkillQuestionsAndAnswers($skill);
 
-            $this->skillAnswerService->storeAnswerAndGetResult($request, $skillQuestions);
+            $compareAnswers = $this->skillAnswerService->storeAnswerAndGetResult($answerPayload, $skillQuestions);
+
+            try {
+                DB::beginTransaction();
+                $this->skillAnswerService->storeAnswerAfterCompare($compareAnswers, $skillSession->id);
+
+                $this->skillSessionService->removeToken($skillSession);
+                DB::commit();
+            } catch (\Throwable $exception) {
+                DB::rollBack();
+
+                throw $exception;
+            }
+
+            $result = $this->skillAnswerService->buildResultScoreResponse($compareAnswers);
         } else {
+            //TODO::
             $skillQuestions = $this->skillService->getAllWritingSkillQuestionsAndAnswers($skill);
 
-            $this->skillAnswerService->storeAnswer($request, $skillQuestions);
+            $result = $this->skillAnswerService->storeAnswer($request, $skillQuestions);
         }
+
+        return ResponseApi::success('', $result);
     }
 }
