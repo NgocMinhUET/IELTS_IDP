@@ -2,6 +2,7 @@
 
 namespace Database\Seeders;
 
+use App\Enum\UserRole;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
@@ -21,7 +22,8 @@ class AdminsTableSeeder extends Seeder
             [
                 'name' => 'Admin',
                 'email' => 'admin@gmail.com',
-                'password' => Hash::make('KxLQ5v7'),
+                'password' => Hash::make('123456789'),
+                'role' => UserRole::ADMIN->value,
             ]
         ];
         DB::table('admins')->insert($data);

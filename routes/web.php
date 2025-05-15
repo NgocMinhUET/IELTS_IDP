@@ -29,7 +29,7 @@ use App\Http\Controllers\V1\Auth\ForgotPasswordController;
 */
 
 Route::get('/', function () {
-    return view('welcome');
+    return redirect()->route('login');
 });
 Route::get('/contact', function () {
     return view('contact');
