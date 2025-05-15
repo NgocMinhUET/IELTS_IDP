@@ -19,7 +19,7 @@ class Skill extends Model
         'type' => SkillType::class
     ];
 
-    protected $with = ['parts'];
+    protected $with = ['parts', 'exam'];
 
     protected $appends = [
         'code',

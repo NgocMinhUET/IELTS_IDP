@@ -9,6 +9,15 @@
                 <div class="mb-3">
                     <input type="text" class="form-control" id="exam-search" placeholder="Search title ...">
                 </div>
+
+                <!-- Select All Checkbox -->
+                <div class="form-check mb-2">
+                    <input class="form-check-input" type="checkbox" value="" id="select-all-checkbox">
+                    <label class="form-check-label fw-semibold" for="select-all-checkbox">
+                        Select All
+                    </label>
+                </div>
+
                 <div class="list-group" id="exam-list">
                     @foreach($exams as $exam)
                         <label class="list-group-item d-flex align-items-center">
@@ -29,21 +38,48 @@
 </div>
 
 <script>
-    // find by title
-    document.getElementById('exam-search').addEventListener('input', function () {
+    const searchInput = document.getElementById('exam-search');
+    const selectAllCheckbox = document.getElementById('select-all-checkbox');
+    const examListItems = document.querySelectorAll('#exam-list .list-group-item');
+    const placeholder = document.getElementById('exam-placeholder');
+
+    // Search filter
+    searchInput.addEventListener('input', function () {
         const keyword = this.value.trim().toLowerCase();
         let hasResult = false;
-        console.log(keyword)
 
-        document.querySelectorAll('#exam-list .list-group-item').forEach(item => {
+        examListItems.forEach(item => {
             const text = item.querySelector('.exam-title').textContent.toLowerCase();
-            console.log(text)
             const isVisible = text.includes(keyword);
-            // item.style.display = isVisible ? '' : 'none';
             item.classList.toggle('d-none', !isVisible);
             if (isVisible) hasResult = true;
         });
 
-        document.getElementById('exam-placeholder').classList.toggle('d-none', hasResult);
+        placeholder.classList.toggle('d-none', hasResult);
+        updateSelectAllCheckbox();
     });
+
+    // Toggle Select All
+    selectAllCheckbox.addEventListener('change', function () {
+        const shouldCheck = this.checked;
+        document.querySelectorAll('.exam-checkbox').forEach(cb => {
+            if (!cb.closest('.d-none')) cb.checked = shouldCheck;
+        });
+    });
+
+    // Update Select All when individual checkboxes change
+    document.querySelectorAll('.exam-checkbox').forEach(cb => {
+        cb.addEventListener('change', updateSelectAllCheckbox);
+    });
+
+    function updateSelectAllCheckbox() {
+        const visibleCheckboxes = Array.from(document.querySelectorAll('.exam-checkbox'))
+            .filter(cb => !cb.closest('.d-none'));
+
+        const allChecked = visibleCheckboxes.length > 0 &&
+            visibleCheckboxes.every(cb => cb.checked);
+
+        selectAllCheckbox.checked = allChecked;
+        selectAllCheckbox.indeterminate = !allChecked && visibleCheckboxes.some(cb => cb.checked);
+    }
 </script>

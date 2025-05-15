@@ -28,6 +28,11 @@ class StudentService extends BaseService
         return $this->userRepository->find($id);
     }
 
+    public function getPickupStudents()
+    {
+        return $this->userRepository->all();
+    }
+
     public function storeStudent($studentPayload)
     {
         $studentPayload['password'] = Hash::make($studentPayload['password']);

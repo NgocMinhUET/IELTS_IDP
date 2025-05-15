@@ -5,6 +5,7 @@ namespace App\Http\Controllers\CMS;
 use App\Http\Requests\Test\StoreTestRequest;
 use App\Http\Requests\Test\UpdateApproveStatusRequest;
 use App\Services\CMS\ExamService;
+use App\Services\CMS\StudentService;
 use App\Services\CMS\TestService;
 use Illuminate\Support\Facades\DB;
 
@@ -15,6 +16,7 @@ class TestController extends CMSController
     public function __construct(
         public TestService $testService,
         public ExamService $examService,
+        public StudentService $studentService,
     ) {
         $this->rootBreadcrumbs['Test'] = route('admin.tests.index');
     }
@@ -37,8 +39,9 @@ class TestController extends CMSController
         ]);
 
         $allExams = $this->examService->getPickupExams();
+        $allStudents = $this->studentService->getPickupStudents();
 
-        return view('tests.create', compact('allExams'));
+        return view('tests.create', compact('allExams', 'allStudents'));
     }
 
     public function store(StoreTestRequest $request)
@@ -47,7 +50,7 @@ class TestController extends CMSController
         try {
             $request->merge(['exam_id' => ($request->exams)[0]]);
 
-            $test = $this->testService->storeTest($request->only(['desc', 'start_time', 'end_time', 'exam_id', 'exams']));
+            $test = $this->testService->storeTest($request->only(['desc', 'start_time', 'end_time', 'exam_id', 'exams', 'students']));
 
             DB::commit();
 
@@ -69,8 +72,9 @@ class TestController extends CMSController
         $test = $this->testService->getTest($id);
 
         $allExams = $this->examService->getPickupExams();
+        $allStudents = $this->studentService->getPickupStudents();
 
-        return view('tests.create', compact('test', 'allExams'));
+        return view('tests.create', compact('test', 'allExams', 'allStudents'));
     }
 
     public function update(StoreTestRequest $request, $id)
@@ -79,7 +83,7 @@ class TestController extends CMSController
         try {
             $request->merge(['exam_id' => ($request->exams)[0]]);
 
-            $test = $this->testService->updateTest($id, $request->only(['desc', 'start_time', 'end_time', 'exam_id', 'exams']));
+            $test = $this->testService->updateTest($id, $request->only(['desc', 'start_time', 'end_time', 'exam_id', 'exams', 'students']));
 
             DB::commit();
 

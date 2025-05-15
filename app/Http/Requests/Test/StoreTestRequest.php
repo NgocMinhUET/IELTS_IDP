@@ -19,6 +19,8 @@ class StoreTestRequest extends FormRequest
             'end_time' => 'nullable|date|date_format:Y-m-d H:i|after:start_time',
             'exams' => 'required|array',
             'exams.*' => 'integer|exists:exams,id',
+            'students' => 'required|array',
+            'students.*' => 'integer|exists:users,id',
         ];
     }
 }

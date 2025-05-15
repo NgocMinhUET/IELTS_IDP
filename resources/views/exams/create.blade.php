@@ -38,6 +38,14 @@
         }
     @endphp
 
+    @if($isUpdate && $exam->approve_status == \App\Enum\Models\ApproveStatus::APPROVED)
+        <div class="alert alert-subtle-warning alert-dismissible fade show" role="alert">
+            The exam has been approved by the admin. Editing it will change its status to pending for re-approval.
+            Please proceed only if you truly believe the changes are necessary.
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+    @endif
+
     <div class="mt-4">
         <div class="row g-4">
             <div class="col-12 col-xl-12 order-1 order-xl-0">

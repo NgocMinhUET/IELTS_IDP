@@ -18,18 +18,18 @@ class TestService extends BaseService
 
     public function getPaginateTests()
     {
-        return $this->testRepository->with('exam')->paginate(10);
+        return $this->testRepository->getPaginateTests();
     }
 
     public function getTest($id)
     {
-        return $this->testRepository->with(['exam', 'exams'])->find($id);
+        return $this->testRepository->with(['exam', 'exams', 'users'])->find($id);
     }
 
     public function storeTest($payload)
     {
         $examIds = $payload['exams'];
-        $userIds = [1]; // TODO: refactor this code
+        $userIds = $payload['students'];
         $payload['created_by'] = auth()->id();
 
         $test = $this->testRepository->create($payload);
@@ -43,7 +43,7 @@ class TestService extends BaseService
     public function updateTest($id, $payload)
     {
         $examIds = $payload['exams'];
-        $userIds = [1];
+        $userIds = $payload['students'];
 
         $this->syncExamToTest($id, $examIds);
         $this->syncUserToTest($id, $userIds);

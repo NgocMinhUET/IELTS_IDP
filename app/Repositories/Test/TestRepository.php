@@ -2,6 +2,7 @@
 
 namespace App\Repositories\Test;
 
+use App\Enum\Models\ApproveStatus;
 use App\Models\Test;
 use App\Repositories\BaseRepository;
 
@@ -15,6 +16,22 @@ class TestRepository extends BaseRepository implements TestInterface
     public function model(): string
     {
         return Test::class;
+    }
+
+    public function getPaginateTests()
+    {
+        $query = $this->model->with('createdBy');
+
+        $user = auth()->user();
+
+        if ($user->isTeacher()) {
+            $query->where('approve_status', ApproveStatus::APPROVED)
+                ->orWhere(function ($query) use ($user) {
+                    $query->where('created_by', $user->id);
+                });
+        }
+
+        return $query->paginate(10);
     }
 
     public function getAssignedToUserTests($userId)
