@@ -5,11 +5,8 @@ namespace App\Http\Controllers\CMS;
 use App\Exceptions\CMS\ImportStudentException;
 use App\Http\Requests\Student\ImportStudentRequest;
 use App\Http\Requests\Student\StoreStudentRequest;
-use App\Models\User;
 use App\Services\CMS\StudentService;
-use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Hash;
-use Illuminate\Support\Facades\Validator;
+use Illuminate\Support\Facades\Log;
 use PhpOffice\PhpSpreadsheet\IOFactory;
 use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
 
@@ -95,6 +92,11 @@ class StudentController extends CMSController
         return view('students.import');
     }
 
+    public function downloadImportTemplate(): \Symfony\Component\HttpFoundation\BinaryFileResponse
+    {
+        return response()->download(storage_path('templates/import-template.xlsx'));
+    }
+
 
     public function executeImport(ImportStudentRequest $request)
     {
@@ -113,6 +115,7 @@ class StudentController extends CMSController
             return redirect()->back()
                 ->with('import_errors', $exception->getErrors());
         } catch (\Throwable $exception) {
+            Log::error($exception->getMessage());
             abort(500);
         }
     }

@@ -132,6 +132,8 @@ Route::group(['middleware' => ['auth:admin']], function () {
             Route::get('/create', [StudentController::class, 'create'])->name('create');
             Route::post('/store', [StudentController::class, 'store'])->name('store');
             Route::get('/import', [StudentController::class, 'import'])->name('import');
+            Route::get('/import/download-template', [StudentController::class, 'downloadImportTemplate'])
+                ->name('import.download-template');
             Route::post('/import', [StudentController::class, 'executeImport'])->name('import.execute');
             Route::get('/{id}', [StudentController::class, 'detail'])->name('detail');
             Route::put('/{id}', [StudentController::class, 'update'])->name('update');

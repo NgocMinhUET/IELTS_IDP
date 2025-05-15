@@ -18,8 +18,8 @@
                                 <div class="col-12 col-md">
                                     <h4 class="text-body">
                                         Import Student
-                                        <a href="{{ asset('storage/templates/import-template.xlsx') }}"
-                                           class="btn btn-sm btn-outline-secondary float-end" download>
+                                        <a href="{{ route('admin.students.import.download-template') }}"
+                                           class="btn btn-sm btn-outline-secondary float-end">
                                             <i class="fas fa-download"></i> Download Template
                                         </a>
                                     </h4>
