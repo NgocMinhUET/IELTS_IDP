@@ -20,7 +20,7 @@ class ExamRepository extends BaseRepository implements ExamInterface
 
     public function getPaginateExams()
     {
-        $query = $this->model->with('createdBy');
+        $query = $this->model->with('createdBy')->withCount('tests');
 
         $user = auth()->user();
 
@@ -36,7 +36,7 @@ class ExamRepository extends BaseRepository implements ExamInterface
 
     public function getPickupExams()
     {
-        return $this->model->select('id', 'title')
+        return $this->model->select('id', 'title')->with('skills:id,exam_id,type')
             ->isApproved()->get();
     }
 

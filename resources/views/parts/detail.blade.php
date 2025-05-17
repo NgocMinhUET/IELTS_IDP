@@ -10,7 +10,14 @@
     }
 @endsection
 
+@php
+    $notAssignTest = !$part->skill->exam->tests_count;
+@endphp
+
 @section('contents')
+    @if(!$notAssignTest)
+        <x-has_assigned_tests_alert></x-has_assigned_tests_alert>
+    @endif
     <div class="mt-4">
         <div class="row g-4">
             <div class="col-12 col-xl-10 order-1 order-xl-0">
@@ -22,8 +29,13 @@
                             <div class="mb-3">
                                 <label class="form-label mb-1" for="skill">Part Description</label>
                                 <div class="d-flex p-2">
-                                    <input type="text" class="form-control me-2" name="desc" placeholder="Enter part desc" value="{{ $part->desc }}">
+                                    <input type="text" class="form-control pt-3 pb-3 me-2" name="desc"
+                                           placeholder="Enter part desc" value="{{ $part->desc }}"
+                                            {{ $notAssignTest ? '' : 'disabled' }}
+                                    >
+                                    @if($notAssignTest)
                                     <button type="submit" class="btn btn-primary pt-3 pb-3">Save</button>
+                                    @endif
                                 </div>
                                 @if($errors->has('desc'))
                                     <div class="invalid-feedback p-2 mt-0 d-block">{{ $errors->first('desc') }}</div>
@@ -263,10 +275,12 @@
                         @endif
                     @endforeach
 
+                    @if($notAssignTest)
                     <div class="accordion-item border-bottom-0">
                         @component('components.question_types', ['part' => $part])
                         @endcomponent
                     </div>
+                    @endif
                 </div>
             </div>
 

@@ -68,5 +68,6 @@ class Kernel extends HttpKernel
         'cors' => \App\Http\Middleware\Cors::class,
         'role.admin' => \App\Http\Middleware\RoleAdmin::class,
         'role.teacher' => \App\Http\Middleware\RoleTeacher::class,
+        'exam.prevent-update' => \App\Http\Middleware\PreventUpdateIfAssignedTests::class,
     ];
 }

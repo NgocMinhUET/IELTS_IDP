@@ -4,7 +4,14 @@
     <link href="{{ asset('build/vendors/dropzone/dropzone.css') }}" rel="stylesheet" />
 @endsection
 
+@php
+    $notAssignTest = !$skill->exam->tests_count;
+@endphp
+
 @section('contents')
+    @if(!$notAssignTest)
+        <x-has_assigned_tests_alert></x-has_assigned_tests_alert>
+    @endif
     <div class="mt-4">
         <div class="row g-4">
             <div class="col-12 col-xl-12 order-1 order-xl-0">
@@ -59,12 +66,18 @@
                                             @if ($audioUrl)
                                                 Change Audio File
                                             @else
+                                                @if($notAssignTest)
                                                 Upload Audio File <span class="text-danger">*</span>
+                                                @else
+                                                No Audio File
+                                                @endif
                                             @endif
                                         </label>
                                         @if($errors->has('audio'))
                                             <div class="invalid-feedback mt-0 d-block">{{ $errors->first('audio') }}</div>
                                         @endif
+
+                                        @if($notAssignTest)
                                         <div class="dropzone dropzone-multiple p-0" id="dropzone"
                                              data-dropzone="data-dropzone"
                                              data-options='{"autoProcessQueue":false,"maxFiles":1,"acceptedFiles":"audio/mpeg,audio/wav"}'
@@ -100,6 +113,7 @@
                                                 </div>
                                             </div>
                                         </div>
+                                        @endif
                                     </div>
                                     @endif
 
@@ -140,10 +154,12 @@
                                             <div class="invalid-feedback mt-0 d-block">{{ $errors->first('parts') }}</div>
                                         @endif
 
+                                        @if($notAssignTest)
                                         <div class="mb-2 d-flex">
                                             <input type="text" class="form-control me-2" id="new-part-title" placeholder="Enter new part title">
                                             <button type="button" class="btn btn-primary" id="add-part">Add Part</button>
                                         </div>
+                                        @endif
 
                                         <div class="row g-4" id="parts-list">
                                             @foreach ($skill->parts as $index => $part)
@@ -159,7 +175,9 @@
                                                                             {{ $part->title }}
                                                                         </a>
                                                                     </strong>
+                                                                    @if($notAssignTest)
                                                                     <button class="btn ms-2 p-0 remove-part" type="button" data-bs-dismiss="toast" aria-label="Close"><span class="uil uil-times fs-7"></span></button>
+                                                                    @endif
                                                                 </div>
                                                             </div>
                                                         </div>
@@ -169,9 +187,11 @@
                                         </div>
                                     </div>
 
-                                    <div class="col-12">
-                                        <button class="btn btn-primary" type="submit">Submit form</button>
-                                    </div>
+                                    @if($notAssignTest)
+                                        <div class="col-12">
+                                            <button class="btn btn-primary" type="submit">Submit form</button>
+                                        </div>
+                                    @endif
                                 </form>
                             </div>
                         </div>

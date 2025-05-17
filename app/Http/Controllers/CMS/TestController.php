@@ -8,6 +8,7 @@ use App\Services\CMS\ExamService;
 use App\Services\CMS\StudentService;
 use App\Services\CMS\TestService;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
 
 class TestController extends CMSController
 {
@@ -92,6 +93,7 @@ class TestController extends CMSController
                 ->with('success', 'Test updated.');
         } catch (\Throwable $th) {
             DB::rollBack();
+            Log::error($th->getMessage());
             abort(500);
         }
     }

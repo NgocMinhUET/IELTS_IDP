@@ -42,10 +42,11 @@
                                     <table class="table table-sm fs-9 mb-0">
                                         <thead>
                                         <tr>
-                                            <th class="align-middle" scope="col" style="width:20%; min-width:200px;">TITLE</th>
-                                            <th class="align-middle pe-3" scope="col" style="width:20%; min-width:200px;">DESCRIPTION</th>
-                                            <th class="align-middle" scope="col" style="width:20%;">SKILLS</th>
-                                            <th class="align-middle" scope="col" style="width:20%;">CREATED BY</th>
+                                            <th class="align-middle" scope="col" style="width:18%; min-width:200px;">TITLE</th>
+                                            <th class="align-middle pe-3" scope="col" style="width:18%; min-width:200px;">DESCRIPTION</th>
+                                            <th class="align-middle" scope="col" style="width:18%;">SKILLS</th>
+                                            <th class="align-middle" scope="col" style="width:18%;">CREATED BY</th>
+                                            <th class="align-middle" scope="col" style="width:8%;">TEST ASSIGNED</th>
                                             <th class="align-middle" scope="col" style="width:10%;">STATUS</th>
                                             <th class="sort align-middle text-end" scope="col" data-sort="created_at" style="width:10%; min-width:200px;">CREATED AT</th>
                                         </tr>
@@ -68,7 +69,7 @@
                                                             $skillList .= $skill->type->name . ' ';
                                                         }
                                                     @endphp
-                                                    {{ $skillList }}
+                                                    <h6>{{ $skillList }}</h6>
                                                 </td>
                                                 <td class="align-middle white-space-nowrap">
                                                     @php
@@ -80,19 +81,25 @@
                                                     @endphp
                                                     <h6>{{ $createdByTxt  }}</h6>
                                                 </td>
-
+                                                <td class="align-middle white-space-nowrap">
+                                                    <h6>{{ $exam->tests_count }}</h6>
+                                                </td>
                                                 @admin
                                                 <td class="align-middle white-space-nowrap">
-                                                    <select class="form-select form-select-sm status-select"
-                                                            data-id="{{ $exam->id }}"
-                                                            data-url="{{ route('admin.exams.status', $exam->id) }}">
-                                                        @foreach(\App\Enum\Models\ApproveStatus::cases() as $status)
-                                                            <option value="{{ $status->value }}" {{ $exam->approve_status == $status ? 'selected' : '' }}>
-                                                                {{ ucfirst($status->label()) }}
-                                                            </option>
-                                                        @endforeach
-                                                    </select>
-                                                    <div class="spinner-border spinner-border-sm text-primary d-none ms-2" role="status"></div>
+                                                    @if(!$exam->tests_count)
+                                                        <select class="form-select form-select-sm status-select"
+                                                                data-id="{{ $exam->id }}"
+                                                                data-url="{{ route('admin.exams.status', $exam->id) }}">
+                                                            @foreach(\App\Enum\Models\ApproveStatus::cases() as $status)
+                                                                <option value="{{ $status->value }}" {{ $exam->approve_status == $status ? 'selected' : '' }}>
+                                                                    {{ ucfirst($status->label()) }}
+                                                                </option>
+                                                            @endforeach
+                                                        </select>
+                                                        <div class="spinner-border spinner-border-sm text-primary d-none ms-2" role="status"></div>
+                                                    @else
+                                                        <h6 class="{{ $exam->approve_status->textColor() }}">{{ $exam->approve_status->label() }}</h6>
+                                                    @endif
                                                 </td>
                                                 @endadmin
 

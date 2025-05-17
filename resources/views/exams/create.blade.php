@@ -23,6 +23,9 @@
 
         $skillTypeOptions = \App\Enum\Models\SkillType::options();
         $oldSkillTypes = [];
+
+        $hasAssignedTest = false;
+
         if ($isUpdate) {
             $exam->skills->each(function ($skill) use (&$oldSkillTypes) {
                $oldSkillTypes[$skill->type->value] = $skill->id;
@@ -35,10 +38,14 @@
 
                 return $type;
             }, $skillTypeOptions);
+
+            $hasAssignedTest = !!$exam->tests_count;
         }
     @endphp
 
-    @if($isUpdate && $exam->approve_status == \App\Enum\Models\ApproveStatus::APPROVED)
+    @if($hasAssignedTest)
+        <x-has_assigned_tests_alert></x-has_assigned_tests_alert>
+    @elseif($isUpdate && $exam->approve_status == \App\Enum\Models\ApproveStatus::APPROVED)
         <div class="alert alert-subtle-warning alert-dismissible fade show" role="alert">
             The exam has been approved by the admin. Editing it will change its status to pending for re-approval.
             Please proceed only if you truly believe the changes are necessary.
@@ -123,6 +130,7 @@
                                                                            class="skill-input"
                                                                            {{ $isSelectedOption ? '' : 'disabled' }}
                                                                     >
+                                                                    @if (!$hasAssignedTest)
                                                                     <button class="btn ms-2 p-0 remove-skill {{ $isSelectedOption ? '' : 'd-none' }}"
                                                                             type="button" aria-label="Remove"
                                                                     >
@@ -133,6 +141,7 @@
                                                                     >
                                                                         <span class="opacity-100 uil uil-plus fs-7"></span>
                                                                     </button>
+                                                                    @endif
                                                                 </div>
                                                             </div>
                                                         </div>
@@ -142,9 +151,11 @@
                                         </div>
                                     </div>
 
-                                    <div class="col-12">
-                                        <button class="btn btn-primary" type="submit">Submit form</button>
-                                    </div>
+                                    @if(!$isUpdate || !$hasAssignedTest)
+                                        <div class="col-12">
+                                            <button class="btn btn-primary" type="submit">Submit form</button>
+                                        </div>
+                                    @endif
                                 </form>
                             </div>
                         </div>

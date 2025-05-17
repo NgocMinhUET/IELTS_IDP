@@ -20,10 +20,18 @@
 
                 <div class="list-group" id="exam-list">
                     @foreach($exams as $exam)
+                        @php
+                            $skills = $exam->skills;
+                            $skillTxt = ' ';
+
+                            foreach ($skills as $skill) {
+                                $skillTxt .= $skill->type->label() . ' ';
+                            }
+                        @endphp
                         <label class="list-group-item d-flex align-items-center">
                             <input class="form-check-input me-2 exam-checkbox" type="checkbox"
                                    value="{{ $exam->id }}" data-name="{{ $exam->title }}">
-                            <span class="exam-title">{{ $exam->title }}</span>
+                            <span class="exam-title">{{ $exam->title }} ({{ $skillTxt }})</span>
                         </label>
                     @endforeach
                 </div>

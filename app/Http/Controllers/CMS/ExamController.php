@@ -85,7 +85,7 @@ class ExamController extends CMSController
                 ->with('success', 'Update exam success');
         } catch (\Throwable $th) {
             DB::rollBack();
-            dd($th);
+            abort(500);
         }
     }
 

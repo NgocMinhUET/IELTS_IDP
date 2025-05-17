@@ -43,7 +43,7 @@
                                         <thead>
                                         <tr>
                                             <th class="align-middle" scope="col" style="width:20%; min-width:200px;">DESCRIPTION</th>
-                                            <th class="align-middle pe-3" scope="col" style="width:20%; min-width:200px;">EXAM</th>
+                                            <th class="align-middle pe-3" scope="col" style="width:20%; min-width:200px;">EXAMS</th>
                                             <th class="align-middle" scope="col" style="width:20%;">TIME</th>
                                             <th class="align-middle" scope="col" style="width:20%;">CREATED BY</th>
                                             <th class="align-middle" scope="col" style="width:10%;">STATUS</th>
@@ -60,7 +60,7 @@
                                                     </a>
                                                 </td>
                                                 <td class="align-middle white-space-nowrap">
-                                                    <h6>{{ $test->exam->title }}</h6>
+                                                    <h6>{{ $test->exams_count }}</h6>
                                                 </td>
                                                 <td class="align-middle white-space-nowrap">
                                                     {{ $test->start_time }} ~ {{ $test->end_time }}

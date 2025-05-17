@@ -17,6 +17,8 @@ class Exam extends Model
         'approve_status' => ApproveStatus::class,
     ];
 
+    protected $withCount = ['tests'];
+
     public function skills(): \Illuminate\Database\Eloquent\Relations\HasMany
     {
         return $this->hasMany(Skill::class, 'exam_id');

@@ -20,7 +20,7 @@ class TestRepository extends BaseRepository implements TestInterface
 
     public function getPaginateTests()
     {
-        $query = $this->model->with('createdBy');
+        $query = $this->model->with('createdBy')->withCount('exams');
 
         $user = auth()->user();
 

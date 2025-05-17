@@ -73,48 +73,56 @@ Route::group(['middleware' => ['auth:admin']], function () {
                 ->middleware('role.admin')
                 ->name('status');
             Route::get('/{id}', [ExamController::class, 'detail'])->name('detail');
-            Route::put('/{id}', [ExamController::class, 'update'])->name('update');
+            Route::put('/{id}', [ExamController::class, 'update'])
+                ->middleware('exam.prevent-update')
+                ->name('update');
         });
 
         Route::group(['prefix' => 'skills', 'as' => 'skills.'], function () {
             Route::get('/{id}', [SkillController::class, 'detail'])->name('detail');
-            Route::put('/{id}', [SkillController::class, 'update'])->name('update');
+            Route::put('/{id}', [SkillController::class, 'update'])
+                ->middleware('exam.prevent-update')
+                ->name('update');
         });
 
         Route::group(['prefix' => 'parts', 'as' => 'parts.'], function () {
             Route::group(['prefix' => '{id}'], function () {
                 Route::get('/', [PartController::class, 'detail'])->name('detail');
-                Route::put('/', [PartController::class, 'update'])->name('update');
-                Route::group(['prefix' => 'questions', 'as' => 'questions.'], function () {
-                    Route::get('/create', [QuestionController::class, 'create'])->name('create');
-                    Route::post('/store', [QuestionController::class, 'store'])->name('store');
-                    Route::get('/{questionId}', [QuestionController::class, 'detail'])->name('detail');
-                    Route::put('/{questionId}', [QuestionController::class, 'update'])->name('update');
-                });
+                Route::put('/', [PartController::class, 'update'])
+                    ->middleware('exam.prevent-update')
+                    ->name('update');
+                Route::group(['middleware' => ['exam.prevent-update']], function () {
+                    Route::group(['prefix' => 'questions', 'as' => 'questions.'], function () {
+                        Route::get('/create', [QuestionController::class, 'create'])->name('create');
+                        Route::post('/store', [QuestionController::class, 'store'])->name('store');
+                        Route::get('/{questionId}', [QuestionController::class, 'detail'])->name('detail');
+                        Route::put('/{questionId}', [QuestionController::class, 'update'])->name('update');
+                    });
 
-                Route::group(['prefix' => 'fic-questions', 'as' => 'fic-questions.'], function () {
-                    Route::post('/store', [FillInContentQuestionController::class, 'store'])->name('store');
-                    Route::get('/{questionId}', [FillInContentQuestionController::class, 'detail'])->name('detail');
-                    Route::put('/{questionId}', [FillInContentQuestionController::class, 'update'])->name('update');
-                });
+                    Route::group(['prefix' => 'fic-questions', 'as' => 'fic-questions.'], function () {
+                        Route::post('/store', [FillInContentQuestionController::class, 'store'])->name('store');
+                        Route::get('/{questionId}', [FillInContentQuestionController::class, 'detail'])->name('detail');
+                        Route::put('/{questionId}', [FillInContentQuestionController::class, 'update'])->name('update');
+                    });
 
-                Route::group(['prefix' => 'fii-questions', 'as' => 'fii-questions.'], function () {
-                    Route::post('/store', [FillInImageQuestionController::class, 'store'])->name('store');
-                    Route::get('/{questionId}', [FillInImageQuestionController::class, 'detail'])->name('detail');
-                    Route::put('/{questionId}', [FillInImageQuestionController::class, 'update'])->name('update');
-                });
+                    Route::group(['prefix' => 'fii-questions', 'as' => 'fii-questions.'], function () {
+                        Route::post('/store', [FillInImageQuestionController::class, 'store'])->name('store');
+                        Route::get('/{questionId}', [FillInImageQuestionController::class, 'detail'])->name('detail');
+                        Route::put('/{questionId}', [FillInImageQuestionController::class, 'update'])->name('update');
+                    });
 
-                Route::group(['prefix' => 'paragraphs', 'as' => 'paragraphs.'], function () {
-                    Route::get('/create', [ParagraphController::class, 'create'])->name('create');
-                    Route::post('/store', [ParagraphController::class, 'store'])->name('store');
-                    Route::get('/{paragraphId}', [ParagraphController::class, 'edit'])->name('edit');
-                    Route::put('/{paragraphId}', [ParagraphController::class, 'update'])->name('update');
-                });
+                    Route::group(['prefix' => 'paragraphs', 'as' => 'paragraphs.'], function () {
+                        Route::get('/create', [ParagraphController::class, 'create'])->name('create');
+                        Route::post('/store', [ParagraphController::class, 'store'])->name('store');
+                        Route::get('/{paragraphId}', [ParagraphController::class, 'edit'])->name('edit');
+                        Route::put('/{paragraphId}', [ParagraphController::class, 'update'])->name('update');
+                    });
 
-                Route::group(['prefix' => 'writing-questions', 'as' => 'writing-questions.'], function () {
-                    Route::post('/store', [WritingQuestionController::class, 'store'])->name('store');
-                    Route::get('/{questionId}', [WritingQuestionController::class, 'edit'])->name('edit');
-                    Route::put('/{questionId}', [WritingQuestionController::class, 'update'])->name('update');
+                    Route::group(['prefix' => 'writing-questions', 'as' => 'writing-questions.'], function () {
+                        Route::post('/store', [WritingQuestionController::class, 'store'])->name('store');
+                        Route::get('/{questionId}', [WritingQuestionController::class, 'edit'])->name('edit');
+                        Route::put('/{questionId}', [WritingQuestionController::class, 'update'])->name('update');
+                    });
                 });
             });
         });
