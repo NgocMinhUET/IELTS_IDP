@@ -47,7 +47,7 @@ class SkillAnswerController extends Controller
         if (in_array($skill->type, [SkillType::LISTENING, SkillType::READING])) {
             $skillQuestions = $this->skillService->getAllListenOrReadingSkillQuestionsAndAnswers($skill);
 
-            $compareAnswers = $this->skillAnswerService->storeAnswerAndGetResult($answerPayload, $skillQuestions);
+            $compareAnswers = $this->skillAnswerService->compareAnswer($answerPayload, $skillQuestions);
 
             $result = $this->skillAnswerService->buildResultScoreResponse($compareAnswers);
         } else {

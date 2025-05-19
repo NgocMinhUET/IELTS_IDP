@@ -54,4 +54,12 @@ class SkillSessionService
     {
         return $skillSession->update(['status' => SkillSessionStatus::SUBMITTED->value]);
     }
+
+    public function getSkillSessionFromExamSessionAndSkillId($examSessionId, $skillId)
+    {
+        return $this->skillSessionRepository->findWhere([
+            'exam_session_id' => $examSessionId,
+            'skill_id' => $skillId,
+        ])->first();
+    }
 }

@@ -34,28 +34,33 @@ class TestService
         ]);
         $examSessionToken = $examSession->generateEncryptedToken();
 
-        $skills = $this->skillRepository->findByField('exam_id', $exam->id);
-
         return [
             'exam_session_token' => $examSessionToken,
             'desc' => $test->desc ?? '',
             'start_time' => $test->start_time,
             'end_time' => $test->end_time,
-            'exam' => [
-                'title' => $exam->title,
-                'desc' => $exam->desc ?? '',
-                'id' => $exam->id,
-                'skills' => $skills->map(function ($skill) {
-                    return [
-                        'id' => $skill->id,
-                        'code' => $skill->code,
-                        'type' => $skill->type->value,
-                        'desc' => $skill->desc,
-                        'duration' => $skill->duration,
-                        'bonus_time' => $skill->bonus_time,
-                    ];
-                })
-            ]
+            'exam' => $this->buildExamResponse($exam)
+        ];
+    }
+
+    public function buildExamResponse($exam, $appendScore = false): array
+    {
+        $skills = $this->skillRepository->findByField('exam_id', $exam->id);
+
+        return [
+            'title' => $exam->title,
+            'desc' => $exam->desc ?? '',
+            'id' => $exam->id,
+            'skills' => $skills->map(function ($skill) {
+                return [
+                    'id' => $skill->id,
+                    'code' => $skill->code,
+                    'type' => $skill->type->value,
+                    'desc' => $skill->desc,
+                    'duration' => $skill->duration,
+                    'bonus_time' => $skill->bonus_time,
+                ];
+            })
         ];
     }
 
@@ -111,11 +116,23 @@ class TestService
 
             return [
                 'id' => $examSession->id,
-                'lastest_submit_at' => $examSession->updated_at->format('Y-m-d H:i:s'),
+                'last_submit_at' => $examSession->updated_at->format('Y-m-d H:i:s'),
                 'status' => $examSession->status,
                 'exam_id' => $exam->id,
                 'exam_title' => $exam->title,
                 'exam_desc' => $exam->desc ?? '',
+            ];
+        });
+    }
+
+    public function buildAnswersResponse($skillAnswers)
+    {
+        return $skillAnswers->map(function ($skillAnswer) {
+            return [
+                'question_id' => $skillAnswer->question_id,
+                'answer' => $skillAnswer->answer,
+                'answer_result' => $skillAnswer->answer_result,
+                'question_type' => $skillAnswer->question_type,
             ];
         });
     }

@@ -90,7 +90,7 @@ class ExamSessionService
         ]);
     }
 
-    public function getExamSessionOfHistoryTest($testId)
+    public function getListExamSessionOfHistoryTest($testId)
     {
         $userId = auth()->id();
 
@@ -101,5 +101,18 @@ class ExamSessionService
                 'user_id' => $userId,
                 'status' => ['status', 'IN', [ExamSessionStatus::COMPLETE, ExamSessionStatus::IN_COMPLETE]]
             ]);
+    }
+
+    public function getExamSessionOfHistoryTest($examSessionId, $testId)
+    {
+        $userId = auth()->id();
+
+        return $this->examSessionRepository->with('exam')
+            ->findWhere([
+                'id' => $examSessionId,
+                'test_id' => $testId,
+                'user_id' => $userId,
+                'status' => ['status', 'IN', [ExamSessionStatus::COMPLETE, ExamSessionStatus::IN_COMPLETE]]
+            ])->first();
     }
 }

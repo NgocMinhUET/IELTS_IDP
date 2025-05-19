@@ -2,13 +2,13 @@
 
 namespace App\Models\Traits;
 
-use Illuminate\Support\Str;
+use Vinkla\Hashids\Facades\Hashids;
 
 trait HasInputIdentify
 {
     public function getInputIdentifyAttribute(): string
     {
-        return self::INPUT_IDENTIFY_PREFIX .  Str::random(4) . $this->id . Str::random(4);
+        return self::INPUT_IDENTIFY_PREFIX .  Hashids::encode($this->id);
     }
     public static function formatId($id): string
     {
@@ -16,23 +16,17 @@ trait HasInputIdentify
             $id = 0;
         }
 
-        return self::INPUT_IDENTIFY_PREFIX .  Str::random(4) . $id . Str::random(4);
+        return self::INPUT_IDENTIFY_PREFIX .  Hashids::encode($id);
     }
 
     public static function toOriginId(string $formattedId): bool|int
     {
         $prefixLength = strlen(self::INPUT_IDENTIFY_PREFIX);
-        $randomLength = 4;
 
-        $start = $prefixLength + $randomLength;
-        $length = strlen($formattedId) - $start - $randomLength;
+        $hashPart = substr($formattedId, $prefixLength);
 
-        if ($length <= 0) {
-            return false;
-        }
+        $decoded = Hashids::decode($hashPart);
 
-        $originId = substr($formattedId, $start, $length);
-
-        return is_numeric($originId) ? (int) $originId : false;
+        return count($decoded) === 1 ? (int) $decoded[0] : false;
     }
 }

@@ -3,6 +3,7 @@
 namespace App\Services\API;
 
 use App\Enum\AnswerType;
+use App\Enum\Models\SkillType;
 use App\Enum\QuestionTypeAPI;
 use App\Models\Skill;
 use App\Repositories\BlankImageQuestion\BlankImageQuestionInterface;
@@ -72,7 +73,7 @@ class SkillService
         $writingQuestions = [];
         foreach ($questions as $question) {
             $tmp = [
-                'question_id' => $question->id,
+                'question_id' => $question->input_identify,
                 'question_model' => $question->getTable(),
                 'question_type' => $question->type,
             ];
@@ -98,7 +99,7 @@ class SkillService
         foreach ($choiceQuestions as $choiceQuestion) {
             foreach ($choiceQuestion->choiceSubQuestions as $choiceSubQuestion) {
                 $questionAndAnswer = [
-                    'question_id' => $choiceSubQuestion->id,
+                    'question_id' => $choiceSubQuestion->input_identify,
                     'question_model' => $choiceSubQuestion->getTable(),
                     'answer_id' => $choiceSubQuestion->choiceOptions->where('is_correct', true)
                         ->pluck('id')->toArray(),
@@ -137,5 +138,25 @@ class SkillService
         }
 
         return $questionAndAnswers;
+    }
+
+    public function buildPartQuestionsResponse(Skill $skill, $partQuestions): array
+    {
+        $response = [];
+
+        $response['skill_type'] = $skill->type->value;
+        $response['skill_label'] = $skill->type->name ?? '';
+        $response['skill_desc'] = $skill->desc ?? '';
+        $response['duration'] = $skill->duration;
+        $response['bonus_time'] = $skill->bonus_time;
+        $response['audio'] = '';
+        $response['parts'] = $partQuestions;
+
+        // get audio if skill is listening
+        if ($skill->type == SkillType::LISTENING) {
+            $response['audio'] = $skill->getFirstMediaUrl() ?? '';
+        }
+
+        return $response;
     }
 }

@@ -37,10 +37,10 @@ class SkillAnswerService
         foreach ($compareAnswers as $compareAnswer) {
             if (in_array($compareAnswer['question_type'], QuestionTypeAPI::getHasInputIdentifyQuestionType())) {
                 if ($compareAnswer['question_model'] == (new LBlankContentQuestion)->getTable()) {
-                    $compareAnswer['question_id'] = DB::table('l_blank_content_answers')->where('input_identify', $compareAnswer['question_id'])->first()->id;
+//                    $compareAnswer['question_id'] = DB::table('l_blank_content_answers')->where('input_identify', $compareAnswer['question_id'])->first()->id;
                     $compareAnswer['question_model'] = 'l_blank_content_answers';
                 } else {
-                    $compareAnswer['question_id'] = DB::table('blank_image_answers')->where('input_identify', $compareAnswer['question_id'])->first()->id;
+//                    $compareAnswer['question_id'] = DB::table('blank_image_answers')->where('input_identify', $compareAnswer['question_id'])->first()->id;
                     $compareAnswer['question_model'] = 'blank_image_answers';
                 }
             }
@@ -136,7 +136,7 @@ class SkillAnswerService
                 if (!$originalQuestionId) {
                     throw new HttpException(400, 'Invalid question id');
                 }
-                $answer['question_id'] = $originalQuestionId;
+//                $answer['question_id'] = $originalQuestionId;
             }
 
             $originalAnswerId = null;
@@ -191,5 +191,10 @@ class SkillAnswerService
         }
 
         return $answerResult;
+    }
+
+    public function getAllAnswerBySkillSession($skillSessionId)
+    {
+        return $this->skillAnswerRepository->findByField('skill_session_id', $skillSessionId);
     }
 }

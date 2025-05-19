@@ -75,20 +75,9 @@ class SkillController extends Controller
 
         DB::beginTransaction();
         try {
-            $response = [];
-            $response['skill_type'] = $skill->type->value;
-            $response['skill_label'] = $skill->type->name ?? '';
-            $response['skill_desc'] = $skill->desc ?? '';
-            $response['duration'] = $skill->duration;
-            $response['bonus_time'] = $skill->bonus_time;
-            $response['audio'] = '';
-            $parts = $this->partService->getQuestionsOfSkill($skill);
-            $response['parts'] = $parts;
+            $partQuestions = $this->partService->getQuestionsOfSkill($skill);
 
-            // get audio if skill is listening
-            if ($skill->type == SkillType::LISTENING) {
-                $response['audio'] = $skill->getFirstMediaUrl() ?? '';
-            }
+            $response = $this->skillService->buildPartQuestionsResponse($skill, $partQuestions);
 
             // store skill session
             $skillSession = $hasSkillSessionToken ? $skillSession : $this->skillSessionService->makeSkillSessionService($examSession->id, $skill);
