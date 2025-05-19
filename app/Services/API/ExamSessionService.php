@@ -37,7 +37,11 @@ class ExamSessionService
         ];
 
         if ($includeStatus) {
-            $findConditions['status'] = ['status', 'NOTIN', [ExamSessionStatus::IN_USE, ExamSessionStatus::CLOSE]];
+            $findConditions['status'] = ['status', 'NOTIN', [
+                ExamSessionStatus::IN_USE,
+                ExamSessionStatus::COMPLETE,
+                ExamSessionStatus::IN_COMPLETE,
+            ]];
         }
 
         $examSession = $this->examSessionRepository->findWhere($findConditions)->first();
@@ -71,11 +75,31 @@ class ExamSessionService
     }
 
 
-    //TODO: refactor
+    // when last skill submits, update exam session status to complete
+    public function updateExamSessionStatusAfterLastSkillSubmit(ExamSession $examSession): bool
+    {
+        $examSession->update([
+            'status' => ExamSessionStatus::COMPLETE,
+        ]);
+    }
+
     public function updateExamSessionStatusAfterSkillSubmit(ExamSession $examSession): bool
     {
         return $examSession->update([
-            'status' => ExamSessionStatus::END,
+            'status' => ExamSessionStatus::SKILL_SUBMITTED,
         ]);
+    }
+
+    public function getExamSessionOfHistoryTest($testId)
+    {
+        $userId = auth()->id();
+
+        return $this->examSessionRepository->with('exam')
+            ->orderBy('id', 'DESC')
+            ->findWhere([
+                'test_id' => $testId,
+                'user_id' => $userId,
+                'status' => ['status', 'IN', [ExamSessionStatus::COMPLETE, ExamSessionStatus::IN_COMPLETE]]
+            ]);
     }
 }

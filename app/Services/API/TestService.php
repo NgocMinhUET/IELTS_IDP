@@ -96,4 +96,27 @@ class TestService
 
         return $this->testRepository->getAssignedToUserTests($userId);
     }
+
+    public function getTestHistories()
+    {
+        $userId = auth()->id();
+
+        return $this->testRepository->getTestHistories($userId);
+    }
+
+    public function buildDetailTestHistoryResponse($examSessions)
+    {
+        return $examSessions->map(function ($examSession) {
+            $exam = $examSession->exam;
+
+            return [
+                'id' => $examSession->id,
+                'lastest_submit_at' => $examSession->updated_at->format('Y-m-d H:i:s'),
+                'status' => $examSession->status,
+                'exam_id' => $exam->id,
+                'exam_title' => $exam->title,
+                'exam_desc' => $exam->desc ?? '',
+            ];
+        });
+    }
 }

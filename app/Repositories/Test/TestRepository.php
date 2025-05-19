@@ -3,8 +3,10 @@
 namespace App\Repositories\Test;
 
 use App\Enum\Models\ApproveStatus;
+use App\Enum\Models\ExamSessionStatus;
 use App\Models\Test;
 use App\Repositories\BaseRepository;
+use Illuminate\Support\Facades\DB;
 
 class TestRepository extends BaseRepository implements TestInterface
 {
@@ -56,5 +58,27 @@ class TestRepository extends BaseRepository implements TestInterface
         return $this->getAssignedToUserTestsQuery($userId)
             ->where('id', $id)
             ->first();
+    }
+
+    public function getTestHistories($userId)
+    {
+        $examSessionStatus = [
+            ExamSessionStatus::COMPLETE->value,
+            ExamSessionStatus::IN_COMPLETE->value,
+        ];
+
+        return $this->model
+            ->select('id', 'desc', 'start_time', 'end_time')
+            ->whereIn('id', DB::table('exam_sessions')
+                ->select('test_id')
+                ->where('user_id', $userId)
+                ->whereIn('status', $examSessionStatus)
+                ->distinct()
+                ->pluck('test_id')
+                ->toArray()
+            )
+            ->orderByDesc('start_time')
+            ->orderByDesc('id')
+            ->get();
     }
 }

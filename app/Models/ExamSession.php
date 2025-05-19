@@ -17,4 +17,9 @@ class ExamSession extends Model
     protected $casts = [
         'status' => ExamSessionStatus::class,
     ];
+
+    public function exam(): \Illuminate\Database\Eloquent\Relations\BelongsTo
+    {
+        return $this->belongsTo(Exam::class, 'exam_id');
+    }
 }

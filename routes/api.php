@@ -52,6 +52,10 @@ Route::group(['middleware' => ['localization', 'cors']], function () {
             Route::group(['prefix' => 'tests'], function () {
                 Route::get('/', [TestController::class, 'getTests']);
                 Route::post('enroll', [TestController::class, 'enrollTest']);
+                Route::group(['prefix' => 'histories'], function () {
+                    Route::get('/', [TestController::class, 'getTestHistories']);
+                    Route::get('/{id}', [TestController::class, 'getDetailTestHistory']);
+                });
             });
             Route::get('/skills', [SkillController::class, 'getSkillForExam']);
             Route::get('/questions', [SkillController::class, 'getQuestions']);
