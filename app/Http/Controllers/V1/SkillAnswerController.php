@@ -63,7 +63,7 @@ class SkillAnswerController extends Controller
             $this->skillAnswerService->storeAnswerAfterCompare($compareAnswers, $skillSession->id);
 
             // remove skill session
-            $this->skillSessionService->removeToken($skillSession);
+            $this->skillSessionService->revokeSkillSessionToken($skillSession);
 
             //update exam session
             //TODO: refactor if this last skill

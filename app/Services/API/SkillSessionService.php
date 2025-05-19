@@ -50,8 +50,8 @@ class SkillSessionService
         return $session;
     }
 
-    public function removeToken(SkillSession $skillSession): bool
+    public function revokeSkillSessionToken(SkillSession $skillSession): bool
     {
-        return $skillSession->update(['status', SkillSessionStatus::SUBMITTED]);
+        return $skillSession->update(['status' => SkillSessionStatus::SUBMITTED->value]);
     }
 }
