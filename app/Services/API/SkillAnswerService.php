@@ -35,11 +35,13 @@ class SkillAnswerService
 
         //TODO: refactor this code
         foreach ($compareAnswers as $compareAnswer) {
-            if ($compareAnswer['question_type'] == QuestionTypeAPI::FILL_CONTENT->value || $compareAnswer['question_type'] == QuestionTypeAPI::FILL_IMAGE->value) {
+            if (in_array($compareAnswer['question_type'], QuestionTypeAPI::getHasInputIdentifyQuestionType())) {
                 if ($compareAnswer['question_model'] == (new LBlankContentQuestion)->getTable()) {
                     $compareAnswer['question_id'] = DB::table('l_blank_content_answers')->where('input_identify', $compareAnswer['question_id'])->first()->id;
+                    $compareAnswer['question_model'] = 'l_blank_content_answers';
                 } else {
                     $compareAnswer['question_id'] = DB::table('blank_image_answers')->where('input_identify', $compareAnswer['question_id'])->first()->id;
+                    $compareAnswer['question_model'] = 'blank_image_answers';
                 }
             }
             $insertData[] = [

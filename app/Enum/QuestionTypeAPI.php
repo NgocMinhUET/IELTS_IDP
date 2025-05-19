@@ -53,4 +53,14 @@ enum QuestionTypeAPI: int
     {
         return self::from($value)->toAnswerModel();
     }
+
+    public static function getHasInputIdentifyQuestionType(): array
+    {
+        return [
+            self::FILL_CONTENT->value,
+            self::DRAG_DROP_CONTENT->value,
+            self::FILL_IMAGE->value,
+            self::DRAG_DROP_IMAGE->value,
+        ];
+    }
 }
