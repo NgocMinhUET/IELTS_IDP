@@ -6,6 +6,7 @@ use App\Common\ResponseApi;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\ApiRequest;
 use App\Http\Requests\Test\EnrollTestAPIRequest;
+use App\Http\Requests\Test\ImmediateResultAPIRequest;
 use App\Services\API\ExamSessionService;
 use App\Services\API\PartService;
 use App\Services\API\SkillAnswerService;
@@ -77,25 +78,31 @@ class TestController extends Controller
 
     public function getSkillOfExamHistory($id, $sessionId)
     {
-        $examSession = $this->examSessionService->getExamSessionOfHistoryTest($sessionId, $id);
+        $testId = $id;
 
-        if (is_null($examSession)) {
-            throw new HttpException(403, 'No exam session found for this test history');
-        }
+        return $this->baseGetSkillOfExamHistory($testId, $sessionId);
+    }
+
+    public function baseGetSkillOfExamHistory($testId, $sessionId)
+    {
+        $examSession = $this->validateExamSessionTokenForGetHistory($sessionId, $testId);
 
         $exam = $examSession->exam;
 
-        return ResponseApi::success('', $this->testService->buildExamResponse($exam, true));
+        $skillSessions = $examSession->skillSessions ?? collect([]);
+
+        return ResponseApi::success('', $this->testService->buildExamResponse($exam, $skillSessions));
     }
 
     public function getAnswerHistory($id, $sessionId, $skillId)
     {
-        $examSession = $this->examSessionService->getExamSessionOfHistoryTest($sessionId, $id);
+        $examSession = $this->validateExamSessionTokenForGetHistory($sessionId, $id);
 
-        if (is_null($examSession)) {
-            throw new HttpException(403, 'No exam session found for this test history');
-        }
+        return $this->baseGetAnswerHistory($examSession, $skillId);
+    }
 
+    public function baseGetAnswerHistory($examSession, $skillId)
+    {
         $skills = $this->skillService->getSkillByExam($examSession->exam_id);
 
         $skill = $skills->where('id', $skillId)->first();
@@ -117,5 +124,45 @@ class TestController extends Controller
         $baseQuestions['answers'] = $skillAnswers;
 
         return ResponseApi::success('', $baseQuestions);
+    }
+
+    public function getImmediateSkillResultAfterCompleteTest(ImmediateResultAPIRequest $request)
+    {
+        $examSessionToken = $request->input('exam_session_token');
+
+        $examSession = $this->validateExamSessionTokenForImmediateHistory($examSessionToken);
+
+        return $this->baseGetSkillOfExamHistory($examSession->test_id, $examSession->id);
+    }
+
+    public function getImmediateSkillDetailAfterCompleteTest($skillId, ImmediateResultAPIRequest $request)
+    {
+        $examSessionToken = $request->input('exam_session_token');
+
+        $examSession = $this->validateExamSessionTokenForImmediateHistory($examSessionToken);
+
+        return $this->baseGetAnswerHistory($examSession, $skillId);
+    }
+
+    public function validateExamSessionTokenForGetHistory($sessionId, $testId)
+    {
+        $examSession = $this->examSessionService->getExamSessionOfHistoryTest($sessionId, $testId);
+
+        if (is_null($examSession)) {
+            throw new HttpException(403, 'No exam session found for this test history');
+        }
+
+        return $examSession;
+    }
+
+    public function validateExamSessionTokenForImmediateHistory($examSessionToken)
+    {
+        $examSession = $this->examSessionService->getExamSessionForImmediateHistoryFromToken($examSessionToken);
+
+        if (is_null($examSession)) {
+            throw new HttpException(403, 'No exam session found for this test history');
+        }
+
+        return $examSession;
     }
 }

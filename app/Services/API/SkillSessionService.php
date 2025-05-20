@@ -52,7 +52,12 @@ class SkillSessionService
 
     public function revokeSkillSessionToken(SkillSession $skillSession): bool
     {
-        return $skillSession->update(['status' => SkillSessionStatus::SUBMITTED->value]);
+        return $this->updateSkillSessionToken($skillSession, ['status' => SkillSessionStatus::SUBMITTED->value]);
+    }
+
+    public function updateSkillSessionToken(SkillSession $skillSession, $attributes): bool
+    {
+        return $skillSession->update($attributes);
     }
 
     public function getSkillSessionFromExamSessionAndSkillId($examSessionId, $skillId)

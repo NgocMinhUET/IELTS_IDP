@@ -43,7 +43,7 @@ class TestService
         ];
     }
 
-    public function buildExamResponse($exam, $appendScore = false): array
+    public function buildExamResponse($exam, $skillSessions = null): array
     {
         $skills = $this->skillRepository->findByField('exam_id', $exam->id);
 
@@ -51,15 +51,30 @@ class TestService
             'title' => $exam->title,
             'desc' => $exam->desc ?? '',
             'id' => $exam->id,
-            'skills' => $skills->map(function ($skill) {
-                return [
+            'skills' => $skills->map(function ($skill) use ($skillSessions) {
+                $baseResponse = [
                     'id' => $skill->id,
                     'code' => $skill->code,
                     'type' => $skill->type->value,
                     'desc' => $skill->desc,
                     'duration' => $skill->duration,
-                    'bonus_time' => $skill->bonus_time,
+                    'bonus_time' => $skill->bonus_time
                 ];
+
+                // for history
+                if (!is_null($skillSessions)) {
+                    $skillSession = $skillSessions->where('skill_id', $skill->id)->first();
+                    $baseResponse['total_question'] = $skillSession->total_question ?? 0;
+                    $baseResponse['total_submitted_answer'] = $skillSession->total_submitted_answer ?? 0;
+                    $baseResponse['total_correct_answer'] = $skillSession->total_correct_answer ?? 0;
+                    $baseResponse['total_pending_answer'] = $skillSession->total_pending_answer ?? 0;
+                    $baseResponse['total_score'] = $skillSession->total_score ?? 0;
+                    $baseResponse['total_correct_score'] = $skillSession->total_correct_score ?? 0;
+                    $baseResponse['start_at'] = $skillSession->created_at ? $skillSession->created_at->format( 'Y-m-d H:i:s') : '';
+                    $baseResponse['submit_at'] = $skillSession->updated_at ? $skillSession->updated_at->format( 'Y-m-d H:i:s') : '';
+                }
+
+                return $baseResponse;
             })
         ];
     }

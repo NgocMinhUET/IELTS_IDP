@@ -72,7 +72,6 @@ class SkillController extends Controller
             }
         }
 
-
         DB::beginTransaction();
         try {
             $partQuestions = $this->partService->getQuestionsOfSkill($skill);

@@ -11,8 +11,10 @@ class SkillSession extends Model
 {
     use HasFactory;
     use HasEncryptedToken;
-
-    protected $fillable = ['exam_session_id', 'skill_id', 'expired_at', 'submit_expired_at', 'status'];
+    protected $fillable = ['exam_session_id', 'skill_id', 'expired_at', 'submit_expired_at', 'status',
+        'total_question', 'total_submitted_answer', 'total_correct_answer', 'total_pending_answer',
+        'total_score', 'total_correct_score',
+    ];
 
     protected $casts = [
         'status' => SkillSessionStatus::class,

@@ -22,4 +22,9 @@ class ExamSession extends Model
     {
         return $this->belongsTo(Exam::class, 'exam_id');
     }
+
+    public function skillSessions(): \Illuminate\Database\Eloquent\Relations\HasMany
+    {
+        return $this->hasMany(SkillSession::class, 'exam_session_id');
+    }
 }

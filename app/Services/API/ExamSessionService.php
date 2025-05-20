@@ -3,6 +3,7 @@
 namespace App\Services\API;
 
 use App\Enum\Models\ExamSessionStatus;
+use App\Enum\Models\SkillSessionStatus;
 use App\Models\ExamSession;
 use App\Models\Skill;
 use App\Repositories\ExamSession\ExamSessionInterface;
@@ -85,8 +86,17 @@ class ExamSessionService
 
     public function updateExamSessionStatusAfterSkillSubmit(ExamSession $examSession): bool
     {
+        $currentSkillSubmitted = $examSession->skillSessions->where('status', SkillSessionStatus::SUBMITTED)
+            ->pluck('skill_id')->toArray();
+        $examSkills = $examSession->exam->skills->pluck('id')->toArray();
+
+        $examSessionStatus = ExamSessionStatus::SKILL_SUBMITTED;
+        if (empty(array_diff($currentSkillSubmitted, $examSkills)) && empty(array_diff($examSkills, $currentSkillSubmitted))) {
+            $examSessionStatus = ExamSessionStatus::COMPLETE;
+        }
+
         return $examSession->update([
-            'status' => ExamSessionStatus::SKILL_SUBMITTED,
+            'status' => $examSessionStatus,
         ]);
     }
 
@@ -111,6 +121,20 @@ class ExamSessionService
             ->findWhere([
                 'id' => $examSessionId,
                 'test_id' => $testId,
+                'user_id' => $userId,
+                'status' => ['status', 'IN', [ExamSessionStatus::COMPLETE, ExamSessionStatus::IN_COMPLETE]]
+            ])->first();
+    }
+
+    public function getExamSessionForImmediateHistoryFromToken($examSessionToken)
+    {
+        $userId = auth()->id();
+
+        $examSessionId = ExamSession::decryptTokenId($examSessionToken);
+
+        return $this->examSessionRepository->with('exam')
+            ->findWhere([
+                'id' => $examSessionId,
                 'user_id' => $userId,
                 'status' => ['status', 'IN', [ExamSessionStatus::COMPLETE, ExamSessionStatus::IN_COMPLETE]]
             ])->first();

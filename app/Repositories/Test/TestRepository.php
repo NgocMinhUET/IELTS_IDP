@@ -40,6 +40,7 @@ class TestRepository extends BaseRepository implements TestInterface
     {
         return $this->getAssignedToUserTestsQuery($userId)
             ->select('id', 'desc', 'start_time', 'end_time')
+            ->orderByDesc('start_time')
             ->get();
     }
 

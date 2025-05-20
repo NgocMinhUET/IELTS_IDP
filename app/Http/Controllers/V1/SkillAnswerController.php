@@ -43,17 +43,34 @@ class SkillAnswerController extends Controller
 
         $answerPayload = $this->skillAnswerService->validateAnswerPayload($request);
 
+        $analyticData = [
+            'total_question' => 0,
+            'total_submitted_answer' => 0,
+            'total_correct_answer' => 0,
+            'total_pending_answer' => 0,
+            'total_score' => 0,
+            'total_correct_score' => 0,
+        ];
+
         //TODO: refactor speaking skill
         if (in_array($skill->type, [SkillType::LISTENING, SkillType::READING])) {
             $skillQuestions = $this->skillService->getAllListenOrReadingSkillQuestionsAndAnswers($skill);
 
-            $compareAnswers = $this->skillAnswerService->compareAnswer($answerPayload, $skillQuestions);
+            [$compareAnswers, $numberOfCorrectAnswer] = $this->skillAnswerService->compareAnswer($answerPayload, $skillQuestions);
+
+            $analyticData['total_question'] = count($skillQuestions);
+            $analyticData['total_submitted_answer'] = count($answerPayload);
+            $analyticData['total_correct_answer'] = $numberOfCorrectAnswer;
 
             $result = $this->skillAnswerService->buildResultScoreResponse($compareAnswers);
         } else {
             $writingQuestions = $this->skillService->getAllWritingSkillQuestionsAndAnswers($skill);
 
             $compareAnswers = $this->skillAnswerService->compareWritingAnswer($answerPayload, $writingQuestions);
+
+            $analyticData['total_question'] = count($writingQuestions);
+            $analyticData['total_submitted_answer'] = count($answerPayload);
+            $analyticData['total_pending_answer'] = $analyticData['total_submitted_answer'];
 
             $result = [];
         }
@@ -64,6 +81,8 @@ class SkillAnswerController extends Controller
 
             // remove skill session
             $this->skillSessionService->revokeSkillSessionToken($skillSession);
+            //update question and answer analytic to skill session
+            $this->skillSessionService->updateSkillSessionToken($skillSession, $analyticData);
 
             //update exam session
             //TODO: refactor if this last skill
