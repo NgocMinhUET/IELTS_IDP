@@ -120,12 +120,13 @@
                                     <div class="mb-3">
                                         <div class="row">
                                             <div class="col">
-                                                <label class="form-label" for="durationFormControlInput">Duration</label>
+                                                <label class="form-label" for="durationFormControlInput">Duration <span class="text-danger">*</span></label>
                                                 <input class="form-control"
                                                        type="number"
                                                        name="duration"
                                                        placeholder=""
                                                        value="{{ old('duration', $skill->duration ?? '') }}"
+                                                       required
                                                 >
                                                 @if($errors->has('duration'))
                                                     <div class="invalid-feedback mt-0">{{ $errors->first('duration') }}</div>

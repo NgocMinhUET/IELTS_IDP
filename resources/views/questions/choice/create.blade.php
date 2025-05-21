@@ -20,7 +20,7 @@
                         </div>
                         <div class="card-body p-0">
                             <div class="p-4 code-to-copy">
-                                <form action="{{ route('admin.parts.questions.store', $partId) }}" method="POST">
+                                <form id="question-form" action="{{ route('admin.parts.questions.store', $partId) }}" method="POST">
                                     @csrf
                                     <div class="mb-3">
                                         <label class="form-label">Main Question Content <span class="text-danger">*</span></label>
@@ -147,6 +147,62 @@
                 if (checkedCount > max) {
                     e.target.checked = false;
                     alert(`You can select up to ${max} correct answer(s).`);
+                }
+            }
+        });
+
+        // required one correct answer
+        document.getElementById('question-form').addEventListener('submit', function (e) {
+            const subQuestions = document.querySelectorAll('.sub-question');
+            let valid = true;
+
+            subQuestions.forEach((sub, idx) => {
+                const checkboxes = sub.querySelectorAll('.correct-checkbox');
+                const checkedCount = Array.from(checkboxes).filter(cb => cb.checked).length;
+
+                const minSelectInput = sub.querySelector('.min-select');
+                const minRequired = parseInt(minSelectInput.value) || 1;
+
+                if (checkedCount < minRequired) {
+                    valid = false;
+                    alert(`Sub Question ${idx + 1} must have at least ${minRequired} correct answer(s).`);
+                }
+            });
+
+            if (!valid) {
+                e.preventDefault();
+            }
+        });
+
+        // prevent min max
+        document.addEventListener('input', function (e) {
+            if (e.target.classList.contains('min-select') || e.target.classList.contains('max-select')) {
+                const input = e.target;
+                const subQuestion = input.closest('.sub-question');
+
+                const minInput = subQuestion.querySelector('.min-select');
+                const maxInput = subQuestion.querySelector('.max-select');
+
+                const min = parseInt(minInput.value);
+                const max = parseInt(maxInput.value);
+
+                if (!isNaN(min) && !isNaN(max)) {
+                    if (min > max) {
+                        alert('Min cannot be greater than Max.');
+                        minInput.value = max;
+                    } else if (max < min) {
+                        alert('Max cannot be smaller than Min.');
+                        maxInput.value = min;
+                    }
+                }
+
+                const checkboxes = subQuestion.querySelectorAll('.correct-checkbox');
+                const checkedCount = [...checkboxes].filter(cb => cb.checked).length;
+                const newValue = parseInt(input.value);
+
+                if (newValue < checkedCount) {
+                    alert(`Cannot set value lower than currently selected checkboxes (${checkedCount}).`);
+                    input.value = checkedCount;
                 }
             }
         });

@@ -17,7 +17,7 @@ class UpdateSkillRequest extends FormRequest
     {
         return [
             'desc' => 'nullable|max:255',
-            'duration' => 'nullable|numeric',
+            'duration' => 'required|numeric',
             'bonus_time' => 'nullable|numeric',
             'parts' => 'required|array',
             'parts.*.title' => 'required|max:255',
