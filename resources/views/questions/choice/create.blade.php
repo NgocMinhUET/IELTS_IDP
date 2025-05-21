@@ -72,12 +72,19 @@
 
                     <div class="mb-2 d-flex gap-3">
                         <div>
+                            <label class="form-label">Max Select</label>
+                            <input type="number" class="form-control max-select" name="choice_sub_questions[${index}][max_option]" value="1" min="1">
+                        </div>
+                        <div>
                             <label class="form-label">Min Select</label>
                             <input type="number" class="form-control min-select" name="choice_sub_questions[${index}][min_option]" value="1" min="1">
                         </div>
+                    </div>
+
+                    <div class="mb-2 d-flex gap-3">
                         <div>
-                            <label class="form-label">Max Select</label>
-                            <input type="number" class="form-control max-select" name="choice_sub_questions[${index}][max_option]" value="1" min="1">
+                            <label class="form-label">Score <span class="text-danger">*</span></label>
+                            <input type="number" class="form-control max-select" name="choice_sub_questions[${index}][score]" value="1" min="1">
                         </div>
                     </div>
 

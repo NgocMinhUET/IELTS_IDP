@@ -11,11 +11,12 @@ class WritingQuestionService extends BaseService
         public WritingQuestionInterface $writingQuestionRepository,
     ) {}
 
-    public function store($partId, $content)
+    public function store($partId, $content, $score)
     {
         return $this->writingQuestionRepository->create([
             'part_id' => $partId,
             'content' => $content,
+            'score' => $score,
         ]);
     }
 

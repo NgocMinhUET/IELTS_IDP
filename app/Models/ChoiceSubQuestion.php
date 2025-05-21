@@ -11,7 +11,7 @@ class ChoiceSubQuestion extends Model
     use HasFactory;
     use HasInputIdentify;
 
-    protected $fillable = ['choice_question_id', 'question', 'min_option', 'max_option'];
+    protected $fillable = ['choice_question_id', 'question', 'score', 'min_option', 'max_option'];
 
     protected $appends = [
         'input_identify',

@@ -25,11 +25,12 @@ class FillInContentQuestionController extends CMSController
 
             $content = $request->input('content');
             $answers = $request->input('answers');
+            $score = $request->input('score');
             $placeholders = $request->input('placeholders');
 
             $dom = $this->blankContentQuestionService->validateContentAndAnswer($content, $answers, $placeholders);
-            [$newContent, $newAnswers, $newPlaceholders] = $this->blankContentQuestionService
-                ->replaceBlankInputId($dom, $answers, $placeholders);
+            [$newContent, $newAnswers, $newPlaceholders, $newScore] = $this->blankContentQuestionService
+                ->replaceBlankInputId($dom, $answers, $placeholders, $score);
             $request->merge(['content' => $newContent]);
 
             $isContentInherit = $part->skill->type === SkillType::READING && $request->has('content_inherit');
@@ -40,13 +41,14 @@ class FillInContentQuestionController extends CMSController
                 $this->partService->updateOrCreateReadingParagraph($partId, $newContent);
             }
 
-            $question = $this->blankContentQuestionService->storeFillInBlankContentQuestion(
-                $partId,
-                $request->only('title', 'content', 'content_inherit', 'answer_type', 'answer_label')
-            );
+            $totalQuestionScore = array_sum($newScore);
+            $questionAttributes = $request->only('title', 'content', 'content_inherit', 'answer_type', 'answer_label');
+            $questionAttributes['score'] = $totalQuestionScore;
+
+            $question = $this->blankContentQuestionService->storeFillInBlankContentQuestion($partId, $questionAttributes);
             $questionId = $question->id;
 
-            $this->blankContentQuestionService->storeFillInBlankContentAnswers($questionId, $newAnswers, $newPlaceholders);
+            $this->blankContentQuestionService->storeFillInBlankContentAnswers($questionId, $newAnswers, $newPlaceholders, $newScore);
 
             if ($request->input('answer_type') == AnswerType::DRAG_DROP->value) {
                 $distractorAnswers = $request->input('distractor_answers');

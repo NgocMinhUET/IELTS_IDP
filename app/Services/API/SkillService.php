@@ -76,6 +76,7 @@ class SkillService
                 'question_id' => $question->input_identify,
                 'question_model' => $question->getTable(),
                 'question_type' => $question->type,
+                'score' => $question->score,
             ];
             $writingQuestions[] = $tmp;
         }
@@ -105,6 +106,7 @@ class SkillService
                         ->pluck('id')->toArray(),
                     'answer' => null,
                     'question_type' => $choiceQuestion->type,
+                    'score' => $choiceSubQuestion->score,
                 ];
                 $questionAndAnswers[] = $questionAndAnswer;
             }
@@ -132,6 +134,7 @@ class SkillService
                         'question_model' => $tableModel,
                         'answer_id' => $answerType == AnswerType::FILL->value ? null : $answer->id,
                         'answer' => $answerType == AnswerType::FILL->value ? $answer->answer : null,
+                        'score' => $answer->score,
                     ];
                 }
             }

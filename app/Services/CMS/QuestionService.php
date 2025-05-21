@@ -48,6 +48,7 @@ class QuestionService extends BaseService
             'question' => $choiceOptionPayload['question'],
             'min_option' => $choiceOptionPayload['min_option'] ?? null,
             'max_option' => $choiceOptionPayload['max_option'] ?? null,
+            'score' => $choiceOptionPayload['score'] ?? null,
         ];
 
         $choiceOptions = $choiceOptionPayload['choice_options'] ?? [];

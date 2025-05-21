@@ -42,6 +42,7 @@ class BlankImageQuestionService extends BaseService
                 'x' => $answer['x'],
                 'y' => $answer['y'],
                 'placeholder' => $answer['placeholder'],
+                'score' => $answer['score'],
             ];
         }
 

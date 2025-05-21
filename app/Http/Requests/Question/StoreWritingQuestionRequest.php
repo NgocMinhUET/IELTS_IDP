@@ -10,6 +10,7 @@ class StoreWritingQuestionRequest extends FormRequest
     {
         return [
             'content' => ['required', 'string', 'max:100000'],
+            'score' => 'required|numeric',
         ];
     }
 }

@@ -3,7 +3,6 @@
 namespace App\Http\Requests\Question;
 
 use Illuminate\Foundation\Http\FormRequest;
-use Illuminate\Validation\Rule;
 use Illuminate\Validation\Validator;
 
 class StoreQuestionRequest extends FormRequest
@@ -16,6 +15,7 @@ class StoreQuestionRequest extends FormRequest
             'choice_sub_questions.*.question' => 'required|string|max:2048',
             'choice_sub_questions.*.min_option' => 'required|numeric',
             'choice_sub_questions.*.max_option' => 'required|numeric',
+            'choice_sub_questions.*.score' => 'required|numeric',
             'choice_sub_questions.*.choice_options' => 'required|array',
             'choice_sub_questions.*.choice_options.*.answer' => 'required|string|max:2048',
         ];

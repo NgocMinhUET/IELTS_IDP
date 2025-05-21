@@ -15,7 +15,7 @@ class WritingQuestion extends Model
     use HasQuestionOrder;
     use HasInputIdentify;
 
-    protected $fillable = ['part_id', 'content'];
+    protected $fillable = ['part_id', 'content', 'score'];
 
     protected $with = ['part'];
 

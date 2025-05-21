@@ -35,7 +35,7 @@ class BlankContentQuestionService extends BaseService
         return compact('dom', 'inputTags');
     }
 
-    public function replaceBlankInputId($domTag, $answers, $placeholders): array
+    public function replaceBlankInputId($domTag, $answers, $placeholders, $score): array
     {
         $dom = $domTag['dom'];
         $inputTags = $domTag['inputTags'];
@@ -59,8 +59,10 @@ class BlankContentQuestionService extends BaseService
 
             $answers[$newAnswerId] = $answers[$oldAnswerId];
             $placeholders[$newAnswerId] = $placeholders[$oldAnswerId];
+            $score[$newAnswerId] = $score[$oldAnswerId];
             unset($answers[$oldAnswerId]);
             unset($placeholders[$oldAnswerId]);
+            unset($score[$oldAnswerId]);
         }
 
         // Export HTML back to string
@@ -71,7 +73,7 @@ class BlankContentQuestionService extends BaseService
         }
         $newContent = mb_convert_encoding($newContent, 'HTML-ENTITIES', 'UTF-8');
 
-        return [$newContent, $answers, $placeholders];
+        return [$newContent, $answers, $placeholders, $score];
     }
 
     public function storeFillInBlankContentQuestion($partId, $questionPayload)
@@ -81,7 +83,7 @@ class BlankContentQuestionService extends BaseService
         return $this->lBlankContentQuestionRepository->create($questionPayload);
     }
 
-    public function storeFillInBlankContentAnswers($questionId, $answers, $placeholders)
+    public function storeFillInBlankContentAnswers($questionId, $answers, $placeholders, $score)
     {
         $insertData = [];
         $current = now();
@@ -91,6 +93,7 @@ class BlankContentQuestionService extends BaseService
                 'input_identify' => $key,
                 'answer' => $answer,
                 'placeholder' => $placeholders[$key],
+                'score' => $score[$key],
                 'created_at' => $current,
                 'updated_at' => $current,
             ];

@@ -92,16 +92,17 @@
                                                     <div class="card-body">
                                                         <div class="mb-2 d-flex justify-content-between align-items-center">
                                                             <h6 class="mb-0">{{ $sub->question }}</h6>
-                                                            <small class="text-muted"> MIN: {{ $sub->min_option }} MAX: {{ $sub->max_option }}</small>
+                                                            <small class="text-muted">SCORE: {{ $sub->score ?? 'NOT SET' }}, MIN: {{ $sub->min_option }}, MAX: {{ $sub->max_option }}</small>
                                                         </div>
                                                         <div class="row g-2 mt-2">
                                                             @foreach ($sub->choiceOptions as $i => $answer)
+{{--                                                                @php dd($answer); @endphp--}}
                                                                 <div class="col-md-6">
                                                                     <div class="form-check border rounded p-3 d-flex align-items-start gap-2">
                                                                         <input
                                                                                 class="form-check-input"
                                                                                 type="{{ $sub->max_option > 1 ? 'checkbox' : 'radio' }}"
-                                                                                name="sub_question_{{ $index }}[]"
+                                                                                name="sub_question_{{ $sub->id }}[]"
                                                                                 value="{{ $answer->id }}"
                                                                                 id="answer_{{ $sub->id }}_{{ $i }}"
                                                                                 disabled
@@ -156,6 +157,8 @@
                                                             <div class="input-group mb-2">
                                                                 <span class="input-group-text">Answer of {{ $answer->placeholder }}</span>
                                                                 <input type="text" class="form-control" value="{{ $answer->answer }}" disabled>
+                                                                <span class="input-group-text">Score</span>
+                                                                <input type="number" class="form-control" value="{{ $answer->score ?: 'NOT SET' }}" disabled>
                                                             </div>
                                                         @endforeach
                                                     </div>
@@ -218,6 +221,8 @@
                                                             <div class="input-group mb-2">
                                                                 <span class="input-group-text">Answer of {{ $answer->placeholder }}</span>
                                                                 <input type="text" class="form-control" value="{{ $answer->answer }}" disabled>
+                                                                <span class="input-group-text">Score</span>
+                                                                <input type="number" class="form-control" value="{{ $answer->score ?: 'NOT SET' }}" disabled>
                                                             </div>
                                                         @endforeach
                                                     </div>
@@ -260,9 +265,12 @@
                                     <div class="accordion-body">
                                         <div class="container py-4">
                                             <div class="card mb-4">
+                                                <div class="mt-4 mx-4">
+                                                    <small class="text-muted">SCORE: {{ $question->score ?? 'NOT SET' }}</small>
+                                                </div>
                                                 <div class="card-body">
                                                     <div class="mb-3">
-                                                        <div class="card pt-4 pb-4 px-2">
+                                                        <div class="card pt-2 pb-4 px-2">
                                                             {!! $question->content !!}
                                                         </div>
                                                     </div>

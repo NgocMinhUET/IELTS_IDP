@@ -31,6 +31,13 @@
                                 <form action="{{ route('admin.parts.writing-questions.store', $part->id) }}" method="POST">
                                 @endif
                                     @csrf
+                                    <div class="mb-3 d-flex gap-3">
+                                        <div>
+                                            <label class="form-label">Score <span class="text-danger">*</span></label>
+                                            <input type="number" class="form-control max-select" name="score" value="1" min="1">
+                                        </div>
+                                    </div>
+
                                     <div class="mb-3">
                                         <label class="form-label">Content <span class="text-danger">*</span></label>
                                         <textarea id="editor" class="form-control {{ $errors->has('content') ? 'is-invalid' : '' }}"

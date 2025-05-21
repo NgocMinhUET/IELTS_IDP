@@ -21,6 +21,7 @@ class LBlankContentQuestion extends Model
         'type',
         'answer_type',
         'answer_label',
+        'score',
         'order'
     ];
 

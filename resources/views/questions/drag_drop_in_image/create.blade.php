@@ -100,6 +100,10 @@
                                                 <label class="form-label">Correct Answer</label>
                                                 <input type="text" class="form-control" id="answer" placeholder="Enter correct answer" required>
                                             </div>
+                                            <div class="mb-3">
+                                                <label class="form-label">Score</label>
+                                                <input type="number" value="1" min="1" id="score" class="form-control">
+                                            </div>
                                             <input type="hidden" id="pos-x">
                                             <input type="hidden" id="pos-y">
                                             <input type="hidden" id="pos-w">
@@ -176,6 +180,7 @@
 
             const placeholder = document.getElementById('placeholder').value;
             const answer = document.getElementById('answer').value;
+            const score = document.getElementById('score').value;
             const x = document.getElementById('pos-x').value;
             const y = document.getElementById('pos-y').value;
             const w = document.getElementById('pos-w').value;
@@ -205,6 +210,8 @@
             <div class="input-group mb-2" data-index="${blankIndex}">
                 <span class="input-group-text">Answer for ${placeholder}</span>
                 <input type="text" name="answers[${blankIndex}][answer]" value="${answer}" class="form-control" required>
+                <span class="input-group-text">Score</span>
+                <input type="number" name="answers[${blankIndex}][score]" class="form-control" value="${score}" min="1" required>
                 <button type="button" class="btn btn-outline-danger btn-sm" onclick="removeBlank(${blankIndex})">x</button>
             </div>
             <input type="hidden" name="answers[${blankIndex}][x]" value="${x}">

@@ -14,6 +14,7 @@ class StoreFICQuestionRequest extends FormRequest
             'title' => 'required|string|max:255',
             'content' => 'required|string',
             'answers' => 'required|array',
+            'score' => 'required|array',
             'answer_type' => ['required', Rule::in(AnswerType::values())],
             'placeholders' => 'required|array',
         ];

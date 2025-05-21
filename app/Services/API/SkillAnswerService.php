@@ -76,6 +76,7 @@ class SkillAnswerService
     public function compareAnswer($answerPayload, $skillQuestions): array
     {
         $numberOfCorrectAnswer = 0;
+        $totalCorrectScore = 0;
         $answerResult = [];
         foreach ($answerPayload as $answer) {
             $found = [];
@@ -110,13 +111,14 @@ class SkillAnswerService
             }
 
             if ($answer['is_correct']) {
+                $totalCorrectScore += $found['score'];
                 $numberOfCorrectAnswer++;
             }
 
             $answerResult[] = $answer;
         }
 
-        return [$answerResult, $numberOfCorrectAnswer];
+        return [$answerResult, $numberOfCorrectAnswer, $totalCorrectScore];
     }
 
     public function validateAnswerPayload(Request $request): array

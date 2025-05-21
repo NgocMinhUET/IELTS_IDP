@@ -82,6 +82,10 @@
                             <label class="form-label">Correct Answer</label>
                             <input type="text" id="blank-answer" class="form-control" placeholder="Enter correct answer">
                         </div>
+                        <div class="mb-3">
+                            <label class="form-label">Score</label>
+                            <input type="number" value="1" min="1" id="blank-score" class="form-control">
+                        </div>
                     </div>
                     <div class="modal-footer">
                         <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
@@ -98,12 +102,14 @@
     <script>
         let blankIndex = 1;
 
-        function renderAnswerInput(index, placeholder, answer) {
+        function renderAnswerInput(index, placeholder, answer, score) {
             return `
                 <div class="input-group mb-2 answer-item" data-index="${index}">
                     <span class="input-group-text">Answer of ${placeholder}</span>
                     <input type="hidden" name="placeholders[${index}]" class="form-control" value="${placeholder}" required>
                     <input type="text" name="answers[${index}]" class="form-control" value="${answer}" required>
+                    <span class="input-group-text">Score</span>
+                    <input type="number" name="score[${index}]" class="form-control" value="${score}" min="1" required>
                     <button type="button" class="btn btn-outline-danger remove-blank" data-blank-id="${index}">×</button>
                 </div>
             `;
@@ -135,6 +141,7 @@
                 document.getElementById('insert-blank').addEventListener('click', function () {
                     const placeholder = document.getElementById('blank-placeholder').value || '____';
                     const answer = document.getElementById('blank-answer').value;
+                    const score = document.getElementById('blank-score').value;
                     const modalEl = bootstrap.Modal.getInstance(document.getElementById('blankModal'));
 
                     if (answer.trim() !== '') {
@@ -143,11 +150,12 @@
                             class="blank-fill" placeholder="${placeholder}" data-blank-id="${blankIndex}" readonly>`;
                         editor.insertContent(inputHtml);
 
-                        document.getElementById('answer-list').insertAdjacentHTML('beforeend', renderAnswerInput(blankIndex, placeholder, answer));
+                        document.getElementById('answer-list').insertAdjacentHTML('beforeend', renderAnswerInput(blankIndex, placeholder, answer, score));
                         blankIndex++;
                         modalEl.hide();
                         document.getElementById('blank-placeholder').value = '';
                         document.getElementById('blank-answer').value = '';
+                        document.getElementById('blank-score').value = '1';
                     }
                 });
             },

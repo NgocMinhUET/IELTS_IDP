@@ -44,8 +44,6 @@ class SkillAnswerController extends Controller
         $answerPayload = $this->skillAnswerService->validateAnswerPayload($request);
 
         $analyticData = [
-            'total_question' => 0,
-            'total_submitted_answer' => 0,
             'total_correct_answer' => 0,
             'total_pending_answer' => 0,
             'total_score' => 0,
@@ -56,11 +54,13 @@ class SkillAnswerController extends Controller
         if (in_array($skill->type, [SkillType::LISTENING, SkillType::READING])) {
             $skillQuestions = $this->skillService->getAllListenOrReadingSkillQuestionsAndAnswers($skill);
 
-            [$compareAnswers, $numberOfCorrectAnswer] = $this->skillAnswerService->compareAnswer($answerPayload, $skillQuestions);
+            [$compareAnswers, $numberOfCorrectAnswer, $totalCorrectScore] = $this->skillAnswerService->compareAnswer($answerPayload, $skillQuestions);
 
             $analyticData['total_question'] = count($skillQuestions);
             $analyticData['total_submitted_answer'] = count($answerPayload);
             $analyticData['total_correct_answer'] = $numberOfCorrectAnswer;
+            $analyticData['total_correct_score'] = $totalCorrectScore;
+            $analyticData['total_score'] = array_sum(array_column($skillQuestions, 'score'));
 
             $result = $this->skillAnswerService->buildResultScoreResponse($compareAnswers);
         } else {
@@ -71,6 +71,7 @@ class SkillAnswerController extends Controller
             $analyticData['total_question'] = count($writingQuestions);
             $analyticData['total_submitted_answer'] = count($answerPayload);
             $analyticData['total_pending_answer'] = $analyticData['total_submitted_answer'];
+            $analyticData['total_score'] = array_sum(array_column($writingQuestions, 'score'));
 
             $result = [];
         }

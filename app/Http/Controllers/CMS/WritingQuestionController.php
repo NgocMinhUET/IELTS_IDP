@@ -17,7 +17,7 @@ class WritingQuestionController extends CMSController
     {
         DB::beginTransaction();
         try {
-            $this->writingQuestionService->store($partId, $request->input('content'));
+            $this->writingQuestionService->store($partId, $request->input('content'),  $request->input('score'));
 
             DB::commit();
 
