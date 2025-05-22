@@ -218,4 +218,14 @@ class StudentService extends BaseService
 
         return $rows;
     }
+
+    public function getHistoryStudentsOfTest($testId)
+    {
+        return $this->userRepository->getHistoryStudentsOfTest($testId);
+    }
+
+    public function getExamSessionsOfStudentWithTestId($testId, $studentId)
+    {
+        return $this->userRepository->getExamSessionsOfStudentWithTestId($testId, $studentId);
+    }
 }

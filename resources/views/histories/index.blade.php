@@ -13,11 +13,6 @@
                     </form>
                 </div>
             </div>
-            <div class="col-auto">
-                <div class="d-flex align-items-center">
-                    <a href="{{ route('admin.tests.create') }}" class="btn btn-primary"><span class="fas fa-plus me-2"></span>Create Test</a>
-                </div>
-            </div>
         </div>
 
         <div class="row g-4">
@@ -49,7 +44,7 @@
                                                             <div>
                                                                 <h5 class="mb-1">
                                                                     <strong class="me-auto exam-label">
-                                                                        <a href="{{ route('admin.histories.test-detail', $test->id) }}">{{ $test->desc }}</a>
+                                                                        <a href="{{ route('admin.histories.list-student', $test->id) }}">{{ $test->desc }}</a>
                                                                     </strong>
                                                                 </h5>
                                                             </div>

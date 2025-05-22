@@ -150,7 +150,8 @@ Route::group(['middleware' => ['auth:admin']], function () {
 
         Route::group(['prefix' => 'histories', 'as' => 'histories.'], function () {
             Route::get('/', [HistoryController::class, 'index'])->name('index');
-            Route::get('/{testId}', [HistoryController::class, 'getDetailHistoryTest'])->name('test-detail');
+            Route::get('/{testId}/students', [HistoryController::class, 'getListHistoryStudentsOfTest'])->name('list-student');
+            Route::get('/{testId}/students/{studentId}', [HistoryController::class, 'getListHistorySessionsOfStudentS'])->name('list-exam-session');
         });
     });
 });

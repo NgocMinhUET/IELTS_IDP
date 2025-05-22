@@ -3,6 +3,8 @@
 namespace App\Http\Controllers\CMS;
 
 use App\Services\CMS\HistoryService;
+use App\Services\CMS\StudentService;
+use App\Services\CMS\TestService;
 
 class HistoryController extends CMSController
 {
@@ -10,6 +12,8 @@ class HistoryController extends CMSController
 
     public function __construct(
         public HistoryService $historyService,
+        public TestService $testService,
+        public StudentService $studentService,
     ) {
         $this->rootBreadcrumbs['History'] = route('admin.histories.index');
     }
@@ -25,14 +29,34 @@ class HistoryController extends CMSController
         return view('histories.index', compact('tests'));
     }
 
-    public function getDetailHistoryTest($testId)
+    public function getListHistoryStudentsOfTest($testId)
     {
         $this->breadcrumbs = array_merge($this->rootBreadcrumbs, [
-            'List' => null
+            'Students' => null,
+            'List' => null,
         ]);
 
-        $test = $this->historyService->getDetailHistoryTest($testId);
+        $test = $this->testService->getTest($testId);
 
-        return view('histories.test-detail', compact('test'));
+        $students = $this->studentService->getHistoryStudentsOfTest($testId);
+
+        return view('histories.student_list', compact('test', 'students'));
+    }
+
+    public function getListHistorySessionsOfStudentS($testId, $studentId)
+    {
+        $this->breadcrumbs = array_merge($this->rootBreadcrumbs, [
+            'Students' => route('admin.histories.list-student', $testId),
+            'Exam Session' => null,
+            'List' => null,
+        ]);
+
+        $test = $this->testService->getTest($testId);
+
+        $student = $this->studentService->getExamSessionsOfStudentWithTestId($testId, $studentId);
+
+//        dd($student);
+
+        return view('histories.exam_list', compact('test', 'student'));
     }
 }

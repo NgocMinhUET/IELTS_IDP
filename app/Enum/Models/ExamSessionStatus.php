@@ -10,4 +10,13 @@ enum ExamSessionStatus: int
 
     case COMPLETE = 4; // end of test session
     case IN_COMPLETE =  5;
+
+    public function label(): string
+    {
+        return match($this) {
+            self::ISSUE, self::SKILL_SUBMITTED, self::IN_USE => 'InProgress',
+            self::COMPLETE => 'Complete',
+            self::IN_COMPLETE => 'InComplete',
+        };
+    }
 }

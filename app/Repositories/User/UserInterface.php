@@ -13,6 +13,7 @@ interface UserInterface extends BaseInterface
 {
     public function getPaginateStudents();
     public function createUser(array $params);
-
     public function countActiveUserByIds(array $userIds);
+    public function getHistoryStudentsOfTest($testId);
+    public function getExamSessionsOfStudentWithTestId($testId, $studentId);
 }
