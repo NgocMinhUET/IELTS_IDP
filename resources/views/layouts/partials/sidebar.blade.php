@@ -153,7 +153,7 @@
                                     <i class="fa-solid fa-graduation-cap"></i>
                                 </span>
                                 <span class="nav-link-text-wrapper">
-                                    <span class="nav-link-text">Members</span>
+                                    <span class="nav-link-text">Member</span>
                                 </span>
                             </div>
                         </a>
@@ -162,13 +162,15 @@
 
                 <li class="nav-item">
                     <!-- parent pages-->
-                    <div class="nav-item-wrapper"><a class="nav-link label-1" href="#" role="button" data-bs-toggle="" aria-expanded="false">
+                    <div class="nav-item-wrapper">
+                        <a class="nav-link label-1 @if(Route::is('admin.histories.*')) active @endif"
+                           href="{{ route('admin.histories.index') }}" role="button" data-bs-toggle="" aria-expanded="false">
                             <div class="d-flex align-items-center">
                                 <span class="nav-link-icon">
-                                    <i class="fa-solid fa-bell"></i>
+                                    <i class="fa-solid fa-timeline"></i>
                                 </span>
                                 <span class="nav-link-text-wrapper">
-                                    <span class="nav-link-text">Notifications</span>
+                                    <span class="nav-link-text">History</span>
                                 </span>
                             </div>
                         </a>

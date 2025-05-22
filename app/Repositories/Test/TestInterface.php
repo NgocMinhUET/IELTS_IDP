@@ -13,4 +13,8 @@ interface TestInterface extends BaseInterface
     public function getAssignedToUserTest($id, $userId);
 
     public function getTestHistories($userId);
+
+    public function getPaginateHistoryTests();
+
+    public function getDetailHistoryTest($testId);
 }

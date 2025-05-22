@@ -32,6 +32,11 @@ class Test extends Model
         return $this->belongsToMany(User::class);
     }
 
+    public function examSessions(): \Illuminate\Database\Eloquent\Relations\HasMany
+    {
+        return $this->hasMany(ExamSession::class, 'test_id');
+    }
+
     public function createdBy(): \Illuminate\Database\Eloquent\Relations\BelongsTo
     {
         return $this->belongsTo(Admin::class, 'created_by');
@@ -68,5 +73,11 @@ class Test extends Model
     public function scopeIsActive(Builder $query): Builder
     {
         return $query->isApproved()->inPublicDateTime();
+    }
+
+    public function scopeOrderByDefault(Builder $query): Builder
+    {
+        return $query->orderByDesc('start_time')
+            ->orderByDesc('id');
     }
 }

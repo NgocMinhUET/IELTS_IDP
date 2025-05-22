@@ -4,6 +4,7 @@ use App\Http\Controllers\CMS\AuthController;
 use App\Http\Controllers\CMS\ExamController;
 use App\Http\Controllers\CMS\FillInContentQuestionController;
 use App\Http\Controllers\CMS\FillInImageQuestionController;
+use App\Http\Controllers\CMS\HistoryController;
 use App\Http\Controllers\CMS\MediaController;
 use App\Http\Controllers\CMS\ParagraphController;
 use App\Http\Controllers\CMS\PartController;
@@ -145,6 +146,11 @@ Route::group(['middleware' => ['auth:admin']], function () {
             Route::post('/import', [StudentController::class, 'executeImport'])->name('import.execute');
             Route::get('/{id}', [StudentController::class, 'detail'])->name('detail');
             Route::put('/{id}', [StudentController::class, 'update'])->name('update');
+        });
+
+        Route::group(['prefix' => 'histories', 'as' => 'histories.'], function () {
+            Route::get('/', [HistoryController::class, 'index'])->name('index');
+            Route::get('/{testId}', [HistoryController::class, 'getDetailHistoryTest'])->name('test-detail');
         });
     });
 });

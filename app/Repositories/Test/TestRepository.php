@@ -40,7 +40,7 @@ class TestRepository extends BaseRepository implements TestInterface
     {
         return $this->getAssignedToUserTestsQuery($userId)
             ->select('id', 'desc', 'start_time', 'end_time')
-            ->orderByDesc('start_time')
+            ->orderByDefault()
             ->get();
     }
 
@@ -78,8 +78,23 @@ class TestRepository extends BaseRepository implements TestInterface
                 ->pluck('test_id')
                 ->toArray()
             )
-            ->orderByDesc('start_time')
-            ->orderByDesc('id')
+            ->orderByDefault()
             ->get();
+    }
+
+    public function getPaginateHistoryTests()
+    {
+        return $this->model
+            ->isApproved()
+            ->withCount('exams')
+            ->withCount('users')
+            ->with('examSessions')
+            ->orderByDefault()
+            ->paginate(8);
+    }
+
+    public function getDetailHistoryTest($testId)
+    {
+
     }
 }

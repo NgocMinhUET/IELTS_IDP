@@ -49,13 +49,13 @@
                                 <form class="row g-3" action="{{ route('admin.tests.update', $test->id) }}" method="POST">
                                     @method('put')
                                 @else
-                                <form class="row g-3" novalidate="" action="{{ route('admin.tests.store') }}" method="POST">
+                                <form class="row g-3" action="{{ route('admin.tests.store') }}" method="POST">
                                 @endif
                                     @csrf
                                     <div class="mb-3">
-                                        <label class="form-label" for="descTextarea">Description</label>
+                                        <label class="form-label" for="descTextarea">Description <span class="text-danger">*</span></label>
                                         <textarea class="form-control  {{ $errors->has('desc') ? 'is-invalid' : '' }}"
-                                                  id="descTextarea" name="desc" rows="3">{{ old('desc', $test->desc ?? '') }}</textarea>
+                                                  id="descTextarea" name="desc" rows="3" required>{{ old('desc', $test->desc ?? '') }}</textarea>
                                         @if($errors->has('desc'))
                                             <div class="invalid-feedback mt-0">{{ $errors->first('desc') }}</div>
                                         @endif
@@ -64,7 +64,7 @@
                                     <div class="mb-3">
                                         <div class="row">
                                             <div class="col-6">
-                                                <label class="form-label" for="datetimepicker">Start Date Time</label>
+                                                <label class="form-label" for="datetimepicker">Start Date Time <span class="text-danger">*</span></label>
                                                 <input class="form-control datetimepicker flatpickr-input"
                                                        name="start_time"
                                                        type="text"
@@ -380,5 +380,15 @@
 
         renderSelectedStudents();
     }
+
+    document.querySelector('form').addEventListener('submit', function (e) {
+        const input = document.querySelector('input[name="start_time"]');
+        if (!input.value.trim()) {
+            input.classList.add('is-invalid');
+            input.focus();
+            e.preventDefault();
+        }
+    });
+
 </script>
 @endsection
