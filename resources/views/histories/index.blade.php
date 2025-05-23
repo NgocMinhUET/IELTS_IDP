@@ -51,9 +51,7 @@
                                                         </div>
                                                         @php
                                                             $examSessions = $test->examSessions;
-                                                            $startedUsers = $examSessions->unique('user_id')->count();
-                                                            $completedUsers = $examSessions
-                                                                ->where('status', \App\Enum\Models\ExamSessionStatus::COMPLETE)
+                                                            $startedUsers = $examSessions->where('status', '!=', \App\Enum\Models\ExamSessionStatus::ISSUE)
                                                                 ->unique('user_id')->count();
                                                             $completedUsers = $examSessions
                                                                 ->where('status', \App\Enum\Models\ExamSessionStatus::COMPLETE)

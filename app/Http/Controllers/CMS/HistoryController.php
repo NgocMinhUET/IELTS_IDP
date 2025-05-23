@@ -55,8 +55,6 @@ class HistoryController extends CMSController
 
         $student = $this->studentService->getExamSessionsOfStudentWithTestId($testId, $studentId);
 
-//        dd($student);
-
         return view('histories.exam_list', compact('test', 'student'));
     }
 }

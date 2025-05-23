@@ -2,6 +2,7 @@
 
 namespace App\Repositories\User;
 
+use App\Enum\Models\ExamSessionStatus;
 use App\Repositories\BaseRepository;
 use Illuminate\Contracts\Pagination\LengthAwarePaginator;
 use Illuminate\Support\Collection;
@@ -73,6 +74,7 @@ class UserRepository extends BaseRepository implements UserInterface
             ->where('tests.id', $testId)
             ->with(['examSessions' => function ($query) use ($testId) {
                 $query->where('test_id', $testId);
+                $query->where('status', '!=', ExamSessionStatus::ISSUE);
                 $query->with('exam.skills');
                 $query->with(['skillSessions' => function ($query) {
                     $query->orderByDesc('id');

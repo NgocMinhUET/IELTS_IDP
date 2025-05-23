@@ -39,11 +39,13 @@
                                             <th class="align-middle" scope="col" style="width:25%; min-width:200px;">NAME</th>
                                             <th class="align-middle pe-3" scope="col" style="width:20%; min-width:200px;">EMAIL</th>
                                             <th class="align-middle pe-3" scope="col" style="width:10%; min-width:200px;">STATUS</th>
-                                            <th class="align-middle" scope="col" style="width:10%; min-width:200px;">NUMBER OF START TEST</th>
+                                            <th class="align-middle" scope="col" style="width:10%; min-width:200px;">STARTED TEST</th>
                                             <th class="sort align-middle" scope="col" data-sort="created_at" style="width:10%; min-width:200px;">
-                                                NUMBER OF COMPLETE TEST</th>
+                                                COMPLETE TEST</th>
                                             <th class="sort align-middle" scope="col" data-sort="created_at" style="width:10%; min-width:200px;">
-                                                NUMBER OF IN COMPLETE TEST</th>
+                                                INCOMPLETE TEST</th>
+                                            <th class="sort align-middle" scope="col" data-sort="created_at" style="width:10%; min-width:200px;">
+                                                IN PROGRESS TEST</th>
                                         </tr>
                                         </thead>
                                         <tbody class="list" id="members-table-body">
@@ -74,9 +76,13 @@
                                                     </td>
                                                     @php
                                                         $examSessions = $student->examSessions;
-                                                        $numberOfStart = $examSessions->count();
+                                                        $numberOfStart = $examSessions->where('status', '!=', \App\Enum\Models\ExamSessionStatus::ISSUE)->count();
                                                         $numberOfComplete = $examSessions->where('status', \App\Enum\Models\ExamSessionStatus::COMPLETE)->count();
                                                         $numberOfInComplete = $examSessions->where('status', \App\Enum\Models\ExamSessionStatus::IN_COMPLETE)->count();
+                                                        $numberOfInProgress = $examSessions->whereIn('status', [
+                                                            \App\Enum\Models\ExamSessionStatus::IN_USE,
+                                                            \App\Enum\Models\ExamSessionStatus::SKILL_SUBMITTED,
+                                                        ])->count();
                                                     @endphp
                                                     <td class="align-middle white-space-nowrap">
                                                         <h6>{{ $numberOfStart  }}</h6>
@@ -85,7 +91,10 @@
                                                         <h6>{{ $numberOfComplete }}</h6>
                                                     </td>
                                                     <td class="align-middle white-space-nowrap">
-                                                        <h6>{{ $numberOfComplete }}</h6>
+                                                        <h6>{{ $numberOfInComplete }}</h6>
+                                                    </td>
+                                                    <td class="align-middle white-space-nowrap">
+                                                        <h6>{{ $numberOfInProgress }}</h6>
                                                     </td>
                                                 </tr>
                                             @endforeach
