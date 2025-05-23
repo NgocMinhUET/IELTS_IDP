@@ -98,16 +98,16 @@
             <div class="modal-dialog">
                 <div class="modal-content">
                     <div class="modal-header">
-                        <h5 class="modal-title" id="blankModalLabel">Add Blank</h5>
+                        <h5 class="modal-title" id="blankModalLabel">Add Blank Input</h5>
                         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                     </div>
                     <div class="modal-body">
                         <div class="mb-3">
-                            <label>Placeholder</label>
-                            <input type="text" id="blank-placeholder" class="form-control" value="" placeholder="e.g. ____">
+                            <label class="form-label">Placeholder</label>
+                            <input type="text" id="blank-placeholder" class="form-control" value="" placeholder="e.g. 1">
                         </div>
                         <div class="mb-3">
-                            <label>Correct Answer</label>
+                            <label class="form-label">Correct Answer</label>
                             <input type="text" id="blank-answer" class="form-control" placeholder="Enter correct answer">
                         </div>
                         <div class="mb-3">
@@ -145,15 +145,31 @@
 
         tinymce.init({
             selector: '#editor',
-            plugins: 'code',
-            toolbar: 'bold italic underline | addBlankBtn',
+            plugins: `
+                advlist autolink lists link charmap preview anchor
+                searchreplace visualblocks code fullscreen
+                table paste help wordcount
+            `,
+            toolbar: `
+                addBlankBtn | undo redo | formatselect | bold italic underline strikethrough |
+                forecolor backcolor | alignleft aligncenter alignright alignjustify |
+                bullist numlist outdent indent | link image media table |
+                code fullscreen
+            `,
             setup: function (editor) {
                 editor.ui.registry.addButton('addBlankBtn', {
                     text: '+ Add Blank',
+                    tooltip: 'Insert Blank Input',
+                    shortcut: 'Ctrl+Shift+B',
                     onAction: function () {
                         const modal = new bootstrap.Modal(document.getElementById('blankModal'));
                         modal.show();
                     }
+                });
+
+                editor.addShortcut('ctrl+shift+b', 'Insert blank text', function () {
+                    const modal = new bootstrap.Modal(document.getElementById('blankModal'));
+                    modal.show();
                 });
 
                 document.addEventListener('click', function (e) {
@@ -186,7 +202,7 @@
                     }
                 });
             },
-            height: 300
+            height: 500
         });
 
         function generateAnswerHtml() {
@@ -210,6 +226,11 @@
             if (e.target.classList.contains('remove-answer')) {
                 e.target.closest('.answer-item').remove();
             }
+        });
+
+        const blankModal = document.getElementById('blankModal');
+        blankModal.addEventListener('shown.bs.modal', function () {
+            document.getElementById('blank-placeholder').focus();
         });
     </script>
 @endsection

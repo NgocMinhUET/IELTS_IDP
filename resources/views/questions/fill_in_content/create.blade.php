@@ -70,7 +70,7 @@
             <div class="modal-dialog">
                 <div class="modal-content">
                     <div class="modal-header">
-                        <h5 class="modal-title" id="blankModalLabel">Add Input Blank</h5>
+                        <h5 class="modal-title" id="blankModalLabel">Add Blank Input</h5>
                         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                     </div>
                     <div class="modal-body">
@@ -117,15 +117,31 @@
 
         tinymce.init({
             selector: '#editor',
-            plugins: 'code',
-            toolbar: 'bold italic underline | addBlankBtn',
+            plugins: `
+                advlist autolink lists link charmap preview anchor
+                searchreplace visualblocks code fullscreen
+                table paste help wordcount
+            `,
+            toolbar: `
+                addBlankBtn | undo redo | formatselect | bold italic underline strikethrough |
+                forecolor backcolor | alignleft aligncenter alignright alignjustify |
+                bullist numlist outdent indent | link image media table |
+                code fullscreen
+            `,
             setup: function (editor) {
                 editor.ui.registry.addButton('addBlankBtn', {
                     text: '+ Add Blank',
+                    tooltip: 'Insert Blank Input',
+                    shortcut: 'Ctrl+Shift+B',
                     onAction: function () {
                         const modal = new bootstrap.Modal(document.getElementById('blankModal'));
                         modal.show();
                     }
+                });
+
+                editor.addShortcut('ctrl+shift+b', 'Insert blank text', function () {
+                    const modal = new bootstrap.Modal(document.getElementById('blankModal'));
+                    modal.show();
                 });
 
                 // Remove blank input in editor and answer list
@@ -159,7 +175,15 @@
                     }
                 });
             },
-            height: 300
+            content_style: `
+                body { font-family:Helvetica,Arial,sans-serif; font-size:14px }
+            `,
+            height: 500
+        });
+
+        const blankModal = document.getElementById('blankModal');
+        blankModal.addEventListener('shown.bs.modal', function () {
+            document.getElementById('blank-placeholder').focus();
         });
     </script>
 @endsection
