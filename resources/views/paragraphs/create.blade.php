@@ -62,8 +62,17 @@
     <script>
         tinymce.init({
             selector: '#editor',
-            plugins: 'code',
-            toolbar: 'bold italic underline | addBlankBtn',
+            plugins: `
+                advlist autolink lists link charmap preview anchor
+                searchreplace visualblocks code fullscreen
+                table paste help wordcount
+            `,
+            toolbar: `
+                undo redo | formatselect | bold italic underline strikethrough |
+                forecolor backcolor | alignleft aligncenter alignright alignjustify |
+                bullist numlist outdent indent | link image media table |
+                code fullscreen
+            `,
             setup: function (editor) {
 
             }

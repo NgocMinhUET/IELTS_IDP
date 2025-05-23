@@ -46,7 +46,6 @@ class SkillAnswerController extends Controller
         $analyticData = [
             'total_correct_answer' => 0,
             'total_pending_answer' => 0,
-            'total_score' => 0,
             'total_correct_score' => 0,
         ];
 

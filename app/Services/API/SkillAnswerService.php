@@ -100,7 +100,7 @@ class SkillAnswerService
                 }
             } else {
                 if (is_array($answer['answer_id'])) {
-                    if ($answer['answer_id'] === $found['answer_id']) {
+                    if (empty(array_diff($answer['answer_id'], $found['answer_id'])) && empty(array_diff($found['answer_id'], $answer['answer_id']))) {
                         $answer['is_correct'] = true;
                     }
                 } else {
