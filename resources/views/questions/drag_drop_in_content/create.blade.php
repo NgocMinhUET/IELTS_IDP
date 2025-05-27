@@ -17,7 +17,7 @@
                         </div>
                         <div class="card-body p-0">
                             <div class="p-4 code-to-copy">
-                                <form action="{{ route('admin.parts.fic-questions.store', $partId) }}" method="POST">
+                                <form action="{{ route('admin.parts.fic-questions.store', $partId) }}" id="dc-question-form" method="POST">
                                     @csrf
                                     <input type="hidden" name="answer_type" value="{{ \App\Enum\AnswerType::DRAG_DROP->value }}">
                                     <div class="mb-4">
@@ -109,6 +109,7 @@
                         <div class="mb-3">
                             <label class="form-label">Correct Answer</label>
                             <input type="text" id="blank-answer" class="form-control" placeholder="Enter correct answer">
+                            <div class="invalid-feedback" id="answer-error" style="display: none;"></div>
                         </div>
                         <div class="mb-3">
                             <label class="form-label">Score</label>
@@ -135,13 +136,35 @@
                 <div class="input-group mb-2 answer-item" data-index="${index}">
                     <span class="input-group-text">Answer of ${placeholder}</span>
                     <input type="hidden" name="placeholders[${index}]" class="form-control" value="${placeholder}" required>
-                    <input type="text" name="answers[${index}]" class="form-control" value="${answer}" required>
+                    <input type="text" name="answers[${index}]" class="form-control answer-input" value="${answer}" required>
                     <span class="input-group-text">Score</span>
                     <input type="number" name="score[${index}]" class="form-control" value="${score}" min="1" required>
                     <button type="button" class="btn btn-outline-danger remove-blank" data-blank-id="${index}">×</button>
+                    <div class="invalid-feedback text-danger answer-error" style="display:none"></div>
                 </div>
             `;
         }
+
+        function normalizeAnswer(text) {
+            return text.trim().toLowerCase();
+        }
+
+        function isDuplicateAnswer(newAnswer) {
+            const allAnswers = [];
+
+            // Get current correct answers
+            document.querySelectorAll('#answer-list input[name^="answers"]').forEach(input => {
+                allAnswers.push(normalizeAnswer(input.value));
+            });
+
+            // Get current distractor answers
+            document.querySelectorAll('input[name="distractor_answers[]"]').forEach(input => {
+                allAnswers.push(normalizeAnswer(input.value));
+            });
+
+            return allAnswers.includes(normalizeAnswer(newAnswer));
+        }
+
 
         tinymce.init({
             selector: '#editor',
@@ -187,6 +210,23 @@
                     const score = document.getElementById('blank-score').value;
                     const modalEl = bootstrap.Modal.getInstance(document.getElementById('blankModal'));
 
+                    let hasError = false;
+                    document.getElementById('answer-error').style.display = 'none';
+                    if (isDuplicateAnswer(answer)) {
+                        document.getElementById('answer-error').textContent = `Answer already exists.`;
+                        // document.getElementById('answer-error').textContent = `Answer "${answer}" already exists.`;
+                        document.getElementById('answer-error').style.display = 'block';
+                        hasError = true;
+                    }
+
+                    if (!answer) {
+                        document.getElementById('answer-error').textContent = `Answer cannot be empty.`;
+                        document.getElementById('answer-error').style.display = 'block';
+                        hasError = true;
+                    }
+
+                    if (hasError) return;
+
                     if (answer.trim() !== '') {
                         const inputHtml = `<input type="text" class="blank-fill"
                             style="border: 2px dashed #c5c5c5; border-radius: 5px; text-align: center; width: 172px; height: 24px;"
@@ -199,6 +239,7 @@
                         document.getElementById('blank-placeholder').value = '';
                         document.getElementById('blank-answer').value = '';
                         document.getElementById('blank-score').value = '1';
+                        document.getElementById('answer-error').style.display = 'none';
                     }
                 });
             },
@@ -209,8 +250,9 @@
             return `
             <div class="col-md-6 answer-item">
                 <div class="input-group">
-                    <input type="text" name="distractor_answers[]" class="form-control" placeholder="Answer text" required>
+                    <input type="text" name="distractor_answers[]" class="form-control answer-input" placeholder="Answer text" required>
                     <button type="button" class="btn btn-outline-danger remove-answer">×</button>
+                    <div class="invalid-feedback text-danger answer-error" style="display:none"></div>
                 </div>
             </div>
         `;
@@ -231,6 +273,57 @@
         const blankModal = document.getElementById('blankModal');
         blankModal.addEventListener('shown.bs.modal', function () {
             document.getElementById('blank-placeholder').focus();
+        });
+
+        document.addEventListener('input', function (e) {
+            const target = e.target;
+            if (target.classList.contains('answer-input')) {
+                const item = target.closest('.answer-item');
+                const currentIndex = item.dataset.index;
+
+                const currentAnswer = item.querySelector('.answer-input').value.trim();
+
+                const allAnswers = [...document.querySelectorAll('.answer-input')]
+                    .filter(input => input.closest('.answer-item').dataset.index !== currentIndex)
+                    .map(input => input.value.trim().toLowerCase());
+
+                const answerError = item.querySelector('.answer-error');
+
+                // Reset errors
+                answerError.style.display = 'none';
+
+                if (allAnswers.includes(currentAnswer.toLowerCase())) {
+                    answerError.textContent = `Answer already exists.`;
+                    answerError.style.display = 'block';
+                }
+            }
+        });
+
+        document.getElementById('dc-question-form').addEventListener('submit', function (e) {
+            let hasError = false;
+            const answerInputs = [...document.querySelectorAll('.answer-input')];
+
+            const answerValues = {};
+
+            answerInputs.forEach(input => {
+                const value = input.value.trim().toLowerCase();
+                const container = input.closest('.answer-item');
+                const errorEl = container.querySelector('.answer-error');
+
+                errorEl.style.display = 'none';
+                if (answerValues[value]) {
+                    // errorEl.textContent = `Duplicate answer "${input.value}"`;
+                    errorEl.textContent = `Answer already exists.`;
+                    errorEl.style.display = 'block';
+                    hasError = true;
+                } else {
+                    answerValues[value] = true;
+                }
+            });
+
+            if (hasError) {
+                e.preventDefault();
+            }
         });
     </script>
 @endsection

@@ -58,7 +58,9 @@ class SkillAnswerService
             ];
         }
 
-        $this->skillAnswerRepository->insert($insertData);
+        if (count($insertData)) {
+            $this->skillAnswerRepository->insert($insertData);
+        }
     }
 
     public function buildResultScoreResponse($compareAnswers): array
@@ -123,7 +125,7 @@ class SkillAnswerService
 
     public function validateAnswerPayload(Request $request): array
     {
-        $answers = $request->input('answers');
+        $answers = $request->input('answers', []);
         $questionTypes = QuestionTypeAPI::values();
         $hasEncryptAnswerIdType = [
             QuestionTypeAPI::CHOICE->value,

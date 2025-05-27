@@ -17,7 +17,7 @@
                         </div>
                         <div class="card-body p-0">
                             <div class="p-4 code-to-copy">
-                                <form action="{{ route('admin.parts.fic-questions.store', $partId) }}" method="POST">
+                                <form action="{{ route('admin.parts.fic-questions.store', $partId) }}" id="fic-question-form" method="POST">
                                     @csrf
                                     <input type="hidden" name="answer_type" value="{{ \App\Enum\AnswerType::FILL }}">
                                     <div class="mb-3">
@@ -77,10 +77,12 @@
                         <div class="mb-3">
                             <label class="form-label">Placeholder</label>
                             <input type="text" id="blank-placeholder" class="form-control" placeholder="e.g. 1">
+{{--                            <div class="invalid-feedback" id="placeholder-error" style="display: none;"></div>--}}
                         </div>
                         <div class="mb-3">
                             <label class="form-label">Correct Answer</label>
                             <input type="text" id="blank-answer" class="form-control" placeholder="Enter correct answer">
+                            <div class="invalid-feedback" id="answer-error" style="display: none;"></div>
                         </div>
                         <div class="mb-3">
                             <label class="form-label">Score</label>
@@ -107,10 +109,11 @@
                 <div class="input-group mb-2 answer-item" data-index="${index}">
                     <span class="input-group-text">Answer of ${placeholder}</span>
                     <input type="hidden" name="placeholders[${index}]" class="form-control" value="${placeholder}" required>
-                    <input type="text" name="answers[${index}]" class="form-control" value="${answer}" required>
+                    <input type="text" name="answers[${index}]" class="form-control answer-input" value="${answer}" required>
                     <span class="input-group-text">Score</span>
                     <input type="number" name="score[${index}]" class="form-control" value="${score}" min="1" required>
                     <button type="button" class="btn btn-outline-danger remove-blank" data-blank-id="${index}">×</button>
+                    <div class="invalid-feedback text-danger answer-error" style="display:none"></div>
                 </div>
             `;
         }
@@ -160,6 +163,35 @@
                     const score = document.getElementById('blank-score').value;
                     const modalEl = bootstrap.Modal.getInstance(document.getElementById('blankModal'));
 
+                    let hasError = false;
+                    // document.getElementById('placeholder-error').style.display = 'none';
+                    document.getElementById('answer-error').style.display = 'none';
+                    // check duplicate
+                    // const placeholders = [...document.querySelectorAll('input[name^="placeholders"]')].map(el => el.value.toLowerCase());
+                    const answers = [...document.querySelectorAll('input[name^="answers"]')].map(el => el.value.toLowerCase());
+
+                    // if (placeholders.includes(placeholder.toLowerCase())) {
+                    //     document.getElementById('placeholder-error').textContent = `Placeholder "${placeholder}" already exists.`;
+                    //     document.getElementById('placeholder-error').style.display = 'block';
+                    //     hasError = true;
+                    // }
+
+                    if (answers.includes(answer.toLowerCase())) {
+                        document.getElementById('answer-error').textContent = `Answer already exists.`;
+                        // document.getElementById('answer-error').textContent = `Answer "${answer}" already exists.`;
+                        document.getElementById('answer-error').style.display = 'block';
+                        hasError = true;
+                    }
+
+                    if (!answer) {
+                        document.getElementById('answer-error').textContent = `Answer cannot be empty.`;
+                        document.getElementById('answer-error').style.display = 'block';
+                        hasError = true;
+                    }
+
+                    if (hasError) return;
+
+
                     if (answer.trim() !== '') {
                         const inputHtml = `<input type="text"
                             style="border: 2px solid black; border-radius: 5px; text-align: center; width: 172px; height: 24px;"
@@ -172,6 +204,8 @@
                         document.getElementById('blank-placeholder').value = '';
                         document.getElementById('blank-answer').value = '';
                         document.getElementById('blank-score').value = '1';
+                        // document.getElementById('placeholder-error').style.display = 'none';
+                        document.getElementById('answer-error').style.display = 'none';
                     }
                 });
             },
@@ -184,6 +218,70 @@
         const blankModal = document.getElementById('blankModal');
         blankModal.addEventListener('shown.bs.modal', function () {
             document.getElementById('blank-placeholder').focus();
+        });
+
+        document.addEventListener('input', function (e) {
+            const target = e.target;
+            // if (target.classList.contains('placeholder-input') || target.classList.contains('answer-input')) {
+            if (target.classList.contains('answer-input')) {
+                const item = target.closest('.answer-item');
+                const currentIndex = item.dataset.index;
+
+                // const currentPlaceholder = item.querySelector('.placeholder-input').value.trim();
+                const currentAnswer = item.querySelector('.answer-input').value.trim();
+
+                // const allPlaceholders = [...document.querySelectorAll('.placeholder-input')]
+                //     .filter(input => input.closest('.answer-item').dataset.index !== currentIndex)
+                //     .map(input => input.value.trim().toLowerCase());
+
+                const allAnswers = [...document.querySelectorAll('.answer-input')]
+                    .filter(input => input.closest('.answer-item').dataset.index !== currentIndex)
+                    .map(input => input.value.trim().toLowerCase());
+
+                // const placeholderError = item.querySelector('.placeholder-error');
+                const answerError = item.querySelector('.answer-error');
+
+                // Reset errors
+                // placeholderError.style.display = 'none';
+                answerError.style.display = 'none';
+
+                // if (allPlaceholders.includes(currentPlaceholder.toLowerCase())) {
+                //     placeholderError.textContent = `Duplicate placeholder "${currentPlaceholder}"`;
+                //     placeholderError.style.display = 'block';
+                // }
+
+                if (allAnswers.includes(currentAnswer.toLowerCase())) {
+                    answerError.textContent = `Answer already exists.`;
+                    answerError.style.display = 'block';
+                }
+            }
+        });
+
+        document.getElementById('fic-question-form').addEventListener('submit', function (e) {
+            let hasError = false;
+            const answerInputs = [...document.querySelectorAll('.answer-input')];
+
+            const answerValues = {};
+
+            answerInputs.forEach(input => {
+                const value = input.value.trim().toLowerCase();
+                const container = input.closest('.answer-item');
+                const errorEl = container.querySelector('.answer-error');
+
+                errorEl.style.display = 'none';
+                if (answerValues[value]) {
+                    // errorEl.textContent = `Duplicate answer "${input.value}"`;
+                    errorEl.textContent = `Answer already exists.`;
+                    errorEl.style.display = 'block';
+                    hasError = true;
+                } else {
+                    answerValues[value] = true;
+                }
+            });
+
+            if (hasError) {
+                e.preventDefault();
+            }
         });
     </script>
 @endsection

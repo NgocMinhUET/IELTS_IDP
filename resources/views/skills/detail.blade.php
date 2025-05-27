@@ -6,6 +6,7 @@
 
 @php
     $notAssignTest = !$skill->exam->tests_count;
+    $audioUrl = '';
 @endphp
 
 @section('contents')
@@ -76,6 +77,7 @@
                                         @if($errors->has('audio'))
                                             <div class="invalid-feedback mt-0 d-block">{{ $errors->first('audio') }}</div>
                                         @endif
+                                        <div class="invalid-feedback mt-0 d-block" id="audio-error">{{ $errors->first('audio') }}</div>
 
                                         @if($notAssignTest)
                                         <div class="dropzone dropzone-multiple p-0" id="dropzone"
@@ -150,7 +152,7 @@
                                     </div>
 
                                     <div class="mb-3">
-                                        <label class="form-label mb-1" for="skill">Parts <span class="text-danger">*</span></label>
+                                        <label class="form-label mb-1" for="skill">Parts</label>
                                         @if($errors->has('parts'))
                                             <div class="invalid-feedback mt-0 d-block">{{ $errors->first('parts') }}</div>
                                         @endif
@@ -227,6 +229,7 @@
             const dataTransfer = new DataTransfer();
 
             dz.on("addedfile", function (file) {
+                document.getElementById('audio-error').textContent = '';
                 dataTransfer.items.clear(); // prepare for one file upload only
                 dataTransfer.items.add(file);
 
@@ -274,6 +277,29 @@
         document.addEventListener('click', function (e) {
             if (e.target.closest('.remove-part')) {
                 e.target.closest('.part-item').remove();
+            }
+        });
+
+        document.querySelector('form').addEventListener('submit', function (e) {
+            const skillTypeIsListening = "{{ $skill->type->value }}" === "{{ \App\Enum\Models\SkillType::LISTENING->value }}";
+            const notAssignTest = @json($notAssignTest);
+            const hasAudioUrl = @json((bool) $audioUrl);
+
+            if (skillTypeIsListening && notAssignTest && !hasAudioUrl) {
+                const audioInput = document.querySelector('#audio-input');
+
+                if (!audioInput || audioInput.files.length === 0) {
+                    e.preventDefault();
+
+                    document.getElementById('audio-error').textContent = 'The audio file is required';
+
+                    // alert('Please upload an audio file for Listening skill.');
+
+                    // Optional: highlight Dropzone or show error message near it
+                    // document.querySelector('#dropzone').classList.add('border-danger');
+
+                    return false;
+                }
             }
         });
     </script>

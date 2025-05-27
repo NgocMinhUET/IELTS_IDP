@@ -19,7 +19,7 @@ class UpdateSkillRequest extends FormRequest
             'desc' => 'nullable|max:255',
             'duration' => 'required|numeric',
             'bonus_time' => 'nullable|numeric',
-            'parts' => 'required|array',
+            'parts' => 'nullable|array',
             'parts.*.title' => 'required|max:255',
             'audio' => 'nullable|mimes:mp3,wav|mimetypes:audio/mpeg,audio/wav|max:102400',
         ];

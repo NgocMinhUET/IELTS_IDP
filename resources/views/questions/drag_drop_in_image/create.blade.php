@@ -12,7 +12,7 @@
                     </div>
                     <div class="card-body p-4">
 
-                        <form action="{{ route('admin.parts.fii-questions.store', $partId) }}" method="POST" enctype="multipart/form-data">
+                        <form action="{{ route('admin.parts.fii-questions.store', $partId) }}" id="di-question-form" method="POST" enctype="multipart/form-data">
                             @csrf
 
                             <input type="hidden" name="answer_type" value="{{ \App\Enum\AnswerType::DRAG_DROP->value }}">
@@ -99,6 +99,7 @@
                                             <div class="mb-3">
                                                 <label class="form-label">Correct Answer</label>
                                                 <input type="text" class="form-control" id="answer" placeholder="Enter correct answer" required>
+                                                <div class="invalid-feedback" id="answer-error" style="display: none;"></div>
                                             </div>
                                             <div class="mb-3">
                                                 <label class="form-label">Score</label>
@@ -127,6 +128,28 @@
 @section('js')
     <script>
         let blankIndex = 0;
+
+        function normalizeAnswer(text) {
+            return text.trim().toLowerCase();
+        }
+
+        function isDuplicateAnswer(newAnswer) {
+            const allAnswers = [];
+
+            // Get current correct answers
+            document.querySelectorAll('#answer-list input[name^="answers["][name$="[answer]"]').forEach(input => {
+                allAnswers.push(normalizeAnswer(input.value));
+            });
+
+            // Get current distractor answers
+            document.querySelectorAll('input[name="distractor_answers[]"]').forEach(input => {
+                allAnswers.push(normalizeAnswer(input.value));
+            });
+
+            console.log(allAnswers);
+
+            return allAnswers.includes(normalizeAnswer(newAnswer));
+        }
 
         // Upload image
         document.getElementById('image-upload').addEventListener('change', function (e) {
@@ -186,6 +209,22 @@
             const w = document.getElementById('pos-w').value;
             const h = document.getElementById('pos-h').value;
 
+            let hasError = false;
+            document.getElementById('answer-error').style.display = 'none';
+            if (isDuplicateAnswer(answer)) {
+                document.getElementById('answer-error').textContent = `Answer already exists.`;
+                document.getElementById('answer-error').style.display = 'block';
+                hasError = true;
+            }
+
+            if (!answer) {
+                document.getElementById('answer-error').textContent = `Answer cannot be empty.`;
+                document.getElementById('answer-error').style.display = 'block';
+                hasError = true;
+            }
+
+            if (hasError) return;
+
             const imageContainer = document.getElementById('image-container');
 
             // Add input to image
@@ -207,12 +246,13 @@
 
             // Add answer preview with remove button
             const answerHtml = `
-            <div class="input-group mb-2" data-index="${blankIndex}">
+            <div class="input-group mb-2 answer-item" data-index="${blankIndex}">
                 <span class="input-group-text">Answer for ${placeholder}</span>
-                <input type="text" name="answers[${blankIndex}][answer]" value="${answer}" class="form-control" required>
+                <input type="text" name="answers[${blankIndex}][answer]" value="${answer}" class="form-control answer-input" required>
                 <span class="input-group-text">Score</span>
                 <input type="number" name="answers[${blankIndex}][score]" class="form-control" value="${score}" min="1" required>
                 <button type="button" class="btn btn-outline-danger btn-sm" onclick="removeBlank(${blankIndex})">x</button>
+                <div class="invalid-feedback text-danger answer-error" style="display:none"></div>
             </div>
             <input type="hidden" name="answers[${blankIndex}][x]" value="${x}">
             <input type="hidden" name="answers[${blankIndex}][y]" value="${y}">
@@ -252,8 +292,9 @@
             return `
             <div class="col-md-6 answer-item">
                 <div class="input-group">
-                    <input type="text" name="distractor_answers[]" class="form-control" placeholder="Answer text" required>
+                    <input type="text" name="distractor_answers[]" class="form-control answer-input" placeholder="Answer text" required>
                     <button type="button" class="btn btn-outline-danger remove-answer">×</button>
+                    <div class="invalid-feedback text-danger answer-error" style="display:none"></div>
                 </div>
             </div>
         `;
@@ -318,5 +359,56 @@
 
             input.style.cursor = 'grab';
         }
+
+        document.addEventListener('input', function (e) {
+            const target = e.target;
+            if (target.classList.contains('answer-input')) {
+                const item = target.closest('.answer-item');
+                const currentIndex = item.dataset.index;
+
+                const currentAnswer = item.querySelector('.answer-input').value.trim();
+
+                const allAnswers = [...document.querySelectorAll('.answer-input')]
+                    .filter(input => input.closest('.answer-item').dataset.index !== currentIndex)
+                    .map(input => input.value.trim().toLowerCase());
+
+                const answerError = item.querySelector('.answer-error');
+
+                // Reset errors
+                answerError.style.display = 'none';
+
+                if (allAnswers.includes(currentAnswer.toLowerCase())) {
+                    answerError.textContent = `Answer already exists.`;
+                    answerError.style.display = 'block';
+                }
+            }
+        });
+
+        document.getElementById('di-question-form').addEventListener('submit', function (e) {
+            let hasError = false;
+            const answerInputs = [...document.querySelectorAll('.answer-input')];
+
+            const answerValues = {};
+
+            answerInputs.forEach(input => {
+                const value = input.value.trim().toLowerCase();
+                const container = input.closest('.answer-item');
+                const errorEl = container.querySelector('.answer-error');
+
+                errorEl.style.display = 'none';
+                if (answerValues[value]) {
+                    // errorEl.textContent = `Duplicate answer "${input.value}"`;
+                    errorEl.textContent = `Answer already exists.`;
+                    errorEl.style.display = 'block';
+                    hasError = true;
+                } else {
+                    answerValues[value] = true;
+                }
+            });
+
+            if (hasError) {
+                e.preventDefault();
+            }
+        });
     </script>
 @endsection

@@ -119,7 +119,6 @@
             const html = generateSubQuestionHtml(subQuestionIndex);
             wrapper.insertAdjacentHTML('beforeend', html);
 
-            // Khởi tạo 2 đáp án mặc định
             const answerList = wrapper.querySelector(`[data-sub-index="${subQuestionIndex}"]`);
             answerList.insertAdjacentHTML('beforeend', generateAnswerHtml(subQuestionIndex, 0));
             answerList.insertAdjacentHTML('beforeend', generateAnswerHtml(subQuestionIndex, 1));
@@ -143,7 +142,6 @@
             }
         });
 
-        // Hạn chế chọn vượt quá max_select
         document.addEventListener('change', function (e) {
             if (e.target.classList.contains('correct-checkbox')) {
                 const subQuestion = e.target.closest('.sub-question');
@@ -151,8 +149,14 @@
                 const checkboxes = subQuestion.querySelectorAll('.correct-checkbox');
                 const checkedCount = [...checkboxes].filter(cb => cb.checked).length;
 
+                // subQuestion.querySelectorAll('.max-error-message').forEach(el => el.remove());
+
                 if (checkedCount > max) {
                     e.target.checked = false;
+                    // const message = document.createElement('div');
+                    // message.className = 'invalid-feedback max-error-message mt-2 d-block';
+                    // message.textContent = `You can select up to ${max} correct answer(s).`;
+                    // checkboxes[0].closest('.mb-2').appendChild(message);
                     alert(`You can select up to ${max} correct answer(s).`);
                 }
             }
@@ -163,6 +167,8 @@
             const subQuestions = document.querySelectorAll('.sub-question');
             let valid = true;
 
+            document.querySelectorAll('.sub-question .error-message').forEach(el => el.remove());
+
             subQuestions.forEach((sub, idx) => {
                 const checkboxes = sub.querySelectorAll('.correct-checkbox');
                 const checkedCount = Array.from(checkboxes).filter(cb => cb.checked).length;
@@ -170,9 +176,28 @@
                 const minSelectInput = sub.querySelector('.min-select');
                 const minRequired = parseInt(minSelectInput.value) || 1;
 
+                const answerInputs = sub.querySelectorAll('input[name*="[answer]"]');
+                const answers = Array.from(answerInputs).map(input => input.value.trim().toLowerCase());
+                const duplicates = answers.filter((item, i) => answers.indexOf(item) !== i);
+
                 if (checkedCount < minRequired) {
                     valid = false;
-                    alert(`Sub Question ${idx + 1} must have at least ${minRequired} correct answer(s).`);
+                    const message = document.createElement('div');
+                    message.className = 'invalid-feedback error-message mt-2 d-block';
+                    message.textContent = `Must have at least ${minRequired} correct answer(s).`;
+                    checkboxes[0].closest('.mb-2').appendChild(message);
+                    // alert(`Sub Question ${idx + 1} must have at least ${minRequired} correct answer(s).`);
+                }
+
+
+                if (duplicates.length > 0) {
+                    valid = false;
+                    const message = document.createElement('div');
+                    message.className = 'invalid-feedback error-message mt-2 d-block';
+                    message.textContent = 'Answers must be unique.';
+                    const answerSection = sub.querySelector('.answer-list');
+                    answerSection.parentNode.appendChild(message);
+                    // alert(`Sub Question ${idx + 1} has duplicate answers. Please make all answers unique.`);
                 }
             });
 

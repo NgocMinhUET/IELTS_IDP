@@ -85,7 +85,6 @@ class SkillAnswerController extends Controller
             $this->skillSessionService->updateSkillSessionToken($skillSession, $analyticData);
 
             //update exam session
-            //TODO: refactor if this last skill
             $this->examSessionService->updateExamSessionStatusAfterSkillSubmit($examSession);
             DB::commit();
         } catch (\Throwable $exception) {
