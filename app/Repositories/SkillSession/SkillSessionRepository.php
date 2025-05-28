@@ -16,4 +16,17 @@ class SkillSessionRepository extends BaseRepository implements SkillSessionInter
     {
         return $this->model->firstOrCreate($uniquePair, $attributes);
     }
+
+    public function updateSkillSessionAfterChangeScore($id, $scoreDiff, $isPendingAnswer)
+    {
+        $skillSession = $this->find($id);
+
+        $skillSession->increment('total_correct_score', $scoreDiff);
+
+        if ($isPendingAnswer) {
+            $skillSession->decrement('total_pending_answer');
+        }
+
+        $skillSession->save();
+    }
 }

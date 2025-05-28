@@ -83,9 +83,19 @@
                                                                         <div class="card border border-primary">
                                                                             <div class="card-body">
                                                                                 <h4 class="card-title">
-                                                                                    <a href="#">
-                                                                                        {{ $skillSession->skill->type->label() }}
-                                                                                    </a>
+                                                                                    @if($skillSession->skill->type == \App\Enum\Models\SkillType::WRITING)
+                                                                                        <a href="{{ route('admin.histories.skill-detail', [
+                                                                                            $test->id,
+                                                                                            $student->id,
+                                                                                            $skillSession->id,
+                                                                                        ]) }}" target="_blank">
+                                                                                            {{ $skillSession->skill->type->label() }}
+                                                                                        </a>
+                                                                                    @else
+                                                                                        <a href="#">
+                                                                                            {{ $skillSession->skill->type->label() }}
+                                                                                        </a>
+                                                                                    @endif
                                                                                 </h4>
                                                                                 <div class="row">
                                                                                     <p class="card-text">

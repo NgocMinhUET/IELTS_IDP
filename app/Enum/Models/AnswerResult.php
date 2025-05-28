@@ -7,4 +7,5 @@ enum AnswerResult: int
     case PENDING = 1;
     case CORRECT = 2;
     case INCORRECT = 3;
+    case GRADED = 4;
 }

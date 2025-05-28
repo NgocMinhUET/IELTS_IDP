@@ -2,6 +2,7 @@
 
 namespace App\Services\CMS;
 
+use App\Http\Controllers\CMS\Traits\QuestionUtil;
 use App\Models\Skill;
 use App\Repositories\Skill\SkillInterface;
 use App\Services\BaseService;
@@ -14,6 +15,8 @@ use Illuminate\Http\UploadedFile;
  */
 class SkillService extends BaseService
 {
+    use QuestionUtil;
+
     public string $storageDisk = 'local';
     public function __construct(
         public SkillInterface $skillRepository,
@@ -81,5 +84,21 @@ class SkillService extends BaseService
     public function updateListeningSkillAudioFile(Skill $skill, UploadedFile $audioFile): \Illuminate\Database\Eloquent\Model
     {
         return $skill->updateMedia($audioFile, $this->storageDisk, 'public');
+    }
+
+    public function getAllQuestionsBySkillId($skillId)
+    {
+        $skill = $this->getSkill($skillId);
+
+        $questions = [];
+
+        $parts = $skill->parts;
+
+        foreach ($parts as $part) {
+            $questions[$part->id]['part'] = $part;
+            $questions[$part->id]['questions'] = $this->getAllOrderedQuestionsOfPart($part->id, $skill->type);
+        }
+
+        return $questions;
     }
 }

@@ -53,6 +53,7 @@ class SkillAnswerService
                 'answer_result' => isset($compareAnswer['is_correct']) ?
                     ($compareAnswer['is_correct'] ? AnswerResult::CORRECT->value : AnswerResult::INCORRECT->value) :
                     AnswerResult::PENDING,
+                'score' => $compareAnswer['score'] ?? null,
                 'created_at' => $now,
                 'updated_at' => $now,
             ];
@@ -95,6 +96,7 @@ class SkillAnswerService
             }
 
             $answer['is_correct'] = false;
+            $answer['score'] = 0;
 
             if (in_array($answer['question_type'], [QuestionTypeAPI::FILL_CONTENT->value, QuestionTypeAPI::FILL_IMAGE->value])) {
                 if (strtolower($answer['answer']) == strtolower($found['answer'])) {
@@ -113,6 +115,7 @@ class SkillAnswerService
             }
 
             if ($answer['is_correct']) {
+                $answer['score'] = $found['score'];
                 $totalCorrectScore += $found['score'];
                 $numberOfCorrectAnswer++;
             }

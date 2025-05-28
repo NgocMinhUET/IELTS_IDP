@@ -7,4 +7,6 @@ use App\Repositories\BaseInterface;
 interface SkillSessionInterface extends BaseInterface
 {
     public function firstOrCreateSkillSession($uniquePair, $attributes);
+
+    public function updateSkillSessionAfterChangeScore($id, $scoreDiff, $isPendingAnswer);
 }

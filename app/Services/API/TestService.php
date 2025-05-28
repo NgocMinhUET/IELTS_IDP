@@ -148,6 +148,7 @@ class TestService
                 'answer' => $skillAnswer->answer,
                 'answer_result' => $skillAnswer->answer_result,
                 'question_type' => $skillAnswer->question_type,
+                'score' => $skillAnswer->score,
             ];
         });
     }

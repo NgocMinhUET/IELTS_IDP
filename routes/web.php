@@ -152,6 +152,8 @@ Route::group(['middleware' => ['auth:admin']], function () {
             Route::get('/', [HistoryController::class, 'index'])->name('index');
             Route::get('/{testId}/students', [HistoryController::class, 'getListHistoryStudentsOfTest'])->name('list-student');
             Route::get('/{testId}/students/{studentId}', [HistoryController::class, 'getListHistorySessionsOfStudentS'])->name('list-exam-session');
+            Route::get('/{testId}/students/{studentId}/skills/{skillSessionId}', [HistoryController::class, 'getDetailSkillSession'])->name('skill-detail');
+            Route::patch('/skill-answers/{skillAnswerId}', [HistoryController::class, 'updateSkillAnswerScore'])->name('update-score');
         });
     });
 });
