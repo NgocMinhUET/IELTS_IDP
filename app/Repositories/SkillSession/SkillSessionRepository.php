@@ -21,11 +21,13 @@ class SkillSessionRepository extends BaseRepository implements SkillSessionInter
     {
         $skillSession = $this->find($id);
 
-        $skillSession->increment('total_correct_score', $scoreDiff);
+        $skillSession->total_correct_score = ($skillSession->total_correct_score ?? 0) + $scoreDiff;
 
         if ($isPendingAnswer) {
-            $skillSession->decrement('total_pending_answer');
+            $skillSession->total_pending_answer--;
         }
+
+        $skillSession->timestamps = false;
 
         $skillSession->save();
     }

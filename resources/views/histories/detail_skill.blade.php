@@ -56,9 +56,26 @@
 
                                         <div class="mt-3">
                                             <span class="form-label"><b>Answer</b></span>
-                                            <div class="card pt-2 pb-4 px-2">
-                                                {!! $answer['answer'] !!}
-                                            </div>
+                                            @if($answer['question_type'] == \App\Enum\QuestionTypeAPI::SPEAKING->value)
+                                                @php
+                                                    $answerArr = json_decode($answer['answer'], true);
+                                                    if ($answerArr['storage'] == 'minio') {
+                                                        config(['filesystems.disks.minio.endpoint' => config('filesystems.disks.minio.access_endpoint')]);
+                                                    }
+                                                    $audioUrl = \Illuminate\Support\Facades\Storage::disk($answerArr['storage'])
+                                                        ->temporaryUrl($answerArr['path'], now()->addMinutes(60));
+                                                @endphp
+                                                <div>
+                                                    <audio controls>
+                                                        <source src="{{ $audioUrl }}" type="audio/webm">
+                                                        Your browser does not support the audio element.
+                                                    </audio>
+                                                </div>
+                                            @else
+                                                <div class="card pt-2 pb-4 px-2">
+                                                    {!! $answer['answer'] !!}
+                                                </div>
+                                            @endif
                                         </div>
                                     </div>
                                 </div>

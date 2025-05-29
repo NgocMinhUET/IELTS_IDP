@@ -54,7 +54,7 @@
                                                         <div class="row pt-2">
                                                             <p class="card-text">
                                                                 <b>Status: </b>
-                                                                <span class="text-gray-500"><b>{{ $examSession->status->label() }}</b></span>
+                                                                <span class="{{ $examSession->status->colorClass() }}"><b>{{ $examSession->status->label() }}</b></span>
                                                             </p>
                                                         </div>
                                                         <div class="row pt-2">
@@ -83,7 +83,11 @@
                                                                         <div class="card border border-primary">
                                                                             <div class="card-body">
                                                                                 <h4 class="card-title">
-                                                                                    @if($skillSession->skill->type == \App\Enum\Models\SkillType::WRITING)
+                                                                                    @if(
+                                                                                        in_array($skillSession->skill->type,
+                                                                                        [\App\Enum\Models\SkillType::WRITING, \App\Enum\Models\SkillType::SPEAKING])
+                                                                                        && $skillSession->status == \App\Enum\Models\SkillSessionStatus::SUBMITTED
+                                                                                    )
                                                                                         <a href="{{ route('admin.histories.skill-detail', [
                                                                                             $test->id,
                                                                                             $student->id,
@@ -92,15 +96,15 @@
                                                                                             {{ $skillSession->skill->type->label() }}
                                                                                         </a>
                                                                                     @else
-                                                                                        <a href="#">
-                                                                                            {{ $skillSession->skill->type->label() }}
-                                                                                        </a>
+                                                                                        {{ $skillSession->skill->type->label() }}
                                                                                     @endif
                                                                                 </h4>
                                                                                 <div class="row">
                                                                                     <p class="card-text">
                                                                                         <b>Skill Status: </b>
-                                                                                        <span class="text-gray-500"><b>{{ $skillSession->status->label() }}</b></span>
+                                                                                        <span class="{{ $skillSession->status->colorClass() }}">
+                                                                                            <b>{{ $skillSession->status->label() }}</b>
+                                                                                        </span>
                                                                                     </p>
                                                                                 </div>
                                                                                 <div class="row">

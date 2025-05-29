@@ -2,6 +2,7 @@
 
 namespace App\Services\CMS;
 
+use App\Models\SpeakingQuestion;
 use App\Models\WritingQuestion;
 use App\Repositories\Test\TestInterface;
 use App\Services\BaseService;
@@ -30,6 +31,8 @@ class HistoryService extends BaseService
             $originalQuestionId = $skillAnswer->question_id;
             if ($skillAnswer->question_model == (new WritingQuestion)->getTable()) {
                 $originalQuestionId = WritingQuestion::toOriginId($originalQuestionId);
+            } else if ($skillAnswer->question_model == (new SpeakingQuestion())->getTable()) {
+                $originalQuestionId = SpeakingQuestion::toOriginId($originalQuestionId);
             }
 
             $arrSkillAnswer = $skillAnswer->toArray();

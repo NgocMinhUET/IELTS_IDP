@@ -19,4 +19,13 @@ enum ExamSessionStatus: int
             self::IN_COMPLETE => 'InComplete',
         };
     }
+
+    public function colorClass(): string
+    {
+        return match($this) {
+            self::ISSUE, self::SKILL_SUBMITTED, self::IN_USE => 'text-warning',
+            self::COMPLETE => 'text-success',
+            self::IN_COMPLETE => 'text-danger',
+        };
+    }
 }

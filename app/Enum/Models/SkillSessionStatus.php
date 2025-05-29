@@ -14,4 +14,12 @@ enum SkillSessionStatus: int
             self::SUBMITTED => 'Submitted',
         };
     }
+
+    public function colorClass(): string
+    {
+        return match($this) {
+            self::IN_PROGRESS => 'text-warning',
+            self::SUBMITTED => 'text-success',
+        };
+    }
 }

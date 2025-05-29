@@ -2,12 +2,15 @@
 
 namespace App\Services\API;
 
+use App\Enum\Models\AnswerResult;
 use App\Enum\Models\ExamSessionStatus;
+use App\Enum\QuestionTypeAPI;
 use App\Models\Test;
 use App\Repositories\Exam\ExamInterface;
 use App\Repositories\ExamSession\ExamSessionInterface;
 use App\Repositories\Skill\SkillInterface;
 use App\Repositories\Test\TestInterface;
+use Illuminate\Support\Facades\Storage;
 use Symfony\Component\HttpKernel\Exception\HttpException;
 
 class TestService
@@ -143,9 +146,23 @@ class TestService
     public function buildAnswersResponse($skillAnswers)
     {
         return $skillAnswers->map(function ($skillAnswer) {
+            $questionType = $skillAnswer->question_type;
+            $answer = '';
+            if ($questionType == QuestionTypeAPI::SPEAKING->value) {
+                if ($skillAnswer->answer_result != AnswerResult::UNANSWERED->value) {
+                    $arrAnswer = json_decode($skillAnswer->answer, true);
+                    if ($arrAnswer['storage'] == 'minio') {
+                        config(['filesystems.disks.minio.endpoint' => config('filesystems.disks.minio.access_endpoint')]);
+                    }
+                    $answer = Storage::disk($arrAnswer['storage'])->temporaryUrl($arrAnswer['path'], now()->addMinutes(60));
+                }
+            } else {
+                $answer = $skillAnswer->answer;
+            }
+
             return [
                 'question_id' => $skillAnswer->question_id,
-                'answer' => $skillAnswer->answer,
+                'answer' => $answer,
                 'answer_result' => $skillAnswer->answer_result,
                 'question_type' => $skillAnswer->question_type,
                 'score' => $skillAnswer->score,
