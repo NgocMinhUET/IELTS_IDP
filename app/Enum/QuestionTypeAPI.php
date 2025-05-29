@@ -9,6 +9,7 @@ use App\Models\ChoiceOptions;
 use App\Models\ChoiceSubQuestion;
 use App\Models\LBlankContentAnswer;
 use App\Models\LBlankContentQuestion;
+use App\Models\SpeakingQuestion;
 use App\Models\WritingQuestion;
 
 enum QuestionTypeAPI: int
@@ -20,6 +21,7 @@ enum QuestionTypeAPI: int
     case DRAG_DROP_IMAGE = 3;
     case CHOICE = 4;
     case WRITING = 6;
+    case SPEAKING = 7;
 
     public function toQuestionModel()
     {
@@ -28,6 +30,7 @@ enum QuestionTypeAPI: int
             self::FILL_IMAGE, self::DRAG_DROP_IMAGE => BlankImageQuestion::class,
             self::CHOICE => ChoiceSubQuestion::class,
             self::WRITING => WritingQuestion::class,
+            self::SPEAKING => SpeakingQuestion::class,
         };
 
         return new $modelClass;

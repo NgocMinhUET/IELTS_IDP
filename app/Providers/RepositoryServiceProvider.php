@@ -34,6 +34,8 @@ use App\Repositories\SkillAnswer\SkillAnswerInterface;
 use App\Repositories\SkillAnswer\SkillAnswerRepository;
 use App\Repositories\SkillSession\SkillSessionInterface;
 use App\Repositories\SkillSession\SkillSessionRepository;
+use App\Repositories\SpeakingQuestion\SpeakingQuestionInterface;
+use App\Repositories\SpeakingQuestion\SpeakingQuestionRepository;
 use App\Repositories\Test\TestInterface;
 use App\Repositories\Test\TestRepository;
 use App\Repositories\WritingQuestion\WritingQuestionInterface;
@@ -78,6 +80,7 @@ class RepositoryServiceProvider extends ServiceProvider
             ExamSessionInterface::class => ExamSessionRepository::class,
             SkillSessionInterface::class => SkillSessionRepository::class,
             SkillAnswerInterface::class => SkillAnswerRepository::class,
+            SpeakingQuestionInterface::class => SpeakingQuestionRepository::class,
         ];
 
         foreach ($repositories as $interface => $repository) {

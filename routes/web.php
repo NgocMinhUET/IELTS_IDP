@@ -10,6 +10,7 @@ use App\Http\Controllers\CMS\ParagraphController;
 use App\Http\Controllers\CMS\PartController;
 use App\Http\Controllers\CMS\QuestionController;
 use App\Http\Controllers\CMS\SkillController;
+use App\Http\Controllers\CMS\SpeakingQuestionController;
 use App\Http\Controllers\CMS\StudentController;
 use App\Http\Controllers\CMS\TeacherController;
 use App\Http\Controllers\CMS\TestController;
@@ -123,6 +124,12 @@ Route::group(['middleware' => ['auth:admin']], function () {
                         Route::post('/store', [WritingQuestionController::class, 'store'])->name('store');
                         Route::get('/{questionId}', [WritingQuestionController::class, 'edit'])->name('edit');
                         Route::put('/{questionId}', [WritingQuestionController::class, 'update'])->name('update');
+                    });
+
+                    Route::group(['prefix' => 'speaking-questions', 'as' => 'speaking-questions.'], function () {
+                        Route::post('/store', [SpeakingQuestionController::class, 'store'])->name('store');
+                        Route::get('/{questionId}', [SpeakingQuestionController::class, 'edit'])->name('edit');
+                        Route::put('/{questionId}', [SpeakingQuestionController::class, 'update'])->name('update');
                     });
                 });
             });

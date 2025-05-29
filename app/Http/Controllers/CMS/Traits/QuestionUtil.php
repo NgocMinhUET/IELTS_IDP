@@ -7,6 +7,7 @@ use App\Services\CMS\BlankContentQuestionService;
 use App\Services\CMS\BlankImageQuestionService;
 use App\Services\CMS\PartService;
 use App\Services\CMS\QuestionService;
+use App\Services\CMS\SpeakingQuestionService;
 use App\Services\CMS\WritingQuestionService;
 
 trait QuestionUtil
@@ -22,6 +23,8 @@ trait QuestionUtil
 
         if ($skillType == SkillType::WRITING) {
             return $this->getAllOrderedWritingQuestionsOfPart($questionOrders, $partId);
+        } else if ($skillType == SkillType::SPEAKING) {
+            return $this->getAllOrderedSpeakingQuestionsOfPart($questionOrders, $partId);
         } else {
             return $this->getAllOrderedOtherQuestionsOfPart($questionOrders, $partId);
         }
@@ -34,14 +37,31 @@ trait QuestionUtil
             abort(500, 'Not implemented');
         }
         $writingQuestions = $writingQuestionService->getWritingQuestionByPart($partId);
-        $sortMapWritingQuestions = $writingQuestions->mapWithKeys(function ($item) {
+
+        return $this->mapQuestionWithOrder($questionOrders, $writingQuestions);
+    }
+
+    public function getAllOrderedSpeakingQuestionsOfPart($questionOrders, $partId): array
+    {
+        $speakingQuestionService = app()->make(SpeakingQuestionService::class);
+        if (!$speakingQuestionService instanceof SpeakingQuestionService) {
+            abort(500, 'Not implemented');
+        }
+        $speakingQuestions = $speakingQuestionService->getSpeakingQuestionByPart($partId);
+
+        return $this->mapQuestionWithOrder($questionOrders, $speakingQuestions);
+    }
+
+    public function mapQuestionWithOrder($questionOrders, $speakingQuestions): array
+    {
+        $sortMapSpeakingQuestions = $speakingQuestions->mapWithKeys(function ($item) {
             return [$item->getTable() . '_' . $item->id => $item];
         })->all();
 
         $allQuestions = [];
         foreach ($questionOrders as $order) {
-            if (isset($sortMapWritingQuestions[$order['table'] . '_' . $order['question_id']])) {
-                $allQuestions[] = $sortMapWritingQuestions[$order['table'] . '_' . $order['question_id']];
+            if (isset($sortMapSpeakingQuestions[$order['table'] . '_' . $order['question_id']])) {
+                $allQuestions[] = $sortMapSpeakingQuestions[$order['table'] . '_' . $order['question_id']];
             }
         }
 

@@ -3,10 +3,11 @@
 namespace App\Services\API;
 
 use App\Enum\AnswerType;
-use App\Enum\Models\SkillType;
+use App\Http\Controllers\CMS\Traits\QuestionUtil;
 use App\Models\BlankImageQuestion;
 use App\Models\ChoiceQuestion;
 use App\Models\LBlankContentQuestion;
+use App\Models\SpeakingQuestion;
 use App\Models\WritingQuestion;
 use App\Repositories\BlankImageQuestion\BlankImageQuestionInterface;
 use App\Repositories\ChoiceQuestion\ChoiceQuestionInterface;
@@ -17,6 +18,7 @@ use App\Repositories\WritingQuestion\WritingQuestionInterface;
 
 class PartService
 {
+    use QuestionUtil;
     public function __construct(
         public PartInterface $partRepository,
         public QuestionOrderInterface $questionOrderRepository,
@@ -50,66 +52,9 @@ class PartService
 
     public function getQuestionsOfPart($partId, $skillType): array
     {
-        $questionOrders = $this->questionOrderRepository->getAllQuestionOrdersOfPart($partId, $skillType)
-            ->select('table', 'question_id')->toArray();
-
-        if ($skillType == SkillType::WRITING) {
-            $questions = $this->getAllOrderedWritingQuestionsOfPart($questionOrders, $partId);
-        } else {
-            $questions = $this->getAllOrderedOtherQuestionsOfPart($questionOrders, $partId);
-        }
+        $questions = $this->getAllOrderedQuestionsOfPart($partId, $skillType);
 
         return $this->mapQuestionAPI($questions);
-    }
-
-    public function getAllOrderedWritingQuestionsOfPart($questionOrders, $partId): array
-    {
-        $writingQuestions = $this->writingQuestionRepository
-            ->findWhere(['part_id' => $partId]);
-
-        $sortMapWritingQuestions = $this->mapKeyForQuestionModels($writingQuestions);
-
-        $allQuestions = [];
-        foreach ($questionOrders as $order) {
-            if (isset($sortMapWritingQuestions[$order['table'] . '_' . $order['question_id']])) {
-                $allQuestions[] = $sortMapWritingQuestions[$order['table'] . '_' . $order['question_id']];
-            }
-        }
-
-        return $allQuestions;
-    }
-
-    public function getAllOrderedOtherQuestionsOfPart($questionOrders, $partId): array
-    {
-        $choiceQuestions = $this->choiceQuestionRepository->with('choiceSubQuestions.choiceOptions')
-            ->findWhere(['part_id' => $partId]);
-        $sortMapChoiceQuestions = $this->mapKeyForQuestionModels($choiceQuestions);
-
-        $fillInBlankQuestions = $this->lBlankContentQuestionRepository->with('answers')
-            ->findWhere(['part_id' => $partId]);
-        $sortFillInBlankQuestions = $this->mapKeyForQuestionModels($fillInBlankQuestions);
-
-        $fillInImageQuestions = $this->blankImageQuestionRepository->with('answers')
-            ->findWhere(['part_id' => $partId]);
-        $sortFillInImageQuestions = $this->mapKeyForQuestionModels($fillInImageQuestions);
-
-        $allMapQuestions = array_merge($sortMapChoiceQuestions, $sortFillInBlankQuestions, $sortFillInImageQuestions);
-
-        $allQuestions = [];
-        foreach ($questionOrders as $order) {
-            if (isset($allMapQuestions[$order['table'] . '_' . $order['question_id']])) {
-                $allQuestions[] = $allMapQuestions[$order['table'] . '_' . $order['question_id']];
-            }
-        }
-
-        return $allQuestions;
-    }
-
-    public function mapKeyForQuestionModels($questions)
-    {
-        return $questions->mapWithKeys(function ($item) {
-            return [$item->getTable() . '_' . $item->id => $item];
-        })->all();
     }
 
     public function mapQuestionAPI($questions): array
@@ -164,7 +109,7 @@ class PartService
                 $choiceQuestionDetail['sub_questions']= $subQuestionDetails->toArray();
                 $component['choice_question_detail'] = $choiceQuestionDetail;
             }
-        } else if ($question instanceof WritingQuestion) {
+        } else if ($question instanceof WritingQuestion || $question instanceof SpeakingQuestion) {
             $component['sub_question_ids'] = [$question->input_identify];
         }
 

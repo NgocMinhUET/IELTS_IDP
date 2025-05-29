@@ -11,7 +11,9 @@ use App\Repositories\ChoiceQuestion\ChoiceQuestionInterface;
 use App\Repositories\LBlankContentQuestion\LBlankContentQuestionInterface;
 use App\Repositories\Part\PartInterface;
 use App\Repositories\Skill\SkillInterface;
+use App\Repositories\SpeakingQuestion\SpeakingQuestionInterface;
 use App\Repositories\WritingQuestion\WritingQuestionInterface;
+use App\Services\CMS\SpeakingQuestionService;
 
 class SkillService
 {
@@ -22,6 +24,7 @@ class SkillService
         public ChoiceQuestionInterface $choiceQuestionRepository,
         public LBlankContentQuestionInterface $lBlankContentQuestionRepository,
         public BlankImageQuestionInterface $blankImageQuestionRepository,
+        public SpeakingQuestionInterface $speakingQuestionRepository,
     ) {}
 
     public function getSkill($id)
@@ -60,6 +63,18 @@ class SkillService
         return $writingQuestions;
     }
 
+    public function getAllSpeakingSkillQuestionsAndAnswers(Skill $skill): array
+    {
+        $parts = $this->getPartsOfSkill($skill->id);
+
+        $writingQuestions = [];
+        foreach ($parts as $part) {
+            $writingQuestions = array_merge($writingQuestions, $this->getAllSpeakingQuestionsOfPart($part->id));
+        }
+
+        return $writingQuestions;
+    }
+
     public function getPartsOfSkill($skillId)
     {
         return $this->partRepository->findByField('skill_id', $skillId);
@@ -68,6 +83,24 @@ class SkillService
     public function getAllWritingQuestionsOfPart($partId): array
     {
         $questions = $this->writingQuestionRepository
+            ->findWhere(['part_id' => $partId]);
+
+        $writingQuestions = [];
+        foreach ($questions as $question) {
+            $tmp = [
+                'question_id' => $question->input_identify,
+                'question_model' => $question->getTable(),
+                'question_type' => $question->type,
+                'score' => $question->score,
+            ];
+            $writingQuestions[] = $tmp;
+        }
+
+        return $writingQuestions;
+    }
+    public function getAllSpeakingQuestionsOfPart($partId): array
+    {
+        $questions = $this->speakingQuestionRepository
             ->findWhere(['part_id' => $partId]);
 
         $writingQuestions = [];

@@ -23,6 +23,9 @@ trait HasMedia
         return $this->morphMany(MediaCollection::class, 'mediable');
     }
 
+    /**
+     * @throws \Exception
+     */
     public function addMedia(
         UploadedFile $file,
         string $disk = 's3',
@@ -36,6 +39,10 @@ trait HasMedia
             'disk' => $disk,
             'visibility' => $visibility,
         ]);
+
+        if ($path === false) {
+            throw new \Exception('Failed to store file');
+        }
 
         return $this->media()->create([
             'disk' => $disk,

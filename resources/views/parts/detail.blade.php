@@ -281,6 +281,36 @@
                                 </div>
                             </div>
                         @endif
+
+                        @if($question instanceof \App\Models\SpeakingQuestion)
+                            <div class="accordion-item" id="Q_{{$key}}">
+                                <h2 class="accordion-header" id="heading_3_{{ $key }}">
+                                    <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse"
+                                            data-bs-target="#collapse_3_{{ $key }}" aria-expanded="false" aria-controls="collapse_3_{{ $key }}">
+                                        {{ $question->title ?? 'Speaking Question ' . ($key + 1) }}
+                                    </button>
+                                </h2>
+                                <div id="collapse_3_{{ $key }}" class="accordion-collapse collapse"
+                                     aria-labelledby="heading_{{ $key }}" data-bs-parent="#accordionExample">
+                                    <div class="accordion-body">
+                                        <div class="container py-4">
+                                            <div class="card mb-4">
+                                                <div class="mt-4 mx-4">
+                                                    <small class="text-muted">SCORE: {{ $question->score ?? 'NOT SET' }}</small>
+                                                </div>
+                                                <div class="card-body">
+                                                    <div class="mb-3">
+                                                        <div class="card pt-2 pb-4 px-2">
+                                                            {!! $question->content !!}
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        @endif
                     @endforeach
 
                     @if($notAssignTest)

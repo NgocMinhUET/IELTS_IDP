@@ -4,6 +4,7 @@ namespace App\Repositories\QuestionOrder;
 
 use App\Enum\Models\SkillType;
 use App\Models\QuestionOrder;
+use App\Models\SpeakingQuestion;
 use App\Models\WritingQuestion;
 use App\Repositories\BaseRepository;
 
@@ -27,8 +28,11 @@ class QuestionOrderRepository extends BaseRepository implements QuestionOrderInt
             case SkillType::WRITING:
                 $query->where('table', (new WritingQuestion())->getTable());
                 break;
+            case SkillType::SPEAKING:
+                $query->where('table', (new SpeakingQuestion())->getTable());
+                break;
             default:
-                $query->where('table', '!=', (new WritingQuestion())->getTable());
+                $query->whereNotIn('table', [(new WritingQuestion())->getTable(), (new SpeakingQuestion())->getTable()]);
                 break;
         }
 

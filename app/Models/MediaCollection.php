@@ -30,9 +30,13 @@ class MediaCollection extends Model
         $path = $this->path;
         $visibility = $this->visibility;
 
+        if ($disk === 'minio') {
+            config(['filesystems.disks.minio.endpoint' => config('filesystems.disks.minio.access_endpoint')]);
+        }
+
         if ($visibility === 'private') {
-            if ($disk === 's3') {
-                return Storage::disk('s3')->temporaryUrl($path, now()->addMinutes(self::DEFAULT_EXPIRE_TIME));
+            if ($disk === 's3' || $disk === 'minio') {
+                return Storage::disk($disk)->temporaryUrl($path, now()->addMinutes(self::DEFAULT_EXPIRE_TIME));
             } else {
                 return URL::signedRoute('media.private', ['media' => $this->id], now()->addMinutes(self::DEFAULT_EXPIRE_TIME));
             }

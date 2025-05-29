@@ -24,6 +24,7 @@ enum QuestionType: string
             self::FILL_IN_IMAGE => 'questions.fill_in_image.create',
             self::DRAG_DROP_IMAGE => 'questions.drag_drop_in_image.create',
             self::WRITING => 'questions.writing.create',
+            self::SPEAKING => 'questions.speaking.create',
         };
     }
 }

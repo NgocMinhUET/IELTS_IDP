@@ -80,6 +80,19 @@ class SkillController extends Controller
 
             // store skill session
             $skillSession = $hasSkillSessionToken ? $skillSession : $this->skillSessionService->makeSkillSessionService($examSession->id, $skill);
+            if ($skill->type == SkillType::SPEAKING) {
+                $speakingQuestions = $this->skillService->getAllSpeakingSkillQuestionsAndAnswers($skill);
+                $totalQuestion = 0;
+                $totalScore = 0;
+                foreach ($speakingQuestions as $speakingQuestion) {
+                    $totalQuestion++;
+                    $totalScore += $speakingQuestion['score'];
+                }
+                $skillSession->update([
+                    'total_question' => $totalQuestion,
+                    'total_score' => $totalScore,
+                ]);
+            }
             $response['skill_session_token'] = $skillSession->generateEncryptedToken();
             $response['seconds_remaining'] = $skillSession->seconds_remaining;
 

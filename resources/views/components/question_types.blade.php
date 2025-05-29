@@ -14,6 +14,18 @@
                 </div>
             </a>
         </div>
+    @elseif($part->skill->type == \App\Enum\Models\SkillType::SPEAKING)
+        <div class="col-md-4">
+            <a href="{{ route('admin.parts.questions.create', ['type' => \App\Enum\QuestionType::SPEAKING, 'id' => $part->id]) }}" class="text-decoration-none">
+                <div class="card h-100 shadow-sm border-0 hover-shadow transition">
+                    <div class="card-body text-center">
+                        <div class="fs-3 mb-3">🗣️🎙️</div>
+                        <h5 class="card-title">Speaking Question</h5>
+                        <p class="card-text text-muted">Create a question for speaking skill.</p>
+                    </div>
+                </div>
+            </a>
+        </div>
     @else
         <div class="col-md-4">
             <a href="{{ route('admin.parts.questions.create', ['type' => \App\Enum\QuestionType::CHOICE, 'id' => $part->id]) }}" class="text-decoration-none">

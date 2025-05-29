@@ -22,7 +22,7 @@ class SkillService extends BaseService
         public SkillInterface $skillRepository,
     ) {
         //TODO: open there if s3 config is set
-//        $this->storageDisk = config('filesystems.default');
+        $this->storageDisk = config('filesystems.default');
     }
 
     public function storeSkillFromExam($examId, $skillTypes)

@@ -64,6 +64,10 @@ Route::group(['middleware' => ['localization', 'cors']], function () {
             Route::get('/skills', [SkillController::class, 'getSkillForExam']);
             Route::get('/questions', [SkillController::class, 'getQuestions']);
             Route::post('/answers', [SkillAnswerController::class, 'submitAnswer']);
+            Route::group(['prefix' => 'speaking-recordings'], function () {
+                Route::get('/request', [SkillAnswerController::class, 'getSpeakingRecordPresignedUrl']);
+                Route::post('/sent', [SkillAnswerController::class, 'markSpeakingRecordAsSent']);
+            });
         });
     });
 });

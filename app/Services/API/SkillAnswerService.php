@@ -3,24 +3,27 @@
 namespace App\Services\API;
 
 use App\Enum\Models\AnswerResult;
+use App\Enum\Models\SkillSessionStatus;
 use App\Enum\QuestionType;
 use App\Enum\QuestionTypeAPI;
-use App\Models\BlankImageAnswer;
 use App\Models\ChoiceOptions;
 use App\Models\ChoiceSubQuestion;
-use App\Models\LBlankContentAnswer;
+use App\Models\ExamSession;
 use App\Models\LBlankContentQuestion;
-use App\Models\Skill;
+use App\Models\SkillSession;
+use App\Models\SpeakingQuestion;
 use App\Models\WritingQuestion;
 use App\Repositories\SkillAnswer\SkillAnswerInterface;
+use App\Repositories\SpeakingQuestion\SpeakingQuestionInterface;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Storage;
 use Symfony\Component\HttpKernel\Exception\HttpException;
 
 class SkillAnswerService
 {
     public function __construct(
         public SkillAnswerInterface $skillAnswerRepository,
+        public SpeakingQuestionInterface $speakingQuestionRepository,
     ) {}
 
     public function storeAnswerAndGetResult($answerPayload, $skillQuestions): array
@@ -143,12 +146,15 @@ class SkillAnswerService
                 throw new HttpException(400, 'Invalid question type');
             }
             $questionModel = QuestionTypeAPI::fromValueToQuestionModel($questionType);
-            if ($questionModel instanceof ChoiceSubQuestion || $questionModel instanceof WritingQuestion) {
+            if ($questionModel instanceof ChoiceSubQuestion ||
+                $questionModel instanceof WritingQuestion ||
+                $questionModel instanceof SpeakingQuestion
+            ) {
                 $originalQuestionId = $questionModel::toOriginId($answer['question_id']);
                 if (!$originalQuestionId) {
                     throw new HttpException(400, 'Invalid question id');
                 }
-//                $answer['question_id'] = $originalQuestionId;
+//                $answer['original_question_id'] = $originalQuestionId;
             }
 
             $originalAnswerId = null;
@@ -208,5 +214,108 @@ class SkillAnswerService
     public function getAllAnswerBySkillSession($skillSessionId)
     {
         return $this->skillAnswerRepository->findByField('skill_session_id', $skillSessionId);
+    }
+
+    public function validateSpeakingAnswerPayload($questionId): array
+    {
+        $originalQuestionId = SpeakingQuestion::toOriginId($questionId);
+        if (!$originalQuestionId) {
+            throw new HttpException(400, 'Invalid question id');
+        }
+
+        return [$questionId, $this->speakingQuestionRepository->find($originalQuestionId)];
+    }
+
+    public function isFirstRequestGetSpeakingRecordPresignedUrl($skillSessionId, SpeakingQuestion $speakingQuestion): void
+    {
+        $skillAnswer = $this->skillAnswerRepository->findWhere([
+            'skill_session_id' => $skillSessionId,
+            'question_model' => $speakingQuestion->getTable(),
+            'question_id' => $speakingQuestion->input_identify,
+            'question_type' => QuestionTypeAPI::SPEAKING->value,
+        ])->first();
+
+        if ($skillAnswer) {
+            throw new HttpException(409, 'Presigned url already exists');
+        }
+    }
+
+    public function markSpeakingRecordAsSent($skillSessionId, SpeakingQuestion $speakingQuestion)
+    {
+        $skillAnswer = $this->skillAnswerRepository->findWhere([
+            'skill_session_id' => $skillSessionId,
+            'question_model' => $speakingQuestion->getTable(),
+            'question_id' => $speakingQuestion->input_identify,
+            'question_type' => QuestionTypeAPI::SPEAKING->value,
+        ])->first();
+
+        if (!$skillAnswer || $skillAnswer->answer_result != AnswerResult::UNANSWERED->value) {
+            throw new HttpException(400);
+        }
+
+        return $skillAnswer->update([
+            'answer_result' => AnswerResult::PENDING
+        ]);
+    }
+
+    public function updateSpeakingSkillSessionAfterSent(SkillSession $skillSession): void
+    {
+        $skillSession->total_submitted_answer++;
+        $skillSession->total_pending_answer++;
+        $skillSession->save();
+
+        $sentAnswers = $this->skillAnswerRepository->findWhere([
+            'skill_session_id' => $skillSession->id,
+            'question_type' => QuestionTypeAPI::SPEAKING->value,
+            'answer_result' => AnswerResult::PENDING
+        ])->count();
+
+        if ($skillSession->total_question == $sentAnswers) {
+            $skillSession->update([
+               'status' => SkillSessionStatus::SUBMITTED,
+            ]);
+        }
+    }
+
+    public function getSpeakingRecordPresignedUrl(SpeakingQuestion $speakingQuestion, ExamSession $examSession, SkillSession $skillSession, $userId): array
+    {
+        $skill = $skillSession->skill;
+        $skillDuration = (int)$skill->duration + (int)$skill->bonus_time + 120;
+        $expiredTime = $speakingQuestion->duration + 120;
+
+        $path = "speaking-recordings/{$examSession->id}_{$skillSession->id}_{$userId}_{$speakingQuestion->id}_record.webm";
+
+        if (!$expiredTime) {
+            $expiredTime = $skillDuration;
+        }
+
+        $disk = config('filesystems.default');
+
+        if ($disk == 'minio') {
+            config(['filesystems.disks.minio.endpoint' => config('filesystems.disks.minio.access_endpoint')]);
+        }
+
+        $client = Storage::disk($disk)->getClient();
+
+        $command = $client->getCommand('PutObject', [
+            'Bucket' => config('filesystems.disks.s3.bucket'),
+            'Key' => $path,
+        ]);
+
+        $request = $client->createPresignedRequest($command, "+{$expiredTime} seconds");
+
+        return [(string) $request->getUri(), $path, $disk];
+    }
+
+    public function storeSpeakingQuestionAnswer($skillSession, $speakingQuestion, array $answerOptions)
+    {
+        return $this->skillAnswerRepository->create([
+            'skill_session_id' => $skillSession->id,
+            'question_model' => $speakingQuestion->getTable(),
+            'question_id' => $speakingQuestion->input_identify,
+            'question_type' => QuestionTypeAPI::SPEAKING->value,
+            'answer' => json_encode($answerOptions),
+            'answer_result' => AnswerResult::UNANSWERED,
+        ]);
     }
 }

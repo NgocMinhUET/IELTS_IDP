@@ -89,12 +89,7 @@ class HistoryController extends CMSController
 
         $skillQuestionsByPart = $this->skillService->getAllQuestionsBySkillId($skillSession->skill_id);
 
-//        dd($skillQuestionsByPart);
-
         $skillAnswers = $this->historyService->prepareSkillAnswersForHistory($skillSession->skillAnswers);
-
-//        dd($skillAnswers, $skillQuestionsByPart);
-
 
         return view('histories.detail_skill', compact('skillQuestionsByPart', 'skillAnswers'));
     }
