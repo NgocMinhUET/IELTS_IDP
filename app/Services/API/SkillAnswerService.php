@@ -298,7 +298,7 @@ class SkillAnswerService
         $client = Storage::disk($disk)->getClient();
 
         $command = $client->getCommand('PutObject', [
-            'Bucket' => config('filesystems.disks.s3.bucket'),
+            'Bucket' => config("filesystems.disks.{$disk}.bucket"),
             'Key' => $path,
         ]);
 
