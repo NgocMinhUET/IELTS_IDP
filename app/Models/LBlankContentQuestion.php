@@ -79,7 +79,16 @@ class LBlankContentQuestion extends Model
                 }
             }
 
-            $input->removeAttribute('placeholder');
+            // Get placeholder value and remove the attribute
+            $placeholder = $input->getAttribute('placeholder');
+            if ($placeholder) {
+                $input->removeAttribute('placeholder');
+
+                // Set Bootstrap tooltip attributes
+                $input->setAttribute('data-bs-toggle', 'tooltip');
+                $input->setAttribute('data-bs-placement', 'top');
+                $input->setAttribute('title', $placeholder);
+            }
 
             // Set value of the input
             $input->setAttribute('value', htmlspecialchars($answerValue));

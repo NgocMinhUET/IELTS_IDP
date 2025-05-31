@@ -117,7 +117,7 @@ class BlankImageQuestion extends Model
             $inputIdentify = $answer->input_identify;
             $inputId = 'input_blank_' . $inputIdentify;
 
-//            $placeholder = htmlspecialchars($answer['placeholder'], ENT_QUOTES);
+            $placeholder = htmlspecialchars($answer['placeholder'], ENT_QUOTES);
 
             // answer submitted of this question
             $submittedAnswer = $submittedAnswers->where('question_id', $inputIdentify)->first();
@@ -151,6 +151,7 @@ class BlankImageQuestion extends Model
                             value="' . $answerValue . '"
                             data-blank-id="' . $inputIdentify . '"
                             style="' . $inputStyle . '"
+                            data-bs-toggle="tooltip" data-bs-placement="top" title="' . $placeholder . '"
                         >
                     </div>
                 ';

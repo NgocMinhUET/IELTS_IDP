@@ -35,46 +35,52 @@
                                         <div class="row">
                                             <div class="d-flex">
                                                 <span class="input-group-text">Max score: {{ $question->score ?? 'not set' }}</span>
-                                                <span class="input-group-text">Current score: {{ $answer['score'] ?: 'not set' }}</span>
-                                                <input type="number" class="form-control pt-3 pb-3 me-2" name="desc"
-                                                       placeholder="Enter new score" max="{{ $question->score }}" min="0"
-                                                >
-                                                <button type="submit"
-                                                        class="btn btn-primary pt-3 pb-3 submit-score-btn"
-                                                        data-url="{{ route('admin.histories.update-score', $answer['id']) }}"
-                                                >Save</button>
+                                                <span class="input-group-text">Current score: {{ $answer['score'] ?? 'not set' }}</span>
+                                                @if($answer)
+                                                    <input type="number" class="form-control pt-3 pb-3 me-2" name="desc"
+                                                           placeholder="Enter new score" max="{{ $question->score }}" min="0"
+                                                    >
+                                                    <button type="submit"
+                                                            class="btn btn-primary pt-3 pb-3 submit-score-btn"
+                                                            data-url="{{ route('admin.histories.update-score', $answer['id']) }}"
+                                                    >Save</button>
+                                                @endif
                                             </div>
                                         </div>
                                     </div>
                                     <div class="card-body">
                                         <div class="mb-1">
-                                            <span class="form-label"><b>Question</b></span>
+                                            <span class="form-label"><b>Question: </b></span>
                                             <div class="card pt-2 pb-4 px-2">
                                                 {!! $question->content !!}
                                             </div>
                                         </div>
 
                                         <div class="mt-3">
-                                            <span class="form-label"><b>Answer</b></span>
-                                            @if($answer['question_type'] == \App\Enum\QuestionTypeAPI::SPEAKING->value)
-                                                @php
-                                                    $answerArr = json_decode($answer['answer'], true);
-                                                    if ($answerArr['storage'] == 'minio') {
-                                                        config(['filesystems.disks.minio.endpoint' => config('filesystems.disks.minio.access_endpoint')]);
-                                                    }
-                                                    $audioUrl = \Illuminate\Support\Facades\Storage::disk($answerArr['storage'])
-                                                        ->temporaryUrl($answerArr['path'], now()->addMinutes(60));
-                                                @endphp
-                                                <div>
-                                                    <audio controls>
-                                                        <source src="{{ $audioUrl }}" type="audio/webm">
-                                                        Your browser does not support the audio element.
-                                                    </audio>
-                                                </div>
+                                            <span class="form-label"><b>Answer: </b></span>
+                                            @if($answer)
+                                                @if($answer['question_type'] == \App\Enum\QuestionTypeAPI::SPEAKING->value)
+                                                    @php
+                                                        $answerArr = json_decode($answer['answer'], true);
+                                                        if ($answerArr['storage'] == 'minio') {
+                                                            config(['filesystems.disks.minio.endpoint' => config('filesystems.disks.minio.access_endpoint')]);
+                                                        }
+                                                        $audioUrl = \Illuminate\Support\Facades\Storage::disk($answerArr['storage'])
+                                                            ->temporaryUrl($answerArr['path'], now()->addMinutes(60));
+                                                    @endphp
+                                                    <div>
+                                                        <audio controls>
+                                                            <source src="{{ $audioUrl }}" type="audio/webm">
+                                                            Your browser does not support the audio element.
+                                                        </audio>
+                                                    </div>
+                                                @else
+                                                    <div class="card pt-2 pb-4 px-2">
+                                                        {!! $answer['answer'] !!}
+                                                    </div>
+                                                @endif
                                             @else
-                                                <div class="card pt-2 pb-4 px-2">
-                                                    {!! $answer['answer'] !!}
-                                                </div>
+                                                <span class="text-warning form-label">No answer submit</span>
                                             @endif
                                         </div>
                                     </div>
