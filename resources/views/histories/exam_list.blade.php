@@ -85,7 +85,12 @@
                                                                                 <h4 class="card-title">
                                                                                     @if(
                                                                                         in_array($skillSession->skill->type,
-                                                                                        [\App\Enum\Models\SkillType::WRITING, \App\Enum\Models\SkillType::SPEAKING])
+                                                                                        [
+                                                                                            \App\Enum\Models\SkillType::WRITING,
+                                                                                            \App\Enum\Models\SkillType::SPEAKING,
+                                                                                            \App\Enum\Models\SkillType::LISTENING,
+                                                                                            \App\Enum\Models\SkillType::READING,
+                                                                                        ])
                                                                                         && $skillSession->status == \App\Enum\Models\SkillSessionStatus::SUBMITTED
                                                                                     )
                                                                                         <a href="{{ route('admin.histories.skill-detail', [

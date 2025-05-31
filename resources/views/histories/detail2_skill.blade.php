@@ -1,0 +1,238 @@
+@extends('layouts.master')
+
+@section('css')
+    .incorrect-border {
+        border: 1px solid green!important;
+    }
+@endsection
+
+@php
+    $firstPartId = array_keys($skillQuestionsByPart)[0] ?? 0;
+@endphp
+@section('contents')
+    <div class="mt-4" id="tests">
+        <x-spinner></x-spinner>
+
+        <div class="p-4">
+            <ul class="nav nav-underline fs-9 d-flex w-100 justify-content-between" id="partTab" role="tablist">
+                @foreach($skillQuestionsByPart as $key => $part)
+                    <li class="nav-item flex-fill text-center">
+                        <a class="nav-link {{ $firstPartId == $key ? 'active' : '' }}" id="part-{{ $key }}-tab" data-bs-toggle="tab" href="#tab-part-{{ $key }}"
+                           role="tab" aria-controls="tab-part-{{ $key }}" aria-selected="true">Part {{ $part['part']->title }}</a>
+                    </li>
+                @endforeach
+            </ul>
+
+            <div class="tab-content mt-3" id="partTabContent">
+                @foreach($skillQuestionsByPart as $key => $part)
+                    <div class="tab-pane fade  {{ $firstPartId == $key ? 'show active' : '' }}" id="tab-part-{{ $key }}"
+                         role="tabpanel" aria-labelledby="part-{{ $key }}-tab"
+                    >
+                        @foreach($questions = $part['questions'] as $question)
+                            @if ($question instanceof \App\Models\ChoiceQuestion)
+                                <div class="accordion-item" id="Q_{{$key}}">
+                                    <h2 class="accordion-header" id="heading_{{$key}}">
+                                        <button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#collapse_{{$key}}" aria-expanded="false" aria-controls="collapse_{{$key}}">
+                                            {{ $question->title }}
+                                        </button>
+                                    </h2>
+                                    <div class="accordion-collapse collapse show" id="collapse_{{$key}}" aria-labelledby="heading_{{$key}}" data-bs-parent="#accordionExample" style="">
+                                        <div class="accordion-body pt-0">
+                                            @foreach ($question->choiceSubQuestions as $index => $sub)
+                                                @php
+                                                    $questionModel = $sub->getTable();
+                                                    $answer = $skillAnswers->where('question_model', $questionModel)
+                                                        ->where('question_id', $sub->id)
+                                                        ->first();
+                                                    $isAnswerCorrect = !is_null($answer) && $answer['answer_result'] == \App\Enum\Models\AnswerResult::CORRECT->value;
+                                                @endphp
+                                                <div class="container py-4">
+                                                    <div class="card mb-4">
+                                                        <div class="card-body">
+                                                            <div class="mb-2 d-flex justify-content-between align-items-center">
+                                                                <h6 class="mb-0">{{ $sub->question }}</h6>
+                                                                <small class="text-{{ ($isAnswerCorrect) ? 'success' : 'danger' }}">
+                                                                    {!! $isAnswerCorrect ? '<i class="fa-solid fa-check"></i>' :
+                                                                        '<i class="fa-solid fa-xmark"></i>' !!}
+                                                                    SCORE: {{ $sub->score ?? 'NOT SET' }}
+                                                                </small>
+                                                            </div>
+                                                            <div class="row g-2 mt-2">
+                                                                @foreach ($sub->choiceOptions as $i => $choiceOption)
+                                                                    @php
+                                                                        $isStudentSelected = !is_null($answer) && in_array($choiceOption->id, $answer['answer']);
+                                                                    @endphp
+                                                                    <div class="col-md-6">
+                                                                        <div class="form-check border rounded {{ (!$isAnswerCorrect && $isStudentSelected) ? 'incorrect-border' : '' }}
+                                                                            p-3 d-flex align-items-start gap-2"
+                                                                        >
+                                                                            <input
+                                                                                    class="form-check-input"
+                                                                                    type="{{ $sub->max_option > 1 ? 'checkbox' : 'radio' }}"
+                                                                                    name="sub_question_{{ $sub->id }}[]"
+                                                                                    value="{{ $choiceOption->id }}"
+                                                                                    id="answer_{{ $sub->id }}_{{ $i }}"
+                                                                                    disabled
+                                                                                    {{ ($isStudentSelected) ? 'checked' : '' }}
+                                                                            >
+                                                                            <label class="form-check-label w-100" for="answer_{{ $sub->id }}_{{ $i }}">
+                                                                                {{ $choiceOption->answer }}
+                                                                            </label>
+                                                                        </div>
+                                                                    </div>
+                                                                @endforeach
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            @endforeach
+                                        </div>
+                                    </div>
+                                </div>
+                            @endif
+
+                            @if ($question instanceof \App\Models\LBlankContentQuestion)
+                                @php
+                                    $isDragDropQuestion = $question->answer_type == \App\Enum\AnswerType::DRAG_DROP->value;
+                                    $allAnswers = $question->answers;
+                                    $correctAnswers = $allAnswers->whereNotNull('input_identify');
+                                    $distractorAnswers = $allAnswers->whereNull('input_identify');
+
+                                    $questionType = $question->answer_type == \App\Enum\AnswerType::FILL->value ?
+                                        \App\Enum\QuestionTypeAPI::FILL_CONTENT->value : \App\Enum\QuestionTypeAPI::DRAG_DROP_CONTENT->value;
+
+                                    $relatedAnswers = $skillAnswers->where('question_model', (new \App\Models\LBlankContentAnswer())->getTable())
+                                        ->where('question_type', $questionType);
+
+                                    $contentWithSubmittedAnswer = $question->getContentWithSubmittedAnswer($question->answers, $relatedAnswers);
+                                @endphp
+                                <div class="accordion-item" id="Q_{{$key}}">
+                                    <h2 class="accordion-header" id="heading_2_{{ $key }}">
+                                        <button class="accordion-button" type="button" data-bs-toggle="collapse"
+                                                data-bs-target="#collapse_2_{{ $key }}" aria-expanded="false" aria-controls="collapse_2_{{ $key }}">
+                                            {{ $question->title ?? 'Fill in the Blank Question ' . ($key + 1) }}
+                                        </button>
+                                    </h2>
+                                    <div id="collapse_2_{{ $key }}" class="accordion-collapse collapse show"
+                                         aria-labelledby="heading_{{ $key }}" data-bs-parent="#accordionExample">
+                                        <div class="accordion-body">
+                                            <div class="container py-4">
+                                                <div class="card mb-4">
+                                                    <div class="card-body">
+                                                        <div class="mb-3">
+                                                            <h6>Question:</h6>
+                                                            <div class="card pt-4 px-2">
+                                                                {!! $contentWithSubmittedAnswer !!}
+                                                            </div>
+                                                        </div>
+
+                                                        <div class="mb-3">
+                                                            <h6>Correct Answers:</h6>
+                                                            @foreach ($correctAnswers as $answer)
+                                                                <div class="input-group mb-2">
+                                                                    <span class="input-group-text">Answer of {{ $answer->placeholder }}</span>
+                                                                    <input type="text" class="form-control" value="{{ $answer->answer }}" disabled>
+                                                                    <span class="input-group-text">Score</span>
+                                                                    <input type="number" class="form-control" value="{{ $answer->score ?: 'NOT SET' }}" disabled>
+                                                                </div>
+                                                            @endforeach
+                                                        </div>
+
+                                                        @if($isDragDropQuestion)
+                                                            <div class="mb-3">
+                                                                <h6>Other Distractor Answers</h6>
+                                                                <div class="row g-2">
+                                                                    @foreach($distractorAnswers as $answer)
+                                                                        <div class="col-md-6">
+                                                                            <input type="text" class="form-control" value="{{ $answer->answer }}" disabled>
+                                                                        </div>
+                                                                    @endforeach
+                                                                </div>
+                                                            </div>
+                                                        @endif
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            @endif
+
+                            @if($question instanceof \App\Models\BlankImageQuestion)
+                                @php
+                                    $isDragDropQuestion = $question->answer_type == \App\Enum\AnswerType::DRAG_DROP->value;
+                                    $allAnswers = $question->answers;
+                                    $correctAnswers = $allAnswers->whereNotNull('input_identify');
+                                    $distractorAnswers = $allAnswers->whereNull('input_identify');
+
+                                    $questionType = $question->answer_type == \App\Enum\AnswerType::FILL ?
+                                        \App\Enum\QuestionTypeAPI::FILL_IMAGE->value : \App\Enum\QuestionTypeAPI::DRAG_DROP_IMAGE->value;
+
+                                    $relatedAnswers = $skillAnswers->where('question_model', (new \App\Models\BlankImageAnswer())->getTable())
+                                        ->where('question_type', $questionType);
+
+                                    $contentWithSubmittedAnswer = $question->getContentWithSubmittedAnswer($question->answers, $relatedAnswers);
+                                @endphp
+                                <div class="accordion-item" id="Q_{{$key}}">
+                                    <h2 class="accordion-header" id="heading_3_{{ $key }}">
+                                        <button class="accordion-button" type="button" data-bs-toggle="collapse"
+                                                data-bs-target="#collapse_3_{{ $key }}" aria-expanded="false" aria-controls="collapse_3_{{ $key }}">
+                                            {{ $question->title ?? 'Fill in the Blank Question ' . ($key + 1) }}
+                                        </button>
+                                    </h2>
+                                    <div id="collapse_3_{{ $key }}" class="accordion-collapse collapse show"
+                                         aria-labelledby="heading_{{ $key }}" data-bs-parent="#accordionExample">
+                                        <div class="accordion-body">
+                                            <div class="container py-4">
+                                                <div class="card mb-4">
+                                                    <div class="card-body">
+                                                        <div class="mb-3">
+                                                            <h6>Question:</h6>
+                                                            <div class="card pt-4 px-2">
+                                                                {!! $contentWithSubmittedAnswer !!}
+                                                            </div>
+                                                        </div>
+
+                                                        <div class="mb-3">
+                                                            <h6>Correct Answers:</h6>
+                                                            @foreach ($correctAnswers as $answer)
+                                                                <div class="input-group mb-2">
+                                                                    <span class="input-group-text">Answer of {{ $answer->placeholder }}</span>
+                                                                    <input type="text" class="form-control" value="{{ $answer->answer }}" disabled>
+                                                                    <span class="input-group-text">Score</span>
+                                                                    <input type="number" class="form-control" value="{{ $answer->score ?: 'NOT SET' }}" disabled>
+                                                                </div>
+                                                            @endforeach
+                                                        </div>
+
+                                                        @if($isDragDropQuestion)
+                                                            <div class="mb-3">
+                                                                <h6>Other Distractor Answers</h6>
+                                                                <div class="row g-2">
+                                                                    @foreach($distractorAnswers as $answer)
+                                                                        <div class="col-md-6">
+                                                                            <input type="text" class="form-control" value="{{ $answer->answer }}" disabled>
+                                                                        </div>
+                                                                    @endforeach
+                                                                </div>
+                                                            </div>
+                                                        @endif
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            @endif
+                        @endforeach
+                    </div>
+                @endforeach
+            </div>
+        </div>
+    </div>
+@endsection
+
+@section('js')
+    <script>
+    </script>
+@endsection

@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use App\Enum\AnswerType;
+use App\Enum\Models\AnswerResult;
 use App\Enum\QuestionTypeAPI;
 use App\Models\Traits\HasQuestionOrder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
@@ -87,6 +88,74 @@ class BlankImageQuestion extends Model
                 ';
                 }
             $html .= '</div>';
+        $html .= '</div>';
+
+        return $html;
+    }
+
+    public function getContentWithSubmittedAnswer($questionAnswers, $submittedAnswers): string
+    {
+        $imgW = $this->width;
+        $imgH = $this->height;
+
+        $html = '
+        <div class="image-map-wrapper" style="display: inline-block; max-width: 100%;">
+            <div style="position: relative; width: 100%; max-width: ' . $imgW . 'px; height: ' . $imgH . 'px;">
+                <img 
+                    src="' . $this->link . '" 
+                    alt="Question Image" 
+                    style="position: absolute; width: 100%; height: 100%; top: 0; left: 0"
+                >';
+
+        foreach ($questionAnswers as $answer) {
+            if (empty($answer->input_identify)) continue;
+
+            $x = intval($answer['x']);
+            $y = intval($answer['y']);
+            $leftPercent = round(($x / $imgW) * 100, 4);
+            $topPercent = round(($y / $imgH) * 100, 4);
+            $inputIdentify = $answer->input_identify;
+            $inputId = 'input_blank_' . $inputIdentify;
+
+//            $placeholder = htmlspecialchars($answer['placeholder'], ENT_QUOTES);
+
+            // answer submitted of this question
+            $submittedAnswer = $submittedAnswers->where('question_id', $inputIdentify)->first();
+            $answerValue = '';
+            $inputColor = 'red';
+
+            if ($submittedAnswer) {
+                if ($submittedAnswer['question_type'] == QuestionTypeAPI::FILL_IMAGE->value) {
+                    $answerValue = $submittedAnswer['answer'];
+                } else if ($submittedAnswer['question_type'] == QuestionTypeAPI::DRAG_DROP_IMAGE->value) {
+                    $mapQuestionAnswer = $questionAnswers->where('id', $submittedAnswer['answer'])->first();
+                    if ($mapQuestionAnswer) {
+                        $answerValue = $mapQuestionAnswer->answer;
+                    }
+                }
+
+                if ($submittedAnswer['answer_result'] == AnswerResult::CORRECT->value) {
+                    $inputColor = 'green';
+                }
+            }
+
+            $inputStyle = "width: 120px; height: 30px; border: 3px solid {$inputColor}; border-radius: 5px; text-align: center;";
+
+            $html .= '
+                    <div 
+                        class="blank-input" 
+                        style="position: absolute; left: ' . $leftPercent . '%; top: ' . $topPercent . '%;">
+                        <input 
+                            id="' . $inputId . '"
+                            type="text" 
+                            value="' . $answerValue . '"
+                            data-blank-id="' . $inputIdentify . '"
+                            style="' . $inputStyle . '"
+                        >
+                    </div>
+                ';
+        }
+        $html .= '</div>';
         $html .= '</div>';
 
         return $html;

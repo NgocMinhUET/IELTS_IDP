@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\CMS;
 
 use App\Enum\Models\AnswerResult;
+use App\Enum\Models\SkillType;
 use App\Services\CMS\HistoryService;
 use App\Services\CMS\SkillAnswerService;
 use App\Services\CMS\SkillService;
@@ -91,7 +92,16 @@ class HistoryController extends CMSController
 
         $skillAnswers = $this->historyService->prepareSkillAnswersForHistory($skillSession->skillAnswers);
 
-        return view('histories.detail_skill', compact('skillQuestionsByPart', 'skillAnswers'));
+//        dd($skillAnswers);
+
+        $view = 'histories.detail_skill';
+
+        if (in_array($skillSession->skill->type, [SkillType::LISTENING, SkillType::READING])) {
+            $view = 'histories.detail2_skill';
+        }
+
+//        dd($skillAnswers->toArray(), $skillQuestionsByPart);
+        return view($view, compact('skillQuestionsByPart', 'skillAnswers'));
     }
 
     /**

@@ -1,7 +1,7 @@
 @extends('layouts.master')
 
 @php
-    $firstPartId = array_keys($skillQuestionsByPart)[0];
+    $firstPartId = array_keys($skillQuestionsByPart)[0] ?? 0;
 @endphp
 @section('contents')
     <div class="mt-4" id="tests">
