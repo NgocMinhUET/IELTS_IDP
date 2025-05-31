@@ -17,14 +17,16 @@
         <x-spinner></x-spinner>
 
         <div class="p-4">
-            <ul class="nav nav-underline fs-9 d-flex w-100 justify-content-between" id="partTab" role="tablist">
-                @foreach($skillQuestionsByPart as $key => $part)
-                    <li class="nav-item flex-fill text-center">
-                        <a class="nav-link {{ $firstPartId == $key ? 'active' : '' }}" id="part-{{ $key }}-tab" data-bs-toggle="tab" href="#tab-part-{{ $key }}"
-                           role="tab" aria-controls="tab-part-{{ $key }}" aria-selected="true">Part {{ $part['part']->title }}</a>
-                    </li>
-                @endforeach
-            </ul>
+            <div class="sticky-top bg-white z-index-fixed" style="top: 64px;">
+                <ul class="nav nav-underline fs-9 d-flex w-100 justify-content-between border-bottom" id="partTab" role="tablist">
+                    @foreach($skillQuestionsByPart as $key => $part)
+                        <li class="nav-item flex-fill text-center">
+                            <a class="nav-link {{ $firstPartId == $key ? 'active' : '' }}" id="part-{{ $key }}-tab" data-bs-toggle="tab" href="#tab-part-{{ $key }}"
+                               role="tab" aria-controls="tab-part-{{ $key }}" aria-selected="true">Part {{ $part['part']->title }}</a>
+                        </li>
+                    @endforeach
+                </ul>
+            </div>
 
             <div class="tab-content mt-3" id="partTabContent">
                 @foreach($skillQuestionsByPart as $key => $part)
@@ -244,5 +246,10 @@
 
 @section('js')
     <script>
+        document.querySelectorAll('#partTab a[data-bs-toggle="tab"]').forEach(tab => {
+            tab.addEventListener('shown.bs.tab', function () {
+                window.scrollTo({ top: 0, behavior: 'smooth' });
+            });
+        });
     </script>
 @endsection
