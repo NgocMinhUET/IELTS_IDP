@@ -2,6 +2,9 @@
 
 @section('css')
     .incorrect-border {
+        border: 1px solid red!important;
+    }
+    .correct-border {
         border: 1px solid green!important;
     }
 @endsection
@@ -51,10 +54,15 @@
                                                         <div class="card-body">
                                                             <div class="mb-2 d-flex justify-content-between align-items-center">
                                                                 <h6 class="mb-0">{{ $sub->question }}</h6>
-                                                                <small class="text-{{ ($isAnswerCorrect) ? 'success' : 'danger' }}">
-                                                                    {!! $isAnswerCorrect ? '<i class="fa-solid fa-check"></i>' :
+                                                                <small class="text-gray">
+                                                                    <span style="display: inline-block; border-bottom: 1px solid green; width: 40px;"></span>
+                                                                    <span style="display: inline-block; border-bottom: 1px solid red; width: 40px;"></span>
+                                                                    &nbsp;Sumitted Answer&nbsp;&nbsp;&nbsp; | &nbsp;&nbsp;&nbsp;
+                                                                    <b class="text-{{ ($isAnswerCorrect) ? 'success' : 'danger' }}">
+                                                                        {!! $isAnswerCorrect ? '<i class="fa-solid fa-check"></i>' :
                                                                         '<i class="fa-solid fa-xmark"></i>' !!}
-                                                                    SCORE: {{ $sub->score ?? 'NOT SET' }}
+                                                                        SCORE: {{ $sub->score ?? 'NOT SET' }}
+                                                                    </b>
                                                                 </small>
                                                             </div>
                                                             <div class="row g-2 mt-2">
@@ -63,7 +71,9 @@
                                                                         $isStudentSelected = !is_null($answer) && in_array($choiceOption->id, $answer['answer']);
                                                                     @endphp
                                                                     <div class="col-md-6">
-                                                                        <div class="form-check border rounded {{ (!$isAnswerCorrect && $isStudentSelected) ? 'incorrect-border' : '' }}
+                                                                        <div class="form-check border rounded
+                                                                            {{ (!$isAnswerCorrect && $isStudentSelected) ? 'incorrect-border' : '' }}
+                                                                            {{ ($isAnswerCorrect && $isStudentSelected) ? 'correct-border' : '' }}
                                                                             p-3 d-flex align-items-start gap-2"
                                                                         >
                                                                             <input
@@ -73,7 +83,7 @@
                                                                                     value="{{ $choiceOption->id }}"
                                                                                     id="answer_{{ $sub->id }}_{{ $i }}"
                                                                                     disabled
-                                                                                    {{ ($isStudentSelected) ? 'checked' : '' }}
+                                                                                    {{ $choiceOption->is_correct ? 'checked' : '' }}
                                                                             >
                                                                             <label class="form-check-label w-100" for="answer_{{ $sub->id }}_{{ $i }}">
                                                                                 {{ $choiceOption->answer }}
