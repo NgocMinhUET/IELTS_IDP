@@ -31,10 +31,28 @@
                                 <form action="{{ route('admin.parts.speaking-questions.store', $part->id) }}" method="POST">
                                 @endif
                                     @csrf
-                                    <div class="mb-3 d-flex gap-3">
-                                        <div>
-                                            <label class="form-label">Score <span class="text-danger">*</span></label>
-                                            <input type="number" class="form-control max-select" name="score" value="1" min="1">
+                                    <div class="">
+                                        <div class="row">
+                                            <div class="col">
+                                                <label class="form-label">Score <span class="text-danger">*</span></label>
+                                                <input type="number" class="form-control max-select" name="score" value="1" min="1">
+                                                @if($errors->has('score'))
+                                                    <div class="invalid-feedback mt-0">{{ $errors->first('score') }}</div>
+                                                @endif
+                                            </div>
+                                            <div class="col">
+                                                <label class="form-label" for="durationFormControlInput">Duration <span class="text-danger">*</span></label>
+                                                <input class="form-control"
+                                                       type="number"
+                                                       name="duration"
+                                                       placeholder=""
+                                                       value="{{ old('duration', $skill->duration ?? '') }}"
+                                                       required
+                                                >
+                                                @if($errors->has('duration'))
+                                                    <div class="invalid-feedback mt-0">{{ $errors->first('duration') }}</div>
+                                                @endif
+                                            </div>
                                         </div>
                                     </div>
 

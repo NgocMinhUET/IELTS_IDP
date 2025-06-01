@@ -11,12 +11,13 @@ class SpeakingQuestionService extends BaseService
         public SpeakingQuestionInterface $speakingQuestionRepository,
     ) {}
 
-    public function store($partId, $content, $score)
+    public function store($partId, $content, $score, $duration)
     {
         return $this->speakingQuestionRepository->create([
             'part_id' => $partId,
             'content' => $content,
             'score' => $score,
+            'duration' => $duration,
         ]);
     }
 

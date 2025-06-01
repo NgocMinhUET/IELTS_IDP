@@ -280,12 +280,12 @@ class SkillAnswerService
     public function getSpeakingRecordPresignedUrl(SpeakingQuestion $speakingQuestion, ExamSession $examSession, SkillSession $skillSession, $userId): array
     {
         $skill = $skillSession->skill;
-        $skillDuration = (int)$skill->duration + (int)$skill->bonus_time + 120;
         $expiredTime = $speakingQuestion->duration + 120;
 
         $path = "speaking-recordings/{$examSession->id}_{$skillSession->id}_{$userId}_{$speakingQuestion->id}_record.webm";
 
-        if (!$expiredTime) {
+        if (empty($speakingQuestion->duration)) {
+            $skillDuration = (int)$skill->duration + (int)$skill->bonus_time + 120;
             $expiredTime = $skillDuration;
         }
 

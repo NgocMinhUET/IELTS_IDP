@@ -63,6 +63,15 @@ class PartService
             $tmp = [];
             $tmp['type'] = $question->type;
             $tmp['title'] = $question->title ?? '';
+            $duration = null;
+            if ($question instanceof SpeakingQuestion) {
+                $duration = $question->duration;
+                if (!$duration) {
+                    $skill = $question->part->skill;
+                    $duration = (int)$skill->duration + (int)$skill->bonus_time;
+                }
+            }
+            $tmp['duration'] = $duration;
             $tmp['component'] = $this->buildQuestionComponent($question);
 
             return $tmp;

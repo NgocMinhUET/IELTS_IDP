@@ -297,6 +297,7 @@
                                             <div class="card mb-4">
                                                 <div class="mt-4 mx-4">
                                                     <small class="text-muted">SCORE: {{ $question->score ?? 'NOT SET' }}</small>
+                                                    <small class="text-muted">DURATION: {{ $question->duration ?? 'NOT SET' }}</small>
                                                 </div>
                                                 <div class="card-body">
                                                     <div class="mb-3">

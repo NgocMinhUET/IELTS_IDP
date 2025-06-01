@@ -45,8 +45,6 @@
     <div class="mt-4" id="tests">
         <x-spinner></x-spinner>
 
-        READING
-
         <div class="p-4">
             <div class="sticky-top bg-white z-index-fixed" style="top: 64px;">
                 <ul class="nav nav-underline fs-9 d-flex w-100 justify-content-between border-bottom" id="partTab" role="tablist">

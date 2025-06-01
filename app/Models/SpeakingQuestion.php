@@ -14,7 +14,7 @@ class SpeakingQuestion extends Model
     use HasQuestionOrder;
     use HasInputIdentify;
 
-    protected $fillable = ['part_id', 'content', 'score'];
+    protected $fillable = ['part_id', 'content', 'score', 'duration'];
 
     protected $with = ['part'];
 
