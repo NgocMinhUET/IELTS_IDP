@@ -3,6 +3,7 @@
 namespace App\Providers;
 
 use App\Http\Controllers\CMS\CMSController;
+use Illuminate\Support\Facades\URL;
 use Illuminate\Support\Facades\View;
 use Illuminate\Support\ServiceProvider;
 use Illuminate\Database\Schema\Blueprint;
@@ -37,5 +38,9 @@ class AppServiceProvider extends ServiceProvider
                 $view->with('breadcrumbs', $routeController->breadcrumbs);
             }
         });
+
+        if (config('app.force_scheme')) {
+            URL::forceScheme(config('app.force_scheme'));
+        }
     }
 }

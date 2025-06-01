@@ -125,6 +125,8 @@ return [
 
     'cipher' => 'AES-256-CBC',
 
+    'force_scheme' => env('FORCE_SCHEME', null),
+
     /*
     |--------------------------------------------------------------------------
     | Maintenance Mode Driver
