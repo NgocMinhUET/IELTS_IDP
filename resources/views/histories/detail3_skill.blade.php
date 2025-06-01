@@ -198,7 +198,7 @@
                                                         <div class="card mb-4">
                                                             <div class="card-body">
                                                                 <div class="mb-3">
-                                                                    <h6>Question: <b class="text-info">{{ $inheritQuestion ? 'Is part paragraph' : ''}}</b></h6>
+                                                                    <h6>Question: <b class="text-info">{{ $isContentInherit ? 'Is part paragraph' : ''}}</b></h6>
                                                                     @if(!$isContentInherit)
                                                                         <div class="card pt-4 px-2">
                                                                             {!! $contentWithSubmittedAnswer !!}
