@@ -83,7 +83,7 @@ class SkillService extends BaseService
 
     public function updateListeningSkillAudioFile(Skill $skill, UploadedFile $audioFile): \Illuminate\Database\Eloquent\Model
     {
-        return $skill->updateMedia($audioFile, $this->storageDisk, 'public');
+        return $skill->updateMedia($audioFile, $this->storageDisk);
     }
 
     public function getAllQuestionsBySkillId($skillId)
