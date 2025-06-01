@@ -96,8 +96,12 @@ class HistoryController extends CMSController
 
         $view = 'histories.detail_skill';
 
-        if (in_array($skillSession->skill->type, [SkillType::LISTENING, SkillType::READING])) {
+        if (in_array($skillSession->skill->type, [SkillType::LISTENING])) {
             $view = 'histories.detail2_skill';
+        }
+
+        if (in_array($skillSession->skill->type, [SkillType::READING])) {
+            $view = 'histories.detail3_skill';
         }
 
 //        dd($skillAnswers->toArray(), $skillQuestionsByPart);
