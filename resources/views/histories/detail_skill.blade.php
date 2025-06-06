@@ -65,17 +65,27 @@
                                                 @if($answer['question_type'] == \App\Enum\QuestionTypeAPI::SPEAKING->value)
                                                     @php
                                                         $answerArr = json_decode($answer['answer'], true);
-                                                        if ($answerArr['storage'] == 'minio') {
-                                                            config(['filesystems.disks.minio.endpoint' => config('filesystems.disks.minio.access_endpoint')]);
+                                                        $audioUrl = '';
+                                                        if (!empty($answerArr)) {
+                                                            if ($answerArr['storage'] == 'minio') {
+                                                                config([
+                                                                    'filesystems.disks.minio.endpoint' =>
+                                                                    config('filesystems.disks.minio.access_endpoint')
+                                                                ]);
+                                                            }
+                                                            $audioUrl = \Illuminate\Support\Facades\Storage::disk($answerArr['storage'])
+                                                                ->temporaryUrl($answerArr['path'], now()->addMinutes(60));
                                                         }
-                                                        $audioUrl = \Illuminate\Support\Facades\Storage::disk($answerArr['storage'])
-                                                            ->temporaryUrl($answerArr['path'], now()->addMinutes(60));
                                                     @endphp
                                                     <div>
-                                                        <audio controls>
-                                                            <source src="{{ $audioUrl }}" type="audio/webm">
-                                                            Your browser does not support the audio element.
-                                                        </audio>
+                                                        @if(!empty($audioUrl))
+                                                            <audio controls>
+                                                                <source src="{{ $audioUrl }}" type="audio/webm">
+                                                                Your browser does not support the audio element.
+                                                            </audio>
+                                                        @else
+                                                            No answer submit
+                                                        @endif
                                                     </div>
                                                 @else
                                                     <div class="card pt-2 pb-4 px-2">

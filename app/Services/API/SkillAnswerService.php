@@ -242,32 +242,45 @@ class SkillAnswerService
 
     public function markSpeakingRecordAsSent($skillSessionId, SpeakingQuestion $speakingQuestion)
     {
-        $skillAnswer = $this->skillAnswerRepository->findWhere([
+        $isCreated = false;
+        $attributes = [
             'skill_session_id' => $skillSessionId,
             'question_model' => $speakingQuestion->getTable(),
             'question_id' => $speakingQuestion->input_identify,
             'question_type' => QuestionTypeAPI::SPEAKING->value,
-        ])->first();
+        ];
+        $skillAnswer = $this->skillAnswerRepository->findWhere($attributes)->first();
 
-        if (!$skillAnswer || $skillAnswer->answer_result != AnswerResult::UNANSWERED->value) {
-            throw new HttpException(400);
+        if ($skillAnswer) {
+            $answer = json_decode($skillAnswer->answer, true);
+            if ($skillAnswer->answer_result != AnswerResult::UNANSWERED->value || empty($answer)) {
+                throw new HttpException(400);
+            }
+            $skillAnswer->update([
+                'answer_result' => AnswerResult::PENDING
+            ]);
+        } else {
+            $attributes['answer_result'] = AnswerResult::UNANSWERED->value;
+            $attributes['answer'] = json_encode([]);
+            $skillAnswer = $this->skillAnswerRepository->create($attributes);
+            $isCreated = true;
         }
 
-        return $skillAnswer->update([
-            'answer_result' => AnswerResult::PENDING
-        ]);
+        return [$skillAnswer->refresh(), $isCreated];
     }
 
-    public function updateSpeakingSkillSessionAfterSent(SkillSession $skillSession): void
+    public function updateSpeakingSkillSessionAfterSent(SkillSession $skillSession, $isSubmittedAnswer = false): void
     {
-        $skillSession->total_submitted_answer++;
-        $skillSession->total_pending_answer++;
-        $skillSession->save();
+        if ($isSubmittedAnswer) {
+            $skillSession->total_submitted_answer++;
+            $skillSession->total_pending_answer++;
+            $skillSession->save();
+        }
 
         $sentAnswers = $this->skillAnswerRepository->findWhere([
             'skill_session_id' => $skillSession->id,
             'question_type' => QuestionTypeAPI::SPEAKING->value,
-            'answer_result' => AnswerResult::PENDING
+            'answer_result' => ['answer_result', 'IN', [AnswerResult::PENDING->value, AnswerResult::UNANSWERED->value]]
         ])->count();
 
         if ($skillSession->total_question == $sentAnswers) {

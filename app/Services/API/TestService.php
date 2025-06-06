@@ -151,10 +151,12 @@ class TestService
             if ($questionType == QuestionTypeAPI::SPEAKING->value) {
                 if ($skillAnswer->answer_result != AnswerResult::UNANSWERED->value) {
                     $arrAnswer = json_decode($skillAnswer->answer, true);
-                    if ($arrAnswer['storage'] == 'minio') {
-                        config(['filesystems.disks.minio.endpoint' => config('filesystems.disks.minio.access_endpoint')]);
+                    if (!empty($arrAnswer)) {
+                        if ($arrAnswer['storage'] == 'minio') {
+                            config(['filesystems.disks.minio.endpoint' => config('filesystems.disks.minio.access_endpoint')]);
+                        }
+                        $answer = Storage::disk($arrAnswer['storage'])->temporaryUrl($arrAnswer['path'], now()->addMinutes(60));
                     }
-                    $answer = Storage::disk($arrAnswer['storage'])->temporaryUrl($arrAnswer['path'], now()->addMinutes(60));
                 }
             } else {
                 $answer = $skillAnswer->answer;
