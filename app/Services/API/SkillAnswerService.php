@@ -260,7 +260,8 @@ class SkillAnswerService
                 'answer_result' => AnswerResult::PENDING
             ]);
         } else {
-            $attributes['answer_result'] = AnswerResult::UNANSWERED->value;
+            // just call api sent but not request presigned s3 url for upload record
+            $attributes['answer_result'] = AnswerResult::PENDING->value;
             $attributes['answer'] = json_encode([]);
             $skillAnswer = $this->skillAnswerRepository->create($attributes);
             $isCreated = true;
@@ -280,7 +281,7 @@ class SkillAnswerService
         $sentAnswers = $this->skillAnswerRepository->findWhere([
             'skill_session_id' => $skillSession->id,
             'question_type' => QuestionTypeAPI::SPEAKING->value,
-            'answer_result' => ['answer_result', 'IN', [AnswerResult::PENDING->value, AnswerResult::UNANSWERED->value]]
+            'answer_result' => ['answer_result', 'IN', [AnswerResult::PENDING->value]]
         ])->count();
 
         if ($skillSession->total_question == $sentAnswers) {

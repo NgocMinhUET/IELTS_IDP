@@ -138,7 +138,7 @@ class SkillAnswerController extends Controller
 
             [$payloadQuestionId, $speakingQuestion] = $this->skillAnswerService->validateSpeakingAnswerPayload($request->question_id);
 
-            [$skillAnswer, $recentAnswerCreated] =$this->skillAnswerService->markSpeakingRecordAsSent($skillSession->id, $speakingQuestion);
+            [$skillAnswer, $recentAnswerCreated] = $this->skillAnswerService->markSpeakingRecordAsSent($skillSession->id, $speakingQuestion);
 
             $this->skillAnswerService->updateSpeakingSkillSessionAfterSent($skillSession, !$recentAnswerCreated);
 
