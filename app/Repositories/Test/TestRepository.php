@@ -20,9 +20,15 @@ class TestRepository extends BaseRepository implements TestInterface
         return Test::class;
     }
 
-    public function getPaginateTests()
+    public function getPaginateTests($search)
     {
         $query = $this->model->with('createdBy')->withCount('exams');
+
+        if (!empty($search)) {
+            $query->where(function ($query) use ($search) {
+                $query->where('desc', 'like', '%' . $search . '%');
+            });
+        }
 
         $user = auth()->user();
 
@@ -82,11 +88,18 @@ class TestRepository extends BaseRepository implements TestInterface
             ->get();
     }
 
-    public function getPaginateHistoryTests()
+    public function getPaginateHistoryTests($search)
     {
-        return $this->model
-            ->isApproved()
-            ->withCount('exams')
+        $query = $this->model
+            ->isApproved();
+
+        if (!empty($search)) {
+            $query->where(function ($query) use ($search) {
+                $query->where('desc', 'like', '%' . $search . '%');
+            });
+        }
+
+        return $query->withCount('exams')
             ->withCount('users')
             ->with('examSessions')
             ->orderByDefault()

@@ -6,6 +6,7 @@ use App\Exceptions\CMS\ImportStudentException;
 use App\Http\Requests\Student\ImportStudentRequest;
 use App\Http\Requests\Student\StoreStudentRequest;
 use App\Services\CMS\StudentService;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
 use PhpOffice\PhpSpreadsheet\IOFactory;
 use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
@@ -22,13 +23,13 @@ class StudentController extends CMSController
         $this->rootBreadcrumbs['Student'] = route('admin.students.index');
     }
 
-    public function index()
+    public function index(Request $request)
     {
         $this->breadcrumbs = array_merge($this->rootBreadcrumbs, [
             'List' => null
         ]);
 
-        $students = $this->studentService->getPaginateStudents();
+        $students = $this->studentService->getPaginateStudents($request);
 
         return view('students.index', compact('students'));
     }

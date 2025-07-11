@@ -28,13 +28,13 @@ class HistoryController extends CMSController
         $this->rootBreadcrumbs['History'] = route('admin.histories.index');
     }
 
-    public function index()
+    public function index(Request $request)
     {
         $this->breadcrumbs = array_merge($this->rootBreadcrumbs, [
             'List' => null
         ]);
 
-        $tests = $this->historyService->getPaginateHistoryTests();
+        $tests = $this->historyService->getPaginateHistoryTests($request);
 
         return view('histories.index', compact('tests'));
     }

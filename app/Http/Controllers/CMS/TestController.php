@@ -7,6 +7,7 @@ use App\Http\Requests\Test\UpdateApproveStatusRequest;
 use App\Services\CMS\ExamService;
 use App\Services\CMS\StudentService;
 use App\Services\CMS\TestService;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 
@@ -22,13 +23,13 @@ class TestController extends CMSController
         $this->rootBreadcrumbs['Test'] = route('admin.tests.index');
     }
 
-    public function index()
+    public function index(Request $request)
     {
         $this->breadcrumbs = array_merge($this->rootBreadcrumbs, [
             'List' => null
         ]);
 
-        $tests = $this->testService->getPaginateTests();
+        $tests = $this->testService->getPaginateTests($request);
 
         return view('tests.index', compact('tests'));
     }

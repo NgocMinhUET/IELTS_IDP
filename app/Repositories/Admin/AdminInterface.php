@@ -6,5 +6,5 @@ use App\Repositories\BaseInterface;
 
 interface AdminInterface extends BaseInterface
 {
-    public function getPaginateTeachers();
+    public function getPaginateTeachers($search);
 }

@@ -45,7 +45,10 @@
 
     @if($hasAssignedTest)
         <x-has_assigned_tests_alert></x-has_assigned_tests_alert>
-    @elseif($isUpdate && $exam->approve_status == \App\Enum\Models\ApproveStatus::APPROVED)
+    @elseif($isUpdate &&
+        $exam->approve_status == \App\Enum\Models\ApproveStatus::APPROVED &&
+        \Illuminate\Support\Facades\Auth::user()->isTeacher()
+    )
         <div class="alert alert-subtle-warning alert-dismissible fade show" role="alert">
             The exam has been approved by the admin. Editing it will change its status to pending for re-approval.
             Please proceed only if you truly believe the changes are necessary.

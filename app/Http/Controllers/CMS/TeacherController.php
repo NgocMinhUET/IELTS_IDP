@@ -4,6 +4,7 @@ namespace App\Http\Controllers\CMS;
 
 use App\Http\Requests\Teacher\StoreTeacherRequest;
 use App\Services\CMS\TeacherService;
+use Illuminate\Http\Request;
 
 class TeacherController extends CMSController
 {
@@ -15,13 +16,13 @@ class TeacherController extends CMSController
         $this->rootBreadcrumbs['Teacher'] = route('admin.teachers.index');
     }
 
-    public function index()
+    public function index(Request $request)
     {
         $this->breadcrumbs = array_merge($this->rootBreadcrumbs, [
             'List' => null
         ]);
 
-        $teachers = $this->teacherService->getPaginateTeachers();
+        $teachers = $this->teacherService->getPaginateTeachers($request);
 
         return view('teachers.index', compact('teachers'));
     }

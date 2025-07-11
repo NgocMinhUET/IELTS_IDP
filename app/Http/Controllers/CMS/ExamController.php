@@ -6,6 +6,7 @@ use App\Http\Requests\Exam\StoreExamRequest;
 use App\Http\Requests\Exam\UpdateApproveStatusRequest;
 use App\Services\CMS\ExamService;
 use App\Services\CMS\SkillService;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 
 class ExamController extends CMSController
@@ -19,13 +20,13 @@ class ExamController extends CMSController
         $this->rootBreadcrumbs['Exam'] = route('admin.exams.index');
     }
 
-    public function index()
+    public function index(Request $request)
     {
         $this->breadcrumbs = array_merge($this->rootBreadcrumbs, [
             'List' => null
         ]);
 
-        $exams = $this->examService->getPaginateExams();
+        $exams = $this->examService->getPaginateExams($request);
 
         return view('exams.index', compact('exams'));
     }

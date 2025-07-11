@@ -7,8 +7,9 @@
         <div class="row align-items-center justify-content-between mt-3 g-3">
             <div class="col col-auto">
                 <div class="search-box">
-                    <form class="position-relative">
-                        <input class="form-control search-input search" type="search" placeholder="Search exams" aria-label="Search" />
+                    <form class="position-relative" method="GET" action="{{ route('admin.exams.index') }}">
+                        <input class="form-control search-input search" type="search" name="search"
+                               placeholder="Search exams" aria-label="Search" value="{{ request()->get('search', '') }}" />
                         <span class="fas fa-search search-box-icon"></span>
                     </form>
                 </div>

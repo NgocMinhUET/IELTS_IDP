@@ -26,10 +26,18 @@ class UserRepository extends BaseRepository implements UserInterface
         return User::class;
     }
 
-    public function getPaginateStudents(): LengthAwarePaginator
+    public function getPaginateStudents($search): LengthAwarePaginator
     {
-        return $this->model->with('createdBy')
-            ->paginate(10);
+        $query = $this->model->with('createdBy');
+
+        if (!empty($search)) {
+            $query->where(function ($query) use ($search) {
+                $query->where('name', 'like', '%' . $search . '%');
+                $query->orWhere('email', 'like', '%' . $search . '%');
+            });
+        }
+
+        return $query->paginate(10);
     }
 
     /**

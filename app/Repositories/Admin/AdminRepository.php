@@ -18,10 +18,18 @@ class AdminRepository extends BaseRepository implements AdminInterface
         return Admin::class;
     }
 
-    public function getPaginateTeachers()
+    public function getPaginateTeachers($search)
     {
-        return $this->model->where('role', UserRole::TEACHER)
-            ->with('createdBy')
+        $query = $this->model->where('role', UserRole::TEACHER);
+
+        if (!empty($search)) {
+            $query->where(function ($query) use ($search) {
+                $query->where('name', 'like', '%' . $search . '%');
+                $query->orWhere('email', 'like', '%' . $search . '%');
+            });
+        }
+
+        return $query->with('createdBy')
             ->paginate(10);
     }
 }

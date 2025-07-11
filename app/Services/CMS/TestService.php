@@ -2,10 +2,12 @@
 
 namespace App\Services\CMS;
 
+use App\Enum\Models\ApproveStatus;
 use App\Repositories\Exam\ExamInterface;
 use App\Repositories\Test\TestInterface;
 use App\Repositories\User\UserInterface;
 use App\Services\BaseService;
+use Illuminate\Http\Request;
 use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
 
 class TestService extends BaseService
@@ -16,9 +18,9 @@ class TestService extends BaseService
         public UserInterface $userRepository,
     ) {}
 
-    public function getPaginateTests()
+    public function getPaginateTests(Request $request)
     {
-        return $this->testRepository->getPaginateTests();
+        return $this->testRepository->getPaginateTests($request->input('search'));
     }
 
     public function getTest($id)
@@ -28,9 +30,14 @@ class TestService extends BaseService
 
     public function storeTest($payload)
     {
+        $user = auth()->user();
         $examIds = $payload['exams'];
         $userIds = $payload['students'];
-        $payload['created_by'] = auth()->id();
+        $payload['created_by'] = $user->id;
+
+        if ($user->isAdmin()) {
+            $payload['approve_status'] = ApproveStatus::APPROVED;
+        }
 
         $test = $this->testRepository->create($payload);
 
@@ -44,6 +51,13 @@ class TestService extends BaseService
     {
         $examIds = $payload['exams'];
         $userIds = $payload['students'];
+
+        $user = auth()->user();
+        if ($user->isAdmin()) {
+            $payload['approve_status'] = ApproveStatus::APPROVED;
+        } else {
+            $payload['approve_status'] = ApproveStatus::PENDING;
+        }
 
         $this->syncExamToTest($id, $examIds);
         $this->syncUserToTest($id, $userIds);
@@ -82,6 +96,9 @@ class TestService extends BaseService
 
     public function updateApproveStatus($id, $status)
     {
-        return $this->testRepository->update(['approve_status' => $status], $id);
+        return $this->testRepository->update([
+            'approve_status' => $status,
+            'approved_by' => auth()->id(),
+        ], $id);
     }
 }

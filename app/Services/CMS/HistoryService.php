@@ -21,9 +21,9 @@ class HistoryService extends BaseService
         public TestInterface $testRepository,
     ) {}
 
-    public function getPaginateHistoryTests()
+    public function getPaginateHistoryTests(Request $request)
     {
-        return $this->testRepository->getPaginateHistoryTests();
+        return $this->testRepository->getPaginateHistoryTests($request->input('search'));
     }
 
     public function getDetailHistoryTest($testId)

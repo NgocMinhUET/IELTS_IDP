@@ -18,9 +18,16 @@ class ExamRepository extends BaseRepository implements ExamInterface
         return Exam::class;
     }
 
-    public function getPaginateExams()
+    public function getPaginateExams($search)
     {
         $query = $this->model->with('createdBy')->withCount('tests');
+
+        if (!empty($search)) {
+            $query->where(function ($query) use ($search) {
+                $query->where('title', 'like', '%' . $search . '%');
+                $query->orWhere('desc', 'like', '%' . $search . '%');
+            });
+        }
 
         $user = auth()->user();
 

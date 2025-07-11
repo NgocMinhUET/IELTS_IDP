@@ -5,6 +5,7 @@ namespace App\Services\CMS;
 use App\Exceptions\CMS\ImportStudentException;
 use App\Repositories\User\UserInterface;
 use App\Services\BaseService;
+use Illuminate\Http\Request;
 use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
@@ -18,9 +19,9 @@ class StudentService extends BaseService
         public UserInterface $userRepository,
     ) {}
 
-    public function getPaginateStudents()
+    public function getPaginateStudents(Request $request)
     {
-        return $this->userRepository->getPaginateStudents();
+        return $this->userRepository->getPaginateStudents($request->input('search'));
     }
 
     public function getStudent($id)

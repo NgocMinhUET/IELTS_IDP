@@ -5,6 +5,7 @@ namespace App\Services\CMS;
 use App\Enum\UserRole;
 use App\Repositories\Admin\AdminInterface;
 use App\Services\BaseService;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 
@@ -14,9 +15,9 @@ class TeacherService extends BaseService
         public AdminInterface $adminRepository,
     ) {}
 
-    public function getPaginateTeachers()
+    public function getPaginateTeachers(Request $request)
     {
-        return $this->adminRepository->getPaginateTeachers();
+        return $this->adminRepository->getPaginateTeachers($request->input('search'));
     }
 
     public function getTeacher($id)

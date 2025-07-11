@@ -6,7 +6,7 @@ use App\Repositories\BaseInterface;
 
 interface TestInterface extends BaseInterface
 {
-    public function getPaginateTests();
+    public function getPaginateTests($search);
 
     public function getAssignedToUserTests($userId);
 
@@ -14,7 +14,7 @@ interface TestInterface extends BaseInterface
 
     public function getTestHistories($userId);
 
-    public function getPaginateHistoryTests();
+    public function getPaginateHistoryTests($search);
 
     public function getDetailHistoryTest($testId);
 }
