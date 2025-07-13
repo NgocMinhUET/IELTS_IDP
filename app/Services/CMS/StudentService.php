@@ -31,7 +31,7 @@ class StudentService extends BaseService
 
     public function getPickupStudents()
     {
-        return $this->userRepository->all();
+        return $this->userRepository->isActive()->get();
     }
 
     public function storeStudent($studentPayload)

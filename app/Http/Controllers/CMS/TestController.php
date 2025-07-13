@@ -61,6 +61,7 @@ class TestController extends CMSController
                 ->with('success', 'Test created.');
         } catch (\Throwable $th) {
             DB::rollBack();
+            Log::error($th->getMessage());
             abort(500);
         }
     }
